@@ -1,22 +1,17 @@
 @model Climb.ViewModels.BaseViewModel
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar nav fixed-top navbar-expand-md navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand brand" asp-controller="Site" asp-action="Home">Climb</a>
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 @if (Model.User == null)
                 {
-                    <li>
-                        <a asp-controller="Account" asp-action="LogIn">Log In</a>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="LogIn">Log In</a>
                     </li>
                     <li>
                         <a asp-controller="Account" asp-action="Register">Register</a>
@@ -31,13 +26,13 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             @foreach (var league in Model.UserActiveLeagues)
                             {
-                                <a class="dropdown-item" asp-controller="League" asp-action="Home" asp-route-leagueID="@league.ID">@league.Name</a>
+                                <a class="dropdown-item text-light" asp-controller="League" asp-action="Home" asp-route-leagueID="@league.ID">@league.Name</a>
                             }
                             @if (Model.UserActiveLeagues.Count > 0)
                             {
                                 <div class="dropdown-divider"></div>
                             }
-                            <a asp-controller="League" asp-action="Index">Search</a>
+                            <a class="btn btn-primary" asp-controller="League" asp-action="Index">Search</a>
                         </div>
                     </li>
 
@@ -50,7 +45,7 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 @foreach (var season in Model.UserActiveSeasons)
                                 {
-                                    <a class="dropdown-item" asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">@season.League.Name @(season.Index + 1)</a>
+                                    <a class="dropdown-item text-light" asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">@season.League.Name @(season.Index + 1)</a>
                                 }
                             </div>
                         </li>
@@ -62,9 +57,10 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" asp-controller="User" asp-action="Home" asp-route-userID="">Home</a>
-                            <a class="dropdown-item" asp-controller="Account" asp-action="Settings">Settings</a>
+                            <a class="dropdown-item text-light" asp-controller="User" asp-action="Home">Home</a>
+                            <a class="dropdown-item text-light" asp-controller="Account" asp-action="Settings">Settings</a>
                             <form asp-controller="Account" asp-action="LogOut">
-                                <button>Log Out</button>
+                                <button type="button" class="btn btn-secondary">Log Out</button>
                             </form>
                         </div>
                     </li>
@@ -73,3 +69,29 @@
         </div>
     </div>
 </nav>
+
+@*<nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="#">Navbar</a>
+
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">Disabled</a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav>*@
+
