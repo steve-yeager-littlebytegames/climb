@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Climb.Attributes;
 using Climb.Data;
 using Climb.Models;
+using Climb.Responses.Models;
+using Climb.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,15 +15,17 @@ namespace Climb.API
     public class GameApi : BaseApi<GameApi>
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly ICdnService cdnService;
 
-        public GameApi(ILogger<GameApi> logger, ApplicationDbContext dbContext)
+        public GameApi(ILogger<GameApi> logger, ApplicationDbContext dbContext, ICdnService cdnService)
             : base(logger)
         {
             this.dbContext = dbContext;
+            this.cdnService = cdnService;
         }
 
         [HttpGet("/api/v1/games/{gameID:int}")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(Game))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(GameDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Get(int gameID)
         {
@@ -34,7 +38,8 @@ namespace Climb.API
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Game with ID '{gameID}'.");
             }
 
-            return CodeResult(HttpStatusCode.OK, game);
+            var dto = GameDto.Create(game, cdnService);
+            return CodeResult(HttpStatusCode.OK, dto);
         }
 
         [HttpGet("/api/v1/games")]

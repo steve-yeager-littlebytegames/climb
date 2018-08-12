@@ -8,7 +8,9 @@ namespace Climb.Responses.Sets
     {
         public int ID { get; }
         public int LeagueID { get; }
+        public string LeagueName { get; }
         public int? SeasonID { get; }
+        public int? SeasonIndex { get; }
         public int GameID { get; }
         public int Player1ID { get; }
         public int Player2ID { get; }
@@ -25,7 +27,9 @@ namespace Climb.Responses.Sets
         {
             ID = set.ID;
             LeagueID = set.LeagueID;
+            LeagueName = set.League.Name;
             SeasonID = set.SeasonID;
+            SeasonIndex = set.Season?.Index;
             Player1ID = set.Player1ID;
             Player2ID = set.Player2ID;
             Player1Score = set.Player1Score;

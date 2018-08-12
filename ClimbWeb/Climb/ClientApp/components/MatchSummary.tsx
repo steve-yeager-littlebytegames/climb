@@ -3,7 +3,7 @@
 import { ClimbClient } from "../gen/climbClient";
 
 interface IMatchSummaryProps {
-    game: ClimbClient.Game;
+    game: ClimbClient.GameDto;
     match: ClimbClient.MatchDto;
     onSelect: (match: ClimbClient.MatchDto) => void;
 }
@@ -11,6 +11,8 @@ interface IMatchSummaryProps {
 export class MatchSummary extends React.Component<IMatchSummaryProps> {
     constructor(props: IMatchSummaryProps) {
         super(props);
+
+        this.renderCharacter = this.renderCharacter.bind(this);
     }
 
     render() {
@@ -20,17 +22,17 @@ export class MatchSummary extends React.Component<IMatchSummaryProps> {
         if (match.player1Characters == null) return null;
         if (match.player2Characters == null) return null;
 
-        const p1Characters = match.player1Characters.map((c: any, i: any) => <span key={i}>{c}</span>);
-        const p2Characters = match.player2Characters.map((c: any, i: any) => <span key={i}>{c}</span>);
+        const p1Characters = match.player1Characters.map(this.renderCharacter);
+        const p2Characters = match.player2Characters.map(this.renderCharacter);
 
         const stageView = this.renderStage(match, game);
 
         return (
-            <div className="match-summary-container" onClick={() => this.props.onSelect(match)}>
-                <div className="match-summary-index">Match {match.index + 1}</div>
-                <div className="match-summary-info">
+            <div className="card" onClick={() => this.props.onSelect(match)}>
+                <h6 className="card-header mb-1">Match {match.index + 1}</h6>
+                <div className="d-flex justify-content-around card-text align-items-center px-2">
                     <div>{p1Characters}</div>
-                    <div>{match.player1Score} - {match.player2Score}</div>
+                    <h4 className="match-score">{match.player1Score} - {match.player2Score}</h4>
                     <div>{p2Characters}</div>
                 </div>
                 {stageView}
@@ -38,7 +40,15 @@ export class MatchSummary extends React.Component<IMatchSummaryProps> {
         );
     }
 
-    private renderStage(match: ClimbClient.MatchDto, game: ClimbClient.Game) {
+    private renderCharacter(characterId: number, key: number) : JSX.Element {
+        const game = this.props.game;
+        if (!game || !game.characters) return <img/>;
+        const character = game.characters.find(gC => gC.id === characterId);
+        if (!character) return <img/>;
+        return <img key={key} src={character.picture} title={character.name} width="32" height="32"/>;
+    }
+
+    private renderStage(match: ClimbClient.MatchDto, game: ClimbClient.GameDto) {
         if (match.stageID == null) {
             return <div></div>;
         }

@@ -1,0 +1,20 @@
+[
+    {
+        "Name": "Smash Bros 4",
+        "CharactersPerMatch": 1,
+        "HasStages": true,
+        "MaxMatchPoints": 2
+    },
+    {
+        "Name": "Street Fighter V",
+        "CharactersPerMatch": 1,
+        "HasStages": false,
+        "MaxMatchPoints": 2
+    },
+    {
+        "Name": "Dragon Ball Fighterz",
+        "CharactersPerMatch": 3,
+        "HasStages": false,
+        "MaxMatchPoints": 1
+    }
+]

@@ -271,7 +271,7 @@ export class GameApi extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
     }
 
-    get(gameID: number): Promise<Game> {
+    get(gameID: number): Promise<GameDto> {
         let url_ = this.baseUrl + "/api/v1/games/{gameID}";
         if (gameID === undefined || gameID === null)
             throw new Error("The parameter 'gameID' must be defined.");
@@ -291,14 +291,14 @@ export class GameApi extends BaseClass {
         });
     }
 
-    protected processGet(response: Response): Promise<Game> {
+    protected processGet(response: Response): Promise<GameDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? Game.fromJS(resultData200) : new Game();
+            result200 = resultData200 ? GameDto.fromJS(resultData200) : new GameDto();
             return result200;
             });
         } else if (status === 404) {
@@ -313,7 +313,7 @@ export class GameApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Game>(<any>null);
+        return Promise.resolve<GameDto>(<any>null);
     }
 
     listAll(): Promise<Game[]> {
@@ -1720,6 +1720,162 @@ export interface ILeagueUser {
     joinDate: Date;
 }
 
+export class GameDto implements IGameDto {
+    id!: number;
+    name?: string | undefined;
+    characters?: CharacterDto[] | undefined;
+    stages?: StageDto[] | undefined;
+    charactersPerMatch!: number;
+    hasStages!: boolean;
+
+    constructor(data?: IGameDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+            if (data["characters"] && data["characters"].constructor === Array) {
+                this.characters = [];
+                for (let item of data["characters"])
+                    this.characters.push(CharacterDto.fromJS(item));
+            }
+            if (data["stages"] && data["stages"].constructor === Array) {
+                this.stages = [];
+                for (let item of data["stages"])
+                    this.stages.push(StageDto.fromJS(item));
+            }
+            this.charactersPerMatch = data["charactersPerMatch"];
+            this.hasStages = data["hasStages"];
+        }
+    }
+
+    static fromJS(data: any): GameDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GameDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (this.characters && this.characters.constructor === Array) {
+            data["characters"] = [];
+            for (let item of this.characters)
+                data["characters"].push(item.toJSON());
+        }
+        if (this.stages && this.stages.constructor === Array) {
+            data["stages"] = [];
+            for (let item of this.stages)
+                data["stages"].push(item.toJSON());
+        }
+        data["charactersPerMatch"] = this.charactersPerMatch;
+        data["hasStages"] = this.hasStages;
+        return data; 
+    }
+}
+
+export interface IGameDto {
+    id: number;
+    name?: string | undefined;
+    characters?: CharacterDto[] | undefined;
+    stages?: StageDto[] | undefined;
+    charactersPerMatch: number;
+    hasStages: boolean;
+}
+
+export class CharacterDto implements ICharacterDto {
+    id!: number;
+    name?: string | undefined;
+    picture?: string | undefined;
+
+    constructor(data?: ICharacterDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+            this.picture = data["picture"];
+        }
+    }
+
+    static fromJS(data: any): CharacterDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CharacterDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["picture"] = this.picture;
+        return data; 
+    }
+}
+
+export interface ICharacterDto {
+    id: number;
+    name?: string | undefined;
+    picture?: string | undefined;
+}
+
+export class StageDto implements IStageDto {
+    id!: number;
+    name?: string | undefined;
+
+    constructor(data?: IStageDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+        }
+    }
+
+    static fromJS(data: any): StageDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new StageDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface IStageDto {
+    id: number;
+    name?: string | undefined;
+}
+
 export class Game implements IGame {
     id!: number;
     name!: string;
@@ -2380,7 +2536,9 @@ export interface IMatchForm {
 export class SetDto implements ISetDto {
     id!: number;
     leagueID!: number;
+    leagueName?: string | undefined;
     seasonID?: number | undefined;
+    seasonIndex?: number | undefined;
     gameID!: number;
     player1ID!: number;
     player2ID!: number;
@@ -2408,7 +2566,9 @@ export class SetDto implements ISetDto {
         if (data) {
             this.id = data["id"];
             this.leagueID = data["leagueID"];
+            this.leagueName = data["leagueName"];
             this.seasonID = data["seasonID"];
+            this.seasonIndex = data["seasonIndex"];
             this.gameID = data["gameID"];
             this.player1ID = data["player1ID"];
             this.player2ID = data["player2ID"];
@@ -2437,7 +2597,9 @@ export class SetDto implements ISetDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["leagueID"] = this.leagueID;
+        data["leagueName"] = this.leagueName;
         data["seasonID"] = this.seasonID;
+        data["seasonIndex"] = this.seasonIndex;
         data["gameID"] = this.gameID;
         data["player1ID"] = this.player1ID;
         data["player2ID"] = this.player2ID;
@@ -2459,7 +2621,9 @@ export class SetDto implements ISetDto {
 export interface ISetDto {
     id: number;
     leagueID: number;
+    leagueName?: string | undefined;
     seasonID?: number | undefined;
+    seasonIndex?: number | undefined;
     gameID: number;
     player1ID: number;
     player2ID: number;

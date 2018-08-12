@@ -3,8 +3,10 @@
 import { ClimbClient } from "../gen/climbClient";
 
 interface IMatchEditProps {
-    game: ClimbClient.Game;
+    game: ClimbClient.GameDto;
     match: ClimbClient.MatchDto;
+    player1Name: string;
+    player2Name: string;
     onEdit: (match: ClimbClient.MatchDto) => void;
     onCancel: () => void;
     onDelete: () => void;
@@ -32,59 +34,94 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
 
     render() {
         const match = this.state.match;
+        const game = this.props.game;
 
-        if (this.props.game.characters == null || this.props.game.stages == null) throw new Error();
-        if (match.player1Characters == null || match.player2Characters == null) throw new Error();
+        if (!game.characters || !game.stages) throw new Error();
+        if (!match.player1Characters || !match.player2Characters) throw new Error();
 
-        const characters = this.props.game.characters.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>);
-        const stages = this.props.game.stages.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>);
+        const characters = game.characters.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>);
         const canOk = match.player1Score !== match.player2Score;
+        const stageInput = this.renderStageInput(game.hasStages, game.stages, match.stageID);
 
         return (
-            <div id="match-edit-container">
-                <button onClick={this.props.onDelete}>Delete</button>
-                <div id="match-edit-title">Match {match.index + 1}</div>
-                {this.renderPlayerInputs(1, characters, match.player1Characters)}
-                <div className="match-edit-input-group-divider"></div>
-                {this.renderPlayerInputs(2, characters, match.player2Characters)}
-                <div className="match-edit-input-group-divider"></div>
-                <div className="match-edit-input-group">
-                    <div className="match-edit-input-label">Stage</div>
-                    <div>
-                        <select className="match-edit-input" value={match.stageID} onChange={(e: any) => this.updateStage(parseInt(e.currentTarget.value))}>{stages}</select>
-                    </div>
+            <div className="container">
+                <div className="d-flex justify-content-start">
+                    <button className="btn btn-sm btn-danger" onClick={this.props.onDelete}>Delete</button>
                 </div>
-                <div className="match-edit-buttons">
-                    <button onClick={this.props.onCancel}>Cancel</button>
-                    <button disabled={!canOk} onClick={() => this.props.onEdit(this.state.match)}>Ok</button>
+
+                <h3>Match {match.index + 1}</h3>
+                {this.renderPlayerInputs(1, this.props.player1Name, characters, match.player1Characters, game.charactersPerMatch)}
+                <hr/>
+                {this.renderPlayerInputs(2, this.props.player2Name, characters, match.player2Characters, game.charactersPerMatch)}
+                {stageInput}
+
+                <div className="d-flex justify-content-between">
+                    <button className="btn btn-secondary" onClick={this.props.onCancel}>Cancel</button>
+                    <button className="btn btn-primary" disabled={!canOk} onClick={() => this.props.onEdit(this.state.match)}>Ok</button>
                 </div>
             </div>
         );
     }
 
-    private renderPlayerInputs(playerNumber: number, characters: any, characterValues: number[]) {
+    private renderPlayerInputs(playerNumber: number, playerName: string, characters: JSX.Element[], characterValues: number[], characterCount: number) {
         const match = this.state.match;
         const score = playerNumber === 1 ? match.player1Score : match.player2Score;
+        
+        let characterInputs:JSX.Element[] = [];
+        for (let i = 0; i < characterCount; i++) {
+            characterInputs.push(
+                <select className="form-control" value={characterValues[i]} onChange={(e: any) => this.updateCharacter(playerNumber, i, parseInt(e.currentTarget.value))}>{characters}</select>
+            );
+        }
 
         return (
             <div>
-                <div className="match-edit-player-title">Player {playerNumber}</div>
-                <div className="match-edit-input-group">
-                    <div className="match-edit-input-label">Score</div>
-                    <div>
-                        <input className="match-edit-input" type="number" value={score} min="0" max="2" onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value))}/>
+                {/*Player Name*/}
+                <div className="form-group row">
+                    <label className="col-form-label col-4 text-right">Player {playerNumber}</label>
+                    <div className="col-8">
+                        <input type="text" readOnly className="form-control" value={playerName} />
                     </div>
                 </div>
-                <div className="match-edit-input-group">
-                    <div className="match-edit-input-label">Characters</div>
-                    <div className="match-edit-characters">
-                        <select className="match-edit-input" value={characterValues[0]} onChange={(e: any) => this.updateCharacter(playerNumber, 0, parseInt(e.currentTarget.value))}>{characters}</select>
-                        <select className="match-edit-input" value={characterValues[1]} onChange={(e: any) => this.updateCharacter(playerNumber, 1, parseInt(e.currentTarget.value))}>{characters}</select>
-                        <select className="match-edit-input" value={characterValues[2]} onChange={(e: any) => this.updateCharacter(playerNumber, 2, parseInt(e.currentTarget.value))}>{characters}</select>
+
+                {/*Score*/}
+                <div className="form-group row">
+                    <label className="col-form-label col-4 text-right">Score</label>
+                    <div className="col-8">
+                        <input className="form-control" type="number" value={score} min="0" max="2" onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value))}/>
+                    </div>
+                </div>
+
+                {/*Characters*/}
+                <div className="form-group row">
+                    <label className="col-form-label col-4 text-right">{`Character${characterCount > 1 ? "s" : ""}`}</label>
+                    <div className="col-8">
+                        {characterInputs}
                     </div>
                 </div>
             </div>
         );
+    }
+
+    private renderStageInput(hasStages: boolean, stageValues: ClimbClient.StageDto[], currentStage: number | undefined) {
+        if (!hasStages) {
+            return null;
+        }
+
+        const stageOptions = stageValues.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>);
+
+        const elements = (
+            <div>
+                <hr/>
+                <div className="form-group row">
+                    <label className="col-form-label col-4 text-right">Stage</label>
+                    <div className="col-8">
+                        <select className="form-control" value={currentStage} onChange={(e: any) => this.updateStage(parseInt(e.currentTarget.value))}>{stageOptions}</select>
+                    </div>
+                </div>
+            </div>);
+
+        return elements;
     }
 
     private updateScore(playerNumber: number, score: number) {
@@ -98,19 +135,19 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         this.setState({ match: match });
     }
 
-    private updateCharacter(playerNumber: number, characterIndex: number, characterID: number) {
+    private updateCharacter(playerNumber: number, characterIndex: number, characterId: number) {
         const match = this.state.match;
 
         const characters = playerNumber === 1 ? match.player1Characters : match.player2Characters;
         if (characters == null) throw new Error();
-        characters[characterIndex] = characterID;
+        characters[characterIndex] = characterId;
 
         this.setState({ match: match });
     }
 
-    private updateStage(stageID: number) {
+    private updateStage(stageId: number) {
         const match = this.state.match;
-        match.stageID = stageID;
+        match.stageID = stageId;
         this.setState({ match: match });
     }
 }

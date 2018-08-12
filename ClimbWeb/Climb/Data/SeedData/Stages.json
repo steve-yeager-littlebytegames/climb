@@ -1,0 +1,27 @@
+[
+    // SB4
+    {
+        "Name": "Final Destination",
+        "GameID": 1
+    },
+    {
+        "Name": "Smashville",
+        "GameID": 1
+    },
+    {
+        "Name": "Town & City",
+        "GameID": 1
+    },
+    {
+        "Name": "Lylat Cruise",
+        "GameID": 1
+    },
+    {
+        "Name": "Dreamland",
+        "GameID": 1
+    },
+    {
+        "Name": "Battlefield",
+        "GameID": 1
+    }
+]

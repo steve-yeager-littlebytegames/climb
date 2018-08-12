@@ -1,13 +1,15 @@
 ﻿import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ClimbClient } from "../gen/climbClient";
+import { SetDetails } from "./SetDetails";
 import { MatchSummary } from "./MatchSummary";
 import { MatchEdit } from "./MatchEdit";
+import { SetCount } from "./SetCount";
 
 interface ISetSubmitState {
     set: ClimbClient.SetDto | null;
     selectedMatch: ClimbClient.MatchDto | null;
-    game: ClimbClient.Game | null;
+    game: ClimbClient.GameDto | null;
     player1: ClimbClient.LeagueUserDto | null;
     player2: ClimbClient.LeagueUserDto | null;
 }
@@ -54,6 +56,8 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         if (this.state.selectedMatch != null) {
             return <MatchEdit match={this.state.selectedMatch}
                               game={game}
+                              player1Name={player1.username}
+                              player2Name={player2.username}
                               onEdit={this.onMatchEdited}
                               onCancel={this.onMatchCancelled}
                               onDelete={this.onMatchDelete}/>;
@@ -68,46 +72,17 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         const canSubmit = set.player1Score !== set.player2Score;
 
         return (
-            <div>
-                <div id="set-submit-header">
-                    <div id="set-submit-player-info">
-                        <div className="set-submit-player">
-                            <div className="set-submit-player-top">
-                                <img src="https://cdn2.iconfinder.com/data/icons/professions/512/user_boy_avatar-64.png"/>
-                                <div className="set-submit-player-meta">
-                                    <div className="set-submit-player-rank">#4</div>
-                                    <div className="set-submit-player-trend">↓</div>
-                                </div>
-                            </div>
-                        </div>
+            <div className="pb-4">
+                <SetDetails set={set} player1={player1} player2={player2}/>
+                <SetCount set={set}/>
 
-                        <div id="set-submit-score-container">
-                            <div className="set-submit-score right">{set.player1Score}</div>
-                            <div id="set-submit-score-divide">-</div>
-                            <div className="set-submit-score left">{set.player2Score}</div>
-                        </div>
-
-                        <div className="set-submit-player">
-                            <div className="set-submit-player-top">
-                                <div className="set-submit-player-meta">
-                                    <div className="set-submit-player-rank">#4</div>
-                                    <div className="set-submit-player-trend">↓</div>
-                                </div>
-                                <img src="https://cdn2.iconfinder.com/data/icons/professions/512/user_boy_avatar-64.png"/>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="set-submit-player-names">
-                        <div className="set-submit-player-name left">{player1.username}</div>
-                        <div className="set-submit-player-name right">{player2.username}</div>
-                    </div>
+                <div>
+                    <div className="card-deck">{matches}</div>
+                    <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add Match</button>
                 </div>
 
-                <div>{matches}</div>
-                <div className="match-summary-buttons">
-                    <button disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
-                    <button onClick={this.onAddMatch}>Add Match</button>
+                <div className="d-flex justify-content-end">
+                    <button id="submit-button" className="btn btn-danger mt-4" disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
                 </div>
             </div>
         );

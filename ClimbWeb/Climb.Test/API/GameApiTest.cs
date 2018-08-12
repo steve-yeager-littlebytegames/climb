@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using Climb.API;
 using Climb.Data;
 using Climb.Extensions;
-using Climb.Models;
+using Climb.Responses.Models;
+using Climb.Services;
 using Climb.Test.Utilities;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -22,8 +23,9 @@ namespace Climb.Test.Api
         {
             dbContext = DbContextUtility.CreateMockDb();
             var logger = Substitute.For<ILogger<GameApi>>();
+            var cdnService = Substitute.For<ICdnService>();
 
-            testObj = new GameApi(logger, dbContext);
+            testObj = new GameApi(logger, dbContext, cdnService);
         }
 
         [Test]
@@ -32,7 +34,7 @@ namespace Climb.Test.Api
             var game = GameUtility.Create(dbContext, 2, 2);
 
             var result = await testObj.Get(game.ID);
-            var resultObj = result.GetObject<Game>();
+            var resultObj = result.GetObject<GameDto>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
             Assert.AreEqual(game.ID, resultObj.ID);
