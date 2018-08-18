@@ -42,8 +42,30 @@ namespace Climb.Controllers
                 return RedirectToAction("Home", "User", new {userID = user.Id});
             }
 
-            var viewModel = new BaseViewModel(null);
+            var viewModel = new RegisterViewModel(null, new RegisterRequest());
             return View(viewModel);
+        }
+
+        [HttpPost("account/register")]
+        public async Task<IActionResult> RegisterPost(RegisterRequest request)
+        {
+            if(!ModelState.IsValid)
+            {
+                var viewModel = new RegisterViewModel(null, request);
+                return View("Register", viewModel);
+            }
+
+            try
+            {
+                await applicationUserService.Register(request, Url, Request.Scheme);
+
+                return RedirectToAction("Home", "User");
+            }
+            catch(Exception exception)
+            {
+                logger.LogError(exception, $"Error handling request\n{request}");
+                return RedirectToAction("Register");
+            }
         }
 
         [HttpGet("account/login")]
@@ -79,21 +101,6 @@ namespace Climb.Controllers
                 logger.LogError(exception, "Failed to log in.");
                 TempData[LoginFail] = true;
                 return RedirectToAction("LogIn");
-            }
-        }
-
-        [HttpPost("account/register")]
-        public async Task<IActionResult> RegisterPost(RegisterRequest request)
-        {
-            try
-            {
-                await applicationUserService.Register(request, Url, Request.Scheme);
-
-                return RedirectToAction("Home", "User");
-            }
-            catch(Exception exception)
-            {
-                return GetExceptionResult(exception, request);
             }
         }
 
