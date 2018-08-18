@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Models;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.ViewModels.Organizations;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,9 +14,9 @@ namespace Climb.Controllers
 {
     public class OrganizationController : BaseController<OrganizationController>
     {
-        private IOrganizationService organizationService;
+        private readonly IOrganizationService organizationService;
 
-        public OrganizationController(ILogger<OrganizationController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext, IOrganizationService organizationService)
+        public OrganizationController(ILogger<OrganizationController> logger, IUserManager userManager, ApplicationDbContext dbContext, IOrganizationService organizationService)
             : base(logger, userManager, dbContext)
         {
             this.organizationService = organizationService;

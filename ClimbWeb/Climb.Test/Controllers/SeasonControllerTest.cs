@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Climb.Controllers;
 using Climb.Data;
+using Climb.Services;
 using Climb.Services.ModelServices;
-using Climb.Test.Fakes;
 using Climb.Test.Utilities;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -23,7 +23,7 @@ namespace Climb.Test.Controllers
             seasonService = Substitute.For<ISeasonService>();
             dbContext = DbContextUtility.CreateMockDb();
             var logger = Substitute.For<ILogger<SeasonController>>();
-            var userManager = Substitute.For<FakeUserManager>();
+            var userManager = Substitute.For<IUserManager>();
 
             testObj = new SeasonController(seasonService, dbContext, logger, userManager);
         }

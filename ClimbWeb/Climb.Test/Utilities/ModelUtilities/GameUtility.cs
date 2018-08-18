@@ -6,12 +6,13 @@ namespace Climb.Test.Utilities
 {
     public static class GameUtility
     {
-        public static Game Create(ApplicationDbContext dbContext, int characterCount, int stageCount)
+        public static Game Create(ApplicationDbContext dbContext, int characterCount, int stageCount, string logoKey = null, string name = "Test Game")
         {
-            var game = new Game("Test Game", characterCount, stageCount, stageCount > 0)
+            var game = new Game(name, characterCount, stageCount, stageCount > 0)
             {
                 Characters = new List<Character>(characterCount),
                 Stages = new List<Stage>(stageCount),
+                LogoImageKey = logoKey,
             };
             dbContext.Add(game);
 

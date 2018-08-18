@@ -1,8 +1,7 @@
-﻿@model Climb.ViewModels.Leagues.HomeViewModel
+﻿@model Climb.ViewModels.BaseViewModel
 
 @{
     ViewBag.Title = "Account-Register";
-    Layout = "_Layout";
 }
 
 <link rel="stylesheet" href="~/dist/styles/account.css"/>
@@ -12,7 +11,7 @@
     <h1 class="h3 mb-3 font-weight-normal">Please Log In</h1>
     @if(ViewData.ContainsKey("LoginFail"))
     {
-        <span class="label-danger">Failed to Log In</span>
+        <span>Failed to Log In</span>
     }
     <label for="inputEmail" class="sr-only">Email address</label>
     <input type="email" id="inputEmail" name="Email" class="form-control" placeholder="Email address" required autofocus>
@@ -24,6 +23,11 @@
         </label>
     </div>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
-    <a asp-action="Register">Register</a>
+    <div class="mt-2">
+        <a asp-action="Register">Register</a>
+    </div>
+    <div class="mt-4">
+        <a asp-action="ForgotPassword">Forgot Password</a>
+    </div>
     <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
 </form>

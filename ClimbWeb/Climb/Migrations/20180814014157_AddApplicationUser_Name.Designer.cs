@@ -4,14 +4,16 @@ using Climb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Climb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180814014157_AddApplicationUser_Name")]
+    partial class AddApplicationUser_Name
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,8 +107,6 @@ namespace Climb.Migrations
                     b.Property<DateTime>("DateAdded");
 
                     b.Property<bool>("HasStages");
-
-                    b.Property<string>("LogoImageKey");
 
                     b.Property<int>("MaxMatchPoints");
 

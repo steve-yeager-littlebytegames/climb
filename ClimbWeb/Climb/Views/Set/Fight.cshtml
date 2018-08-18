@@ -2,21 +2,26 @@
 
 @{
     ViewBag.Title = "Set-Fight";
-    Layout = "_LayoutWithNavbar";
 }
 
 <div id="react-app" class="mx-4 mt-4"></div>
 
 @section scripts {
-<environment include="Development">
-    <script crossorigin="anonymous" src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script crossorigin="anonymous" src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <script crossorigin="anonymous" src="https://unpkg.com/react-router@4.3.1/umd/react-router.js"></script>
-    <script crossorigin="anonymous" src="https://unpkg.com/react-router-dom@4.3.1/umd/react-router-dom.js"></script>
-</environment>
+    <environment include="Development">
+        <script crossorigin="anonymous" src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin="anonymous" src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        <script crossorigin="anonymous" src="https://unpkg.com/react-router@4.3.1/umd/react-router.js"></script>
+        <script crossorigin="anonymous" src="https://unpkg.com/react-router-dom@4.3.1/umd/react-router-dom.js"></script>
+    </environment>
+    
+    <environment include="Production">
+        <script crossorigin="anonymous" src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+        <script crossorigin="anonymous" src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+        <script crossorigin="anonymous" src="https://unpkg.com/react-router@4.3.1/umd/react-router.min.js"></script>
+        <script crossorigin="anonymous" src="https://unpkg.com/react-router-dom@4.3.1/umd/react-router-dom.min.js"></script>
+    </environment>
 
     <link href="~/dist/styles/matches.css" rel="stylesheet"/>
 
-    @*<script type="module" src="~/dist/gen/climbClient.js"></script>*@
     <script type="module" src="~/dist/app/bundle.js"></script>
 }

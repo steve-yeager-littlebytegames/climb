@@ -35,7 +35,7 @@ namespace Climb.ViewModels.Leagues
             {
                 title = leagueUser.League.Name;
                 titleLink = urlHelper.Action("Home", "League", new {leagueUser.LeagueID});
-                picture = "https://pbs.twimg.com/profile_images/697220635198689285/T34coLzR_400x400.png";
+                picture = cdnService.GetImageUrl(leagueUser.League.Game.LogoImageKey, ClimbImageRules.GameLogo);
             }
 
             return new LeagueUserViewModel(leagueUser, title, titleLink, picture);

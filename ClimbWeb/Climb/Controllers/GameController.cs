@@ -6,7 +6,7 @@ using Climb.Requests.Games;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.ViewModels.Games;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ namespace Climb.Controllers
         private readonly IGameService gameService;
         private readonly ICdnService cdnService;
 
-        public GameController(IGameService gameService, ApplicationDbContext dbContext, ILogger<GameController> logger, UserManager<ApplicationUser> userManager, ICdnService cdnService)
+        public GameController(IGameService gameService, ApplicationDbContext dbContext, ILogger<GameController> logger, IUserManager userManager, ICdnService cdnService)
             : base(logger, userManager, dbContext)
         {
             this.gameService = gameService;
@@ -45,7 +45,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = new HomeViewModel(user, game);
+            var viewModel = HomeViewModel.Create(user, game, cdnService);
             return View(viewModel);
         }
 
@@ -127,12 +127,38 @@ namespace Climb.Controllers
             }
         }
 
-        [HttpPost("games/create")]
-        public async Task<IActionResult> Create(CreateRequest request)
+        [Authorize]
+        [HttpGet("games/create")]
+        public async Task<IActionResult> Create()
+        {
+            var user = await GetViewUserAsync();
+
+            var viewModel = new UpdateViewModel(user, null, cdnService);
+            return View("Update", viewModel);
+        }
+
+        [Authorize]
+        [HttpGet("games/update/{gameID:int}")]
+        public async Task<IActionResult> Update(int gameID)
+        {
+            var user = await GetViewUserAsync();
+
+            var game = await dbContext.Games.FirstOrDefaultAsync(g => g.ID == gameID);
+            if(game == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new UpdateViewModel(user, game, cdnService);
+            return View(viewModel);
+        }
+
+        [HttpPost("games/update")]
+        public async Task<IActionResult> UpdatePost(UpdateRequest request)
         {
             try
             {
-                var game = await gameService.Create(request);
+                var game = await gameService.Update(request);
                 logger.LogInformation($"Game {game.ID} created");
 
                 return RedirectToAction("Home", new

@@ -1,14 +1,15 @@
-﻿@model Climb.ViewModels.Games.IndexViewModel
+﻿@using Climb.Services
+@model Climb.ViewModels.Games.IndexViewModel
+@inject ICdnService cdnService
 
 @{
     ViewBag.Title = "Games";
-    Layout = "_LayoutWithNavbar";
 }
 
 <div>
     <h1>All Games</h1>
     
-    <form asp-action="Create">
+    <form asp-action="UpdatePost">
         <input type="text" name="name" placeholder="Name" />
         <input type="number" name="charactersPerMatch" placeholder="Characters per Match" />
         <input type="number" name="maxMatchPoints" placeholder="Max Match Points" />
@@ -18,7 +19,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Name</th>
+                <th scope="col">Game</th>
                 <th scope="col">Date Added</th>
                 <th scope="col">Leagues</th>
                 <th scope="col">Members</th>
@@ -28,7 +29,12 @@
         @foreach(var game in Model.Games)
         {
             <tr>
-                <td><a asp-action="Home" asp-route-gameID="@game.ID">@game.Name</a></td>
+                <td>
+                    <div class="d-flex text-left">
+                        <img class="mr-2" src="@cdnService.GetImageUrl(game.LogoImageKey, ClimbImageRules.GameLogo)" width="32" height="32"/>
+                        <a asp-action="Home" asp-route-gameID="@game.ID">@game.Name</a>
+                    </div>
+                </td>
                 <td>@game.DateAdded.ToShortDateString()</td>
                 <td>@game.Leagues.Count</td>
                 <td>@game.Leagues.Sum(l => l.Members.Count)</td>

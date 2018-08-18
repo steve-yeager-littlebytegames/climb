@@ -7,7 +7,6 @@ using Climb.Requests.Account;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,11 +14,11 @@ namespace Climb.API
 {
     public class AccountApi : BaseApi<AccountApi>
     {
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly ISignInManager signInManager;
         private readonly ITokenHelper tokenHelper;
         private readonly IApplicationUserService applicationUserService;
 
-        public AccountApi(SignInManager<ApplicationUser> signInManager, ITokenHelper tokenHelper, ILogger<AccountApi> logger, IApplicationUserService applicationUserService)
+        public AccountApi(ISignInManager signInManager, ITokenHelper tokenHelper, ILogger<AccountApi> logger, IApplicationUserService applicationUserService)
             : base(logger)
         {
             this.signInManager = signInManager;

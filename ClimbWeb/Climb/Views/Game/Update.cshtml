@@ -1,0 +1,37 @@
+﻿@using Climb.Requests.Games
+@model Climb.ViewModels.Games.UpdateViewModel
+
+@{
+    ViewBag.Title = "Games";
+}
+
+<div class="container mt-4">
+    <h1>@Model.Action Game</h1>
+    <form asp-action="UpdatePost" enctype="multipart/form-data">
+        <input type="hidden" name="gameID" value="@Model.Game?.ID"/>
+        <div class="form-group row">
+            <label class="col-5 col-form-label text-left">Name</label>
+            <input class="form-control col-7" type="text" name="name" value="@Model.Game?.Name"/>
+        </div>
+        <div class="form-group row">
+            <label class="col-5 col-form-label text-left">Logo</label>
+            <div class="col-7">
+                <img src="@Model.LogoImage" width="100" height="100"/>
+                <input class="form-control-file" type="file" name="@nameof(UpdateRequest.LogoImage)" accept="image/*"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-5 col-form-label text-left">Characters per Match</label>
+            <input class="form-control col-7" type="number" name="charactersPerMatch" min="1" value="@(Model.Game?.CharactersPerMatch ?? 1)"/>
+        </div>
+        <div class="form-group row">
+            <label class="col-5 col-form-label text-left">Max Match Points</label>
+            <input class="form-control col-7" type="number" name="maxMatchPoints" min="1" value="@(Model.Game?.MaxMatchPoints ?? 1)"/>
+        </div>
+        <div class="form-group row">
+            <label class="col-5 col-form-label text-left">Has Stages</label>
+            <input class="form-control col-7" type="checkbox" name="hasStages" value="@(Model.Game?.HasStages ?? false)"/>
+        </div>
+        <button class="btn btn-primary">@Model.Action</button>
+    </form>
+</div>

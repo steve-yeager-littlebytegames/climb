@@ -4,7 +4,6 @@ using Climb.Exceptions;
 using Climb.Requests.Account;
 using Climb.Services;
 using Climb.Services.ModelServices;
-using Climb.Test.Fakes;
 using Climb.Test.Utilities;
 using Climb.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using NUnit.Framework;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Climb.Test.Services.ModelServices
 {
@@ -24,7 +24,8 @@ namespace Climb.Test.Services.ModelServices
         private ApplicationUserService testObj;
         private ApplicationDbContext dbContext;
         private ICdnService cdnService;
-        private FakeUserManager userManager;
+        private IUserManager userManager;
+        private ISignInManager signInManager;
 
         [SetUp]
         public void SetUp()
@@ -38,23 +39,16 @@ namespace Climb.Test.Services.ModelServices
             var emailSender = Substitute.For<IEmailSender>();
             var tokenHelper = Substitute.For<ITokenHelper>();
             var urlUtility = Substitute.For<IUrlUtility>();
-            var signInManager = new FakeSignInManager();
-            userManager = Substitute.For<FakeUserManager>();
+            signInManager = Substitute.For<ISignInManager>();
+            userManager = Substitute.For<IUserManager>();
 
             testObj = new ApplicationUserService(dbContext, cdnService, signInManager, emailSender, configuration, tokenHelper, urlUtility, userManager);
         }
 
         [Test]
-        public void LogIn_NoUser_NotFoundException()
+        public void LogIn_WrongPassword_BadRequestException()
         {
-            var request = new LoginRequest();
-
-            Assert.ThrowsAsync<BadRequestException>(() => testObj.LogIn(request));
-        }
-
-        [Test]
-        public void LogIn_WrongPassword_NotFoundException()
-        {
+            signInManager.PasswordSignInAsync("", "", false, false).ReturnsForAnyArgs(SignInResult.Failed);
             const string email = "user@test.com";
             DbContextUtility.AddNew<ApplicationUser>(dbContext, u => u.Email = email);
             var request = new LoginRequest {Email = email};
@@ -70,6 +64,19 @@ namespace Climb.Test.Services.ModelServices
             var urlHelper = Substitute.For<IUrlHelper>();
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.Register(request, urlHelper, ""));
+        }
+
+        [Test]
+        public async Task Register_Valid_SetValues()
+        {
+            userManager.CreateAsync(null, null).ReturnsForAnyArgs(IdentityResult.Success);
+            const string name = "bob";
+            var request = new RegisterRequest {Name = name};
+            var urlHelper = Substitute.For<IUrlHelper>();
+
+            var user = await testObj.Register(request, urlHelper, "");
+
+            Assert.AreEqual(name, user.Name);
         }
 
         [Test]
@@ -111,29 +118,17 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task UploadImage_UserHasImage_DeleteOldImage()
-        {
-            const string firstKey = ImageKey + "_First";
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext, u => u.ProfilePicKey = firstKey);
-            var file = PrepareCdnService();
-
-            await testObj.UploadProfilePic(user.Id, file);
-
-#pragma warning disable 4014
-            cdnService.Received(1).DeleteImageAsync(firstKey, ClimbImageRules.ProfilePic);
-#pragma warning restore 4014
-        }
-
-        [Test]
-        public async Task UpdateSettings_NewUsername_UpdateUsername()
+        public async Task UpdateSettings_NewValues_ValuesUpdated()
         {
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
             const string username = "bob";
+            const string name = "ted";
             var file = Substitute.For<IFormFile>();
 
-            await testObj.UpdateSettings(user.Id, username, file);
+            await testObj.UpdateSettings(user.Id, username, name, file);
 
             Assert.AreEqual(username, user.UserName);
+            Assert.AreEqual(name, user.Name);
         }
 
         [Test]
@@ -141,7 +136,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var file = Substitute.For<IFormFile>();
 
-            Assert.ThrowsAsync<NotFoundException>(() => testObj.UpdateSettings("", "bob", file));
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.UpdateSettings("", "bob", "", file));
         }
 
         [Test]
@@ -150,10 +145,10 @@ namespace Climb.Test.Services.ModelServices
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
             var file = Substitute.For<IFormFile>();
 
-            await testObj.UpdateSettings(user.Id, "bob", file);
+            await testObj.UpdateSettings(user.Id, "bob", "", file);
 
 #pragma warning disable 4014
-            cdnService.Received(1).UploadImageAsync(file, ClimbImageRules.ProfilePic);
+            cdnService.Received(1).ReplaceImageAsync(Arg.Any<string>(), file, ClimbImageRules.ProfilePic);
 #pragma warning restore 4014
         }
 
@@ -162,7 +157,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
 
-            await testObj.UpdateSettings(user.Id, "bob", null);
+            await testObj.UpdateSettings(user.Id, "bob", "", null);
 
 #pragma warning disable 4014
             cdnService.DidNotReceiveWithAnyArgs().UploadImageAsync(null, null);
@@ -176,7 +171,7 @@ namespace Climb.Test.Services.ModelServices
             var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
             const string newDisplayName = "bob";
 
-            await testObj.UpdateSettings(leagueUser.UserID, newDisplayName, null);
+            await testObj.UpdateSettings(leagueUser.UserID, newDisplayName, "", null);
 
             Assert.AreEqual(newDisplayName, leagueUser.DisplayName);
         }
@@ -184,7 +179,7 @@ namespace Climb.Test.Services.ModelServices
         private IFormFile PrepareCdnService()
         {
             var file = Substitute.For<IFormFile>();
-            cdnService.UploadImageAsync(file, ClimbImageRules.ProfilePic).Returns(ImageKey);
+            cdnService.ReplaceImageAsync(Arg.Any<string>(), file, ClimbImageRules.ProfilePic).Returns(ImageKey);
             cdnService.GetImageUrl(ImageKey, ClimbImageRules.ProfilePic).Returns(ImageUrl);
             return file;
         }

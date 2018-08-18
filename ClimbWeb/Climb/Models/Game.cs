@@ -13,6 +13,7 @@ namespace Climb.Models
         public int CharactersPerMatch { get; set; }
         public int MaxMatchPoints { get; set; }
         public bool HasStages { get; set; }
+        public string LogoImageKey { get; set; }
 
         [Required]
         public List<Character> Characters { get; set; }

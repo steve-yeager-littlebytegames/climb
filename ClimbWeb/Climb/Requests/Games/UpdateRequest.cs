@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Climb.Requests.Games
 {
-    public class CreateRequest
+    public class UpdateRequest
     {
+        public int? GameID { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
@@ -12,17 +14,20 @@ namespace Climb.Requests.Games
         public int MaxMatchPoints { get; set; }
         [Required]
         public bool HasStages { get; set; }
+        [Required]
+        public IFormFile LogoImage { get; set; }
 
-        public CreateRequest()
+        public UpdateRequest()
         {
         }
 
-        public CreateRequest(string name, int characterCount, int maxPoints, bool hasStages)
+        public UpdateRequest(string name, int characterCount, int maxPoints, bool hasStages, IFormFile logo)
         {
             Name = name;
             CharactersPerMatch = characterCount;
             MaxMatchPoints = maxPoints;
             HasStages = hasStages;
+            LogoImage = logo;
         }
     }
 }

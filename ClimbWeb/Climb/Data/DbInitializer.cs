@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Climb.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -9,8 +10,13 @@ namespace Climb.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize(ApplicationDbContext dbContext)
+        public static void Initialize(ApplicationDbContext dbContext, IHostingEnvironment environment)
         {
+            if(environment.IsProduction())
+            {
+                return;
+            }
+
             if(!dbContext.Users.Any())
             {
                 CreateTestData(dbContext);

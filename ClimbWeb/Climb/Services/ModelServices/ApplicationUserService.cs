@@ -6,7 +6,6 @@ using Climb.Extensions;
 using Climb.Requests.Account;
 using Climb.Utilities;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,14 +16,14 @@ namespace Climb.Services.ModelServices
     {
         private readonly ApplicationDbContext dbContext;
         private readonly ICdnService cdnService;
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly ISignInManager signInManager;
         private readonly IEmailSender emailSender;
         private readonly IConfiguration configuration;
         private readonly ITokenHelper tokenHelper;
         private readonly IUrlUtility urlUtility;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
 
-        public ApplicationUserService(ApplicationDbContext dbContext, ICdnService cdnService, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, IConfiguration configuration, ITokenHelper tokenHelper, IUrlUtility urlUtility, UserManager<ApplicationUser> userManager)
+        public ApplicationUserService(ApplicationDbContext dbContext, ICdnService cdnService, ISignInManager signInManager, IEmailSender emailSender, IConfiguration configuration, ITokenHelper tokenHelper, IUrlUtility urlUtility, IUserManager userManager)
         {
             this.dbContext = dbContext;
             this.cdnService = cdnService;
@@ -42,6 +41,7 @@ namespace Climb.Services.ModelServices
             {
                 UserName = request.Username,
                 Email = request.Email,
+                Name = request.Name,
             };
             var result = await userManager.CreateAsync(user, request.Password);
             if(result.Succeeded)
@@ -60,7 +60,7 @@ namespace Climb.Services.ModelServices
         public async Task<string> LogIn(LoginRequest request)
         {
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            
+
             var result = await signInManager.PasswordSignInAsync(user?.UserName, request.Password, request.RememberMe, false);
             if(result.Succeeded)
             {
@@ -86,20 +86,15 @@ namespace Climb.Services.ModelServices
             }
 
             dbContext.Update(user);
-            if(!string.IsNullOrWhiteSpace(user.ProfilePicKey))
-            {
-                await cdnService.DeleteImageAsync(user.ProfilePicKey, ClimbImageRules.ProfilePic);
-                user.ProfilePicKey = "";
-            }
-
-            var imageKey = await cdnService.UploadImageAsync(image, ClimbImageRules.ProfilePic);
+            
+            var imageKey = await cdnService.ReplaceImageAsync(user.ProfilePicKey, image, ClimbImageRules.ProfilePic);
             var imageUrl = cdnService.GetImageUrl(imageKey, ClimbImageRules.ProfilePic);
             user.ProfilePicKey = imageKey;
             await dbContext.SaveChangesAsync();
             return imageUrl;
         }
 
-        public async Task UpdateSettings(string userID, string username, IFormFile profilePic)
+        public async Task UpdateSettings(string userID, string username, string name, IFormFile profilePic)
         {
             var user = await dbContext.Users
                 .Include(u => u.LeagueUsers)
@@ -108,10 +103,12 @@ namespace Climb.Services.ModelServices
             {
                 throw new NotFoundException(typeof(ApplicationUser), userID);
             }
+
             dbContext.Update(user);
             dbContext.UpdateRange(user.LeagueUsers);
 
             user.UserName = username;
+            user.Name = name;
             foreach(var leagueUser in user.LeagueUsers)
             {
                 leagueUser.DisplayName = username;

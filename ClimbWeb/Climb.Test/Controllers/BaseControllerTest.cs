@@ -3,9 +3,8 @@ using System.Net;
 using Climb.Controllers;
 using Climb.Data;
 using Climb.Exceptions;
-using Climb.Test.Fakes;
+using Climb.Services;
 using Climb.Test.Utilities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -15,7 +14,7 @@ namespace Climb.Test.Controllers
 {
     public class FakeBaseController : BaseController<FakeBaseController>
     {
-        public FakeBaseController(ILogger<FakeBaseController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        public FakeBaseController(ILogger<FakeBaseController> logger, IUserManager userManager, ApplicationDbContext dbContext)
             : base(logger, userManager, dbContext)
         {
         }
@@ -35,7 +34,7 @@ namespace Climb.Test.Controllers
         public void SetUp()
         {
             var logger = Substitute.For<ILogger<FakeBaseController>>();
-            var userManager = new FakeUserManager();
+            var userManager = Substitute.For<IUserManager>();
             var dbContext = DbContextUtility.CreateMockDb();
 
             testObj = new FakeBaseController(logger, userManager, dbContext);

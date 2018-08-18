@@ -13,8 +13,6 @@ namespace Climb.Services
 {
     public class S3Cdn : CdnService
     {
-        private static readonly RegionEndpoint region = RegionEndpoint.USWest2;
-
         private readonly AmazonS3Client s3Client;
         private readonly string accessKey;
         private readonly string secretKey;
@@ -28,6 +26,7 @@ namespace Climb.Services
             accessKey = awsSection["AccessKey"];
             secretKey = awsSection["SecretKey"];
             bucketName = awsSection["Bucket"];
+            var region = RegionEndpoint.GetBySystemName(awsSection["Region"]);
 
             if(environment.IsDevelopment())
             {

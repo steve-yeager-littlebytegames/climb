@@ -21,13 +21,8 @@ namespace Climb.Services.ModelServices
             this.cdnService = cdnService;
         }
 
-        public async Task<Game> Create(CreateRequest request)
+        public async Task<Game> Update(UpdateRequest request)
         {
-            if(await dbContext.Games.AnyAsync(g => g.Name == request.Name))
-            {
-                throw new BadRequestException();
-            }
-
             if(request.CharactersPerMatch < 1)
             {
                 throw new BadRequestException(nameof(request.CharactersPerMatch), "A game needs at least 1 character per match");
@@ -38,14 +33,44 @@ namespace Climb.Services.ModelServices
                 throw new BadRequestException(nameof(request.MaxMatchPoints), "A game needs at least 1 point per match.");
             }
 
-            if(await dbContext.Games.AnyAsync(g => g.Name == request.Name))
+            if(await dbContext.Games.AnyAsync(g => g.Name == request.Name && (request.GameID == null || g.ID != request.GameID)))
             {
                 throw new ConflictException(typeof(Game), nameof(Game.Name), request.Name);
             }
 
-            var game = new Game(request.Name, request.CharactersPerMatch, request.MaxMatchPoints, request.HasStages);
+            var game = await dbContext.Games.FirstOrDefaultAsync(g => g.ID == request.GameID);
 
-            dbContext.Add(game);
+            if(game == null)
+            {
+                if(request.LogoImage == null)
+                {
+                    throw new BadRequestException(nameof(request.LogoImage), "A game needs a logo.");
+                }
+
+                var logoImageKey = await cdnService.UploadImageAsync(request.LogoImage, ClimbImageRules.GameLogo);
+
+                game = new Game(request.Name, request.CharactersPerMatch, request.MaxMatchPoints, request.HasStages)
+                {
+                    LogoImageKey = logoImageKey
+                };
+                dbContext.Add(game);
+            }
+            else
+            {
+                game.Name = request.Name;
+                game.CharactersPerMatch = request.CharactersPerMatch;
+                game.MaxMatchPoints = request.MaxMatchPoints;
+                game.HasStages = request.HasStages;
+
+                if(request.LogoImage != null)
+                {
+                    var logoKey = await cdnService.ReplaceImageAsync(game.LogoImageKey, request.LogoImage, ClimbImageRules.GameLogo);
+                    game.LogoImageKey = logoKey;
+                }
+
+                dbContext.Update(game);
+            }
+            
             await dbContext.SaveChangesAsync();
 
             return game;
@@ -88,7 +113,7 @@ namespace Climb.Services.ModelServices
             else
             {
                 character = await dbContext.Characters.FirstOrDefaultAsync(c => c.ID == characterID);
-                if (character == null)
+                if(character == null)
                 {
                     throw new NotFoundException(typeof(Character), characterID.Value);
                 }
@@ -98,8 +123,7 @@ namespace Climb.Services.ModelServices
 
                 if(imageFile != null)
                 {
-                    await cdnService.DeleteImageAsync(character.ImageKey, ClimbImageRules.CharacterPic);
-                    var imageKey = await cdnService.UploadImageAsync(imageFile, ClimbImageRules.CharacterPic);
+                    var imageKey = await cdnService.ReplaceImageAsync(game.LogoImageKey, imageFile, ClimbImageRules.CharacterPic);
                     character.ImageKey = imageKey;
                 }
             }

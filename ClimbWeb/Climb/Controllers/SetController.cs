@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Climb.Data;
+using Climb.Services;
 using Climb.ViewModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +9,7 @@ namespace Climb.Controllers
 {
     public class SetController : BaseController<SetController>
     {
-        public SetController(ApplicationDbContext dbContext, ILogger<SetController> logger, UserManager<ApplicationUser> userManager)
+        public SetController(ApplicationDbContext dbContext, ILogger<SetController> logger, IUserManager userManager)
             : base(logger, userManager, dbContext)
         {
         }

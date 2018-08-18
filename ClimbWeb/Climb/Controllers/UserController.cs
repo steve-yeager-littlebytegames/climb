@@ -2,7 +2,6 @@
 using Climb.Data;
 using Climb.Services;
 using Climb.ViewModels.Users;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,7 +12,7 @@ namespace Climb.Controllers
     {
         private readonly ICdnService cdnService;
 
-        public UserController(ApplicationDbContext dbContext, ILogger<UserController> logger, ICdnService cdnService, UserManager<ApplicationUser> userManager)
+        public UserController(ApplicationDbContext dbContext, ILogger<UserController> logger, ICdnService cdnService, IUserManager userManager)
             : base(logger, userManager, dbContext)
         {
             this.cdnService = cdnService;
@@ -31,7 +30,7 @@ namespace Climb.Controllers
             }
 
             var user = await dbContext.Users
-                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).AsNoTracking()
+                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).ThenInclude(l => l.Game).AsNoTracking().AsNoTracking()
                 .Include(u => u.LeagueUsers).ThenInclude(lu => lu.P1Sets).ThenInclude(s => s.Matches).ThenInclude(m => m.MatchCharacters).AsNoTracking()
                 .Include(u => u.LeagueUsers).ThenInclude(lu => lu.P1Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(u => u.LeagueUsers).ThenInclude(lu => lu.P1Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()

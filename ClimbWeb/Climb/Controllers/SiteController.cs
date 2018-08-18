@@ -6,7 +6,6 @@ using Climb.ViewModels;
 using Climb.ViewModels.Site;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -18,7 +17,7 @@ namespace Climb.Controllers
         private readonly IEmailSender emailSender;
         private readonly IConfiguration configuration;
 
-        public SiteController(ILogger<SiteController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext, IEmailSender emailSender, IConfiguration configuration)
+        public SiteController(ILogger<SiteController> logger, IUserManager userManager, ApplicationDbContext dbContext, IEmailSender emailSender, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.emailSender = emailSender;

@@ -3,9 +3,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Requests.Seasons;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.ViewModels.Seasons;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,7 @@ namespace Climb.Controllers
     {
         private readonly ISeasonService seasonService;
 
-        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, UserManager<ApplicationUser> userManager)
+        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager)
             : base(logger, userManager, dbContext)
         {
             this.seasonService = seasonService;
