@@ -30,7 +30,10 @@
         {
             <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
         }*@
-        <a asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
+        @if (Model.IsAdmin)
+        {
+            <a asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
+        }
     </div>
 
     <div class="d-flex justify-content-center align-items-center body-temp">
