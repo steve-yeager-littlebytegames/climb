@@ -10,6 +10,7 @@ using Climb.Responses.Models;
 using Climb.Services.ModelServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.API
@@ -18,12 +19,14 @@ namespace Climb.API
     {
         private readonly ApplicationDbContext dbContext;
         private readonly ILeagueService leagueService;
+        private readonly string adminKey;
 
-        public LeagueApi(ILogger<LeagueApi> logger, ApplicationDbContext dbContext, ILeagueService leagueService)
+        public LeagueApi(ILogger<LeagueApi> logger, ApplicationDbContext dbContext, ILeagueService leagueService, IConfiguration configuration)
             : base(logger)
         {
             this.dbContext = dbContext;
             this.leagueService = leagueService;
+            adminKey = configuration["AdminKey"];
         }
 
         [HttpGet("/api/v1/leagues")]
@@ -110,6 +113,27 @@ namespace Climb.API
             }
 
             return CodeResult(HttpStatusCode.OK, league.Seasons);
+        }
+
+        [HttpPost("/api/v1/leagues/update-standings/{leagueID:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(League), "League power rankings have been updated.")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Can't find league.")]
+        public async Task<IActionResult> UpdateStandings(int leagueID, [FromHeader]string key)
+        {
+            if(key != adminKey)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var league = await leagueService.UpdateStandings(leagueID);
+                return Ok(league);
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {leagueID});
+            }
         }
     }
 }

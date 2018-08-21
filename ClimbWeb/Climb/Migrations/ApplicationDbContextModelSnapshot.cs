@@ -158,6 +158,8 @@ namespace Climb.Migrations
 
                     b.Property<bool>("HasLeft");
 
+                    b.Property<bool>("IsNewcomer");
+
                     b.Property<DateTime>("JoinDate");
 
                     b.Property<int>("LeagueID");

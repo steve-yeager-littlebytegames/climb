@@ -88,6 +88,8 @@ namespace Climb.Services.ModelServices
         public async Task<Set> Update(int setID, IReadOnlyList<MatchForm> matchForms)
         {
             var set = await dbContext.Sets
+                .Include(s => s.Player1)
+                .Include(s => s.Player2)
                 .Include(s => s.Matches).ThenInclude(m => m.MatchCharacters)
                 .FirstOrDefaultAsync(s => s.ID == setID);
             if(set == null)
@@ -102,9 +104,15 @@ namespace Climb.Services.ModelServices
                 await dbContext.SaveChangesAsync();
                 set.Matches.Clear();
             }
+            else
+            {
+                set.Player1.SetCount++;
+                set.Player2.SetCount++;
+            }
 
             dbContext.Sets.Update(set);
 
+            set.IsComplete = true;
             set.Player1Score = set.Player2Score = 0;
 
             for(var i = 0; i < matchForms.Count; i++)

@@ -16,7 +16,8 @@ namespace Climb.ViewModels.Seasons
 
         public static SeasonParticipantViewModel Create(SeasonLeagueUser participant, ICdnService cdnService)
         {
-            var profilePic = cdnService.GetImageUrl(participant.LeagueUser.User.ProfilePicKey, ClimbImageRules.ProfilePic);
+            var user = participant.LeagueUser.User;
+            var profilePic = cdnService.GetUserProfilePicUrl(user.Id, user.ProfilePicKey, ClimbImageRules.ProfilePic);
             return new SeasonParticipantViewModel(participant, profilePic);
         }
     }

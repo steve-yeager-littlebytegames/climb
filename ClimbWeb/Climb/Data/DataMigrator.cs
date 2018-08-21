@@ -21,6 +21,7 @@ namespace Climb.Data
 {
     public static class DataMigrator
     {
+        private const int SetsTillNotNewcomer = 4;
         private static readonly Dictionary<string, (string id, string name)> applicationUserIDs = new Dictionary<string, (string id, string name)>();
         private static readonly Dictionary<int, int> gameIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> characterIDs = new Dictionary<int, int>();
@@ -84,7 +85,6 @@ namespace Climb.Data
                     UserName = oldUser.Username,
                     NormalizedUserName = userManager.KeyNormalizer.Normalize(oldUser.Username),
                     PasswordHash = oldUser.ApplicationUser.PasswordHash,
-                    ProfilePicKey = oldUser.ProfilePicKey,
                     ConcurrencyStamp = oldUser.ApplicationUser.ConcurrencyStamp,
                     SecurityStamp = oldUser.ApplicationUser.SecurityStamp,
                 };
@@ -185,7 +185,7 @@ namespace Climb.Data
                     AdminID = oldLeague.Admin.ApplicationUser.Id,
                     Name = oldLeague.Name,
                     DateCreated = DateTime.Today,
-                    SetsTillRank = 4,
+                    SetsTillRank = SetsTillNotNewcomer,
                 };
             }
 
@@ -246,6 +246,7 @@ namespace Climb.Data
                     Rank = oldLeagueUser.Rank,
                     Points = oldLeagueUser.Points,
                     SetCount = oldLeagueUser.SetsPlayed,
+                    IsNewcomer = oldLeagueUser.SetsPlayed < SetsTillNotNewcomer, 
                 };
             }
 
@@ -288,18 +289,23 @@ namespace Climb.Data
         private static async Task MigrateSets(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldSets = await v1Context.Set.ToArrayAsync();
-            var sets = new Set[oldSets.Length];
+            var sets = new List<Set>(oldSets.Length);
+            var setIDsDict = new Dictionary<Set, int>();
 
-            for(var i = 0; i < oldSets.Length; i++)
+            foreach(var oldSet in oldSets)
             {
-                var oldSet = oldSets[i];
+                if(oldSet.Player1Score == null && oldSet.Player2Score == null)
+                {
+                    continue;
+                }
+
                 Debug.Assert(oldSet.Player1ID != null, "oldSet.Player1ID != null");
                 Debug.Assert(oldSet.Player2ID != null, "oldSet.Player2ID != null");
                 var isComplete = oldSet.Player1Score != null;
                 var player1Won = oldSet.Player1Score > oldSet.Player2Score;
                 var player2Won = oldSet.Player2Score > oldSet.Player1Score;
 
-                sets[i] = new Set
+                var newSet = new Set
                 {
                     LeagueID = leagueIDs[oldSet.LeagueID],
                     DueDate = oldSet.DueDate,
@@ -316,18 +322,21 @@ namespace Climb.Data
 
                 if(oldSet.SeasonID != null)
                 {
-                    sets[i].SeasonID = oldSet.SeasonID != null ? seasonIDs[oldSet.SeasonID.Value] : (int?)null;
-                    sets[i].SeasonPlayer1ID = seasonLeagueUserIDs[$"{oldSet.Player1ID.Value}-{oldSet.SeasonID}"];
-                    sets[i].SeasonPlayer2ID = seasonLeagueUserIDs[$"{oldSet.Player2ID.Value}-{oldSet.SeasonID}"];
+                    newSet.SeasonID = oldSet.SeasonID != null ? seasonIDs[oldSet.SeasonID.Value] : (int?)null;
+                    newSet.SeasonPlayer1ID = seasonLeagueUserIDs[$"{oldSet.Player1ID.Value}-{oldSet.SeasonID}"];
+                    newSet.SeasonPlayer2ID = seasonLeagueUserIDs[$"{oldSet.Player2ID.Value}-{oldSet.SeasonID}"];
                 }
+
+                setIDsDict.Add(newSet, oldSet.ID);
+                sets.Add(newSet);
             }
 
             context.Sets.AddRange(sets);
             await context.SaveChangesAsync();
 
-            for(var i = 0; i < oldSets.Length; i++)
+            foreach(var set in setIDsDict)
             {
-                setIDs[oldSets[i].ID] = sets[i].ID;
+                setIDs[set.Value] = set.Key.ID;
             }
         }
 
@@ -336,12 +345,17 @@ namespace Climb.Data
             var oldMatches = await v1Context.Match
                 .Include(m => m.Set).AsNoTracking()
                 .ToArrayAsync();
-            var matches = new Match[oldMatches.Length];
+            var matches = new List<Match>(oldMatches.Length);
+            var matchIDsDict = new Dictionary<Match, int>();
 
-            for(var i = 0; i < oldMatches.Length; i++)
+            foreach(var oldMatch in oldMatches)
             {
-                var oldMatch = oldMatches[i];
-                matches[i] = new Match
+                if(oldMatch.Player1Score == 0 && oldMatch.Player2Score == 0)
+                {
+                    continue;
+                }
+
+                var newMatch = new Match
                 {
                     Index = oldMatch.Index,
                     SetID = setIDs[oldMatch.Set.ID],
@@ -349,31 +363,39 @@ namespace Climb.Data
                     Player2Score = oldMatch.Player2Score,
                     StageID = oldMatch.StageID,
                 };
+
+                matches.Add(newMatch);
+                matchIDsDict.Add(newMatch, oldMatch.ID);
             }
 
             context.Matches.AddRange(matches);
             await context.SaveChangesAsync();
 
-            for(var i = 0; i < oldMatches.Length; i++)
+            foreach(var match in matchIDsDict)
             {
-                matchIDs[oldMatches[i].ID] = matches[i].ID;
+                matchIDs[match.Value] = match.Key.ID;
             }
         }
 
         private static async Task MigrateMatchCharacters(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldMatchCharacters = await v1Context.MatchCharacters.ToArrayAsync();
-            var matchCharacters = new MatchCharacter[oldMatchCharacters.Length];
+            var matchCharacters = new List<MatchCharacter>(oldMatchCharacters.Length);
 
             for(var i = 0; i < oldMatchCharacters.Length; i++)
             {
                 var oldMatchCharacter = oldMatchCharacters[i];
-                matchCharacters[i] = new MatchCharacter
+                if(!matchIDs.ContainsKey(oldMatchCharacter.MatchID))
+                {
+                    continue;
+                }
+
+                matchCharacters.Add(new MatchCharacter
                 {
                     MatchID = matchIDs[oldMatchCharacter.MatchID],
                     LeagueUserID = leagueUserIDs[oldMatchCharacter.LeagueUserID],
                     CharacterID = characterIDs[oldMatchCharacter.CharacterID],
-                };
+                });
             }
 
             context.MatchCharacters.AddRange(matchCharacters);

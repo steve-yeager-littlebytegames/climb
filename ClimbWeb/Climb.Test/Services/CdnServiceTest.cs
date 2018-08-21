@@ -14,6 +14,11 @@ namespace Climb.Test.Services
         {
             public int deleteCalls;
 
+            public FakeCdnService()
+            {
+                root = "https://www.climb.com/";
+            }
+
             protected override Task UploadImageInternalAsync(IFormFile image, string folder, string fileKey)
             {
                 return Task.CompletedTask;
@@ -92,6 +97,25 @@ namespace Climb.Test.Services
             await testObj.ReplaceImageAsync("", image, rules);
 
             Assert.AreEqual(0, testObj.deleteCalls);
+        }
+
+        [Test]
+        public void GetUserProfilePicUrl_HasKey_ReturnUrlToImage()
+        {
+            const string imageKey = "key.png";
+            
+            var url = testObj.GetUserProfilePicUrl("123", imageKey, ClimbImageRules.ProfilePic);
+
+            Assert.IsTrue(url.EndsWith(imageKey));
+            Assert.IsFalse(url.StartsWith("/"));
+        }
+
+        [Test]
+        public void GetUserProfilePicUrl_NoKey_ReturnTempImage()
+        {
+            var url = testObj.GetUserProfilePicUrl("123", "", ClimbImageRules.ProfilePic);
+
+            Assert.IsTrue(url.StartsWith("/"));
         }
     }
 }

@@ -25,10 +25,13 @@ namespace Climb.ViewModels.Sets
 
         public static DetailsViewModel Create(ApplicationUser viewingUser, Set set, ICdnService cdnService)
         {
-            var p1ProfilePic = set.Player1.User.GetProfilePicUrl(cdnService);
-            var p2ProfilePic = set.Player2.User.GetProfilePicUrl(cdnService);
-            var isPlaying = viewingUser != null && (set.Player1.UserID == viewingUser.Id || set.Player2.UserID == viewingUser.Id);
-            var opponentProfilePic = set.Player1.UserID == viewingUser?.Id ? p2ProfilePic : p1ProfilePic;
+            var player1 = set.Player1;
+            var player2 = set.Player2;
+
+            var p1ProfilePic = cdnService.GetUserProfilePicUrl(player1.User.Id, player1.User.ProfilePicKey, ClimbImageRules.ProfilePic);
+            var p2ProfilePic = cdnService.GetUserProfilePicUrl(player2.User.Id, player2.User.ProfilePicKey, ClimbImageRules.ProfilePic);
+            var isPlaying = viewingUser != null && (player1.UserID == viewingUser.Id || player2.UserID == viewingUser.Id);
+            var opponentProfilePic = player1.UserID == viewingUser?.Id ? p2ProfilePic : p1ProfilePic;
 
             return new DetailsViewModel(set, p1ProfilePic, p2ProfilePic, isPlaying, opponentProfilePic);
         }

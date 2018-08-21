@@ -2,7 +2,7 @@
 @model Climb.ViewModels.BaseViewModel
 @inject ICdnService cdnService
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" asp-controller="Site" asp-action="Home">
         <img src="~/images/logo/logo-32x32.png" width="30" height="30" class="d-inline-block align-top"/>
         Climb
@@ -76,8 +76,8 @@
     @if(Model.IsLoggedIn)
     {
         <div class="ml-2">
-            <a asp-controller="User" asp-action="Home">
-                <img src="@cdnService.GetImageUrl(Model.User.ProfilePicKey, ClimbImageRules.ProfilePic)" width="30" height="30"/>
+            <a asp-controller="User" asp-action="Home" asp-route-userID="">
+                <img src="@Model.GetProfilePic(cdnService)" width="30" height="30"/>
             </a>
         </div>
     }

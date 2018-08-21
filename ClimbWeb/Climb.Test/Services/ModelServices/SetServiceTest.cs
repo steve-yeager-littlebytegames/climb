@@ -116,6 +116,42 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
+        public async Task Update_NewSet_LeagueUserSetCountIncremented()
+        {
+            var set = SetUtility.Create(dbContext);
+            var matchForms = CreateMatchForms(3);
+
+            await testObj.Update(set.ID, matchForms);
+            await testObj.Update(set.ID, matchForms);
+
+            Assert.AreEqual(1, set.Player1.SetCount);
+            Assert.AreEqual(1, set.Player2.SetCount);
+        }
+        
+        [Test]
+        public async Task Update_OldSet_LeagueUserSetCountNotChanged()
+        {
+            var set = SetUtility.Create(dbContext);
+            var matchForms = CreateMatchForms(3);
+
+            await testObj.Update(set.ID, matchForms);
+
+            Assert.AreEqual(1, set.Player1.SetCount);
+            Assert.AreEqual(1, set.Player2.SetCount);
+        }
+
+        [Test]
+        public async Task Update_IsCompleteIsTrue()
+        {
+            var set = SetUtility.Create(dbContext);
+
+            var matchForms = CreateMatchForms(3);
+            await testObj.Update(set.ID, matchForms);
+
+            Assert.IsTrue(set.IsComplete);
+        }
+
+        [Test]
         public void RequestSet_NoRequester_NotFoundException()
         {
             var league = LeagueUtility.CreateLeague(dbContext);

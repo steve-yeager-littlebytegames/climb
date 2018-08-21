@@ -29,7 +29,7 @@ namespace Climb.ViewModels.Leagues
             {
                 title = leagueUser.DisplayName;
                 titleLink = urlHelper.Action("Home", "User", new {leagueUser.UserID});
-                picture = leagueUser.User.GetProfilePicUrl(cdnService);
+                picture = cdnService.GetUserProfilePicUrl(leagueUser.User.Id, leagueUser.User.ProfilePicKey, ClimbImageRules.ProfilePic);
             }
             else
             {

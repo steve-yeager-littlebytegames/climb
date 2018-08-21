@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Models;
@@ -18,7 +19,10 @@ namespace Climb.ViewModels.Site
 
         public static async Task<HomeViewModel> Create(ApplicationUser user, ApplicationDbContext dbContext)
         {
-            var games = await dbContext.Games.ToArrayAsync();
+            var games = await dbContext.Games
+                .Include(g => g.Leagues).AsNoTracking()
+                .OrderByDescending(g => g.Leagues.Count)
+                .Take(5).ToArrayAsync();
 
             return new HomeViewModel(user, games);
         }

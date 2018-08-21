@@ -9,6 +9,7 @@ using Climb.Requests.Leagues;
 using Climb.Responses.Models;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
@@ -30,8 +31,9 @@ namespace Climb.Test.Api
             leagueService = Substitute.For<ILeagueService>();
             dbContext = DbContextUtility.CreateMockDb();
             var logger = Substitute.For<ILogger<LeagueApi>>();
+            var configuration = Substitute.For<IConfiguration>();
 
-            testObj = new LeagueApi(logger, dbContext, leagueService);
+            testObj = new LeagueApi(logger, dbContext, leagueService, configuration);
         }
 
         [Test]

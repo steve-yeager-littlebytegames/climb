@@ -14,6 +14,20 @@ namespace Climb.Services
         protected abstract void EnsureFolder(string rulesFolder);
         public abstract Task DeleteImageAsync(string fileKey, ImageRules rules);
 
+        public string GetUserProfilePicUrl(string id, string imageKey, ImageRules rules)
+        {
+            const int defaultPicturesCount = 24;
+
+            if(string.IsNullOrWhiteSpace(imageKey))
+            {
+                var idHash = id.Select(c => (int)c).Sum();
+                var defaultID = idHash % defaultPicturesCount;
+                return $"/images/profile-default/profile-default-{defaultID}.jpg";
+            }
+
+            return GetImageUrl(imageKey, ClimbImageRules.ProfilePic);
+        }
+
         public string GetImageUrl(string imageKey, ImageRules rules) => string.IsNullOrWhiteSpace(imageKey) ? rules.MissingUrl : $"{root}/{rules.Folder}/{imageKey}";
 
         public async Task<string> UploadImageAsync(IFormFile image, ImageRules rules)

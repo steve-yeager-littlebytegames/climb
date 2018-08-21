@@ -40,6 +40,6 @@ namespace Climb.Models
             DateCreated = DateTime.Today;
         }
 
-        public bool IsMemberNew(LeagueUser member) => member.SetCount >= SetsTillRank;
+        public bool IsMemberNew(LeagueUser member) => member.SetCount < SetsTillRank;
     }
 }

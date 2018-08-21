@@ -2,6 +2,7 @@
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
+using Climb.Services;
 
 namespace Climb.ViewModels
 {
@@ -35,6 +36,11 @@ namespace Climb.ViewModels
                     .Where(slu => slu != null)
                     .Select(slu => slu.Season).ToArray();
             }
+        }
+
+        public string GetProfilePic(ICdnService cdnService)
+        {
+            return cdnService.GetUserProfilePicUrl(User.Id, User.ProfilePicKey, ClimbImageRules.ProfilePic);
         }
     }
 }
