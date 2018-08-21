@@ -36,5 +36,17 @@ namespace Climb
             modelErrors.SaveErrors(modelState);
             return modelErrors;
         }
+
+        public static bool HasErrors(ModelStateDictionary modelState, out ModelErrors errors)
+        {
+            if(modelState.IsValid)
+            {
+                errors = null;
+                return false;
+            }
+
+            errors = Create(modelState);
+            return true;
+        }
     }
 }

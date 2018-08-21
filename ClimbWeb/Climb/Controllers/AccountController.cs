@@ -43,17 +43,17 @@ namespace Climb.Controllers
                 return RedirectToAction("Home", "User", new {userID = user.Id});
             }
 
-            var viewModel = new RegisterViewModel(null, new RegisterRequest());
+            var viewModel = new RequestViewModel<RegisterRequest>(null);
             return View(viewModel);
         }
 
         [HttpPost("account/register")]
         public async Task<IActionResult> RegisterPost(RegisterRequest request)
         {
-            if(!ModelState.IsValid)
+            if(ModelErrors.HasErrors(ModelState, out var errors))
             {
-                var viewModel = new RegisterViewModel(null, request);
-                return View("Register", viewModel);
+                TempData.Put("RegisterErrors", errors);
+                RedirectToAction("Register");
             }
 
             try
@@ -133,9 +133,9 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
 
-            if(!ModelState.IsValid)
+            if(ModelErrors.HasErrors(ModelState, out var errors))
             {
-                TempData.Put("ModelErrors", ModelErrors.Create(ModelState));
+                TempData.Put("ModelErrors", errors);
                 return RedirectToAction("Settings");
             }
 
