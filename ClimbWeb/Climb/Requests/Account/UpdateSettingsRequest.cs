@@ -11,7 +11,7 @@ namespace Climb.Requests.Account
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         public string Username { get; set; }
         public string Name { get; set; }
-        [FileSize(1024*1024/2)]
+        [FileSize(ClimbImageRules.ProfilePicMaxSize)]
         public IFormFile ProfilePic { get; set; }
     }
 }
