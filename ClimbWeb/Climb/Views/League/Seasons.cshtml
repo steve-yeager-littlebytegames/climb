@@ -7,6 +7,7 @@
     ViewBag.Title = "Leagues-Home";
 }
 
+
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>Welcome to @Model.League.Name</h1>
@@ -38,39 +39,17 @@
     <!-- Columns -->
     <div class="row">
         <!-- Members -->
-        <div class="col-xl-4 page-section pb-2 mt-4">
-            <h3>Members</h3>
+        <div class="col-xl-6 page-section pb-2 mt-4">
+            <h3>Final Rankings</h3>
             <div class="page-section-child">
-                @if (Model.Members.Count > 0)
+                @foreach (var member in Model.Members)
                 {
-                    <div class="page-section-content">
-                        @foreach (var member in Model.Members)
-                        {
-                            <partial name="./Partials/LeagueUser" model="@LeagueUserViewModel.Create(member, cdnService, true, Url)" />
-                        }
-                        @if (Model.Newcomers.Count > 0)
-                        {
-                            <div class="section-divider">
-                                <h5>Newcomers</h5>
-                            </div>
-
-                            foreach (var newcomer in Model.Newcomers)
-                            {
-                                <partial name="./Partials/LeagueUser" model="@LeagueUserViewModel.Create(newcomer, cdnService, true, Url)" />
-                            }
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="text-darker">
-                        <em>No members</em>
-                    </div>
+                    <partial name="./Partials/LeagueUser" model="@LeagueUserViewModel.Create(member, cdnService, true, Url)" />
                 }
             </div>
         </div>
         <!-- Activity -->
-        <div class="col-xl-4 page-section pb-2 mt-4">
+        <div class="col-xl-6 page-section pb-2 mt-4">
             <h3>Activity</h3>
             <div class="page-section-child">
                 @*@if (Model.RecentSets.Count == 0)
@@ -86,21 +65,6 @@
                             <div>@set.ID</div>
                         }
                     }*@
-            </div>
-
-        </div>
-
-        <!-- Sets -->
-        <div class="col-xl-4 page-section pb-2 mt-4">
-            <h3>Sets</h3>
-            <div class="page-section-child">
-                @*@foreach (var set in Model.AvailableSets)
-                    {
-                        <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)" />
-                    }*@
-                <div class="text-darker">
-                    <em> No recent activity</em>
-                </div>
             </div>
         </div>
     </div>
