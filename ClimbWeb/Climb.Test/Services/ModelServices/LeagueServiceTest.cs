@@ -11,9 +11,6 @@ using NUnit.Framework;
 
 namespace Climb.Test.Services.ModelServices
 {
-    // TODO: Sets for all players
-    // TODO: Sets for some players
-    // TODO: Sets for no players
     [TestFixture]
     public class LeagueServiceTest
     {
@@ -215,6 +212,31 @@ namespace Climb.Test.Services.ModelServices
             await testObj.UpdateStandings(league.ID);
 
             Assert.AreNotEqual(originalPoints, player1.Points);
+        }
+
+        [Test]
+        public async Task UpdateStandings_HasNewcomers_NewcomersSkippedWhenRanking()
+        {
+            var league = CreateLeague(4);
+
+            dbContext.UpdateRange(league.Members);
+            for(int i = 0; i < league.Members.Count; i++)
+            {
+                league.Members[i].Points = i;
+                league.Members[i].SetCount = 10;
+                league.Members[i].IsNewcomer = false;
+            }
+            league.Members[1].SetCount = 0;
+            league.Members[1].IsNewcomer = true;
+            dbContext.SaveChanges();
+
+            await testObj.UpdateStandings(league.ID);
+
+            var members = league.Members.OrderBy(lu => lu.Rank).ToArray();
+            Assert.AreEqual(0, members[0].Rank);
+            Assert.AreEqual(1, members[1].Rank);
+            Assert.AreEqual(2, members[2].Rank);
+            Assert.AreEqual(3, members[3].Rank);
         }
 
         [Test]

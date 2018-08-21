@@ -145,6 +145,7 @@ namespace Climb.Services.ModelServices
                 var activeMembers = league.Members.OrderByDescending(lu => lu.Points).ToList();
 
                 var rank = 0;
+                var rankedMembers = 0;
                 var lastPoints = -1;
                 for(var i = 0; i < activeMembers.Count; i++)
                 {
@@ -158,9 +159,10 @@ namespace Climb.Services.ModelServices
                     if(member.Points != lastPoints)
                     {
                         lastPoints = member.Points;
-                        rank = i + 1;
+                        rank = rankedMembers + 1;
                     }
 
+                    ++rankedMembers;
                     member.Rank = rank;
                 }
             }

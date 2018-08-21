@@ -1,4 +1,5 @@
-﻿@model Climb.ViewModels.Account.SettingsViewModel
+﻿@using Climb.Extensions
+@model Climb.ViewModels.Account.SettingsViewModel
 
 @{
     ViewBag.Title = "Account-Settings";
@@ -10,24 +11,29 @@
         <!--ID-->
         <div class="form-group row">
             <label class="col-5 col-form-label text-left">ID</label>
-            <input type="text" name="Name" class="form-control col-7" value="@Model.User.Id" readonly="readonly"/>
+            <input type="text" class="form-control col-7" value="@Model.User.Id" readonly="readonly"/>
         </div>
         <!--Name-->
         <div class="form-group row">
             <label class="col-5 col-form-label text-left">Name</label>
-            <input type="text" name="Name" class="form-control col-7" value="@Model.User.Name" autofocus />
+            <input type="text" asp-for="Request.Name" class="form-control col-7" value="@Model.User.Name" autofocus />
         </div>
         <!--Username-->
         <div class="form-group row">
             <label class="col-5 col-form-label text-left">Username</label>
-            <input type="text" name="Username" class="form-control col-7" value="@Model.User.UserName" autofocus required />
+            <input type="text" asp-for="Request.Username" class="form-control col-7" value="@Model.User.UserName" autofocus />
+            <span class="text-danger" asp-validation-for="Request.Username"></span>
         </div>
         <!--Profile Picture-->
         <div class="form-group row">
-            <label class="col-5 col-form-label text-left">Profile Picture</label>
+            <div class="col-5 col-form-label text-left d-flex flex-column">
+                <label class="col-form-label">Profile Picture</label>
+                <small>Max size of @ClimbImageRules.ProfilePic.MaxSize.ToBytesReadable()</small>
+            </div>
             <div class="col-7">
                 <img src="@Model.ProfilePic" width="100" height="100" />
-                <input class="form-control-file" type="file" name="ProfilePic" accept="image/*" />
+                <input asp-for="Request.ProfilePic" class="form-control-file" type="file" accept="image/*" />
+                <span class="text-danger" asp-validation-for="Request.ProfilePic"></span>
             </div>
         </div>
 

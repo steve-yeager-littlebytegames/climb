@@ -9,6 +9,7 @@ namespace Climb.ViewModels.Leagues
     {
         public League League { get; }
         public bool IsMember { get; }
+        public bool IsAdmin { get; }
         public IReadOnlyList<LeagueUser> Members { get; }
         public IReadOnlyList<LeagueUser> Newcomers { get; }
         public bool CanStartSeason { get;  }
@@ -22,6 +23,7 @@ namespace Climb.ViewModels.Leagues
             Members = league.Members.Where(lu => !lu.IsNewcomer).ToList();
             Newcomers = league.Members.Where(lu => lu.IsNewcomer).ToList();
             IsMember = league.Members.Any(lu => lu.UserID == user?.Id);
+            IsAdmin = user?.Id == league.AdminID;
 
 #if DEBUG
             CanStartSeason = true;
