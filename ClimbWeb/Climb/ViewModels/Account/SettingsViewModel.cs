@@ -1,9 +1,10 @@
 ﻿using Climb.Data;
+using Climb.Requests.Account;
 using Climb.Services;
 
 namespace Climb.ViewModels.Account
 {
-    public class SettingsViewModel : BaseViewModel
+    public class SettingsViewModel : RequestViewModel<UpdateSettingsRequest>
     {
         public string ProfilePic { get; }
 

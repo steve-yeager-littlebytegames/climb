@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Climb.Data;
+using Climb.Extensions;
 using Climb.Requests.Account;
 using Climb.Services;
 using Climb.Services.ModelServices;
@@ -42,17 +43,17 @@ namespace Climb.Controllers
                 return RedirectToAction("Home", "User", new {userID = user.Id});
             }
 
-            var viewModel = new RegisterViewModel(null, new RegisterRequest());
+            var viewModel = new RequestViewModel<RegisterRequest>(null);
             return View(viewModel);
         }
 
         [HttpPost("account/register")]
         public async Task<IActionResult> RegisterPost(RegisterRequest request)
         {
-            if(!ModelState.IsValid)
+            if(ModelErrors.HasErrors(ModelState, out var errors))
             {
-                var viewModel = new RegisterViewModel(null, request);
-                return View("Register", viewModel);
+                TempData.Put("RegisterErrors", errors);
+                RedirectToAction("Register");
             }
 
             try
@@ -117,6 +118,12 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
 
+            if(TempData.ContainsKey("ModelErrors"))
+            {
+                var modelErrors = TempData.Get<ModelErrors>("ModelErrors");
+                modelErrors.AssignErrors(ModelState);
+            }
+
             var viewModel = SettingsViewModel.Create(user, cdnService);
             return View(viewModel);
         }
@@ -126,8 +133,20 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
 
-            // TODO: Handle errors.
-            await applicationUserService.UpdateSettings(user.Id, request.Username, request.Name, request.ProfilePic);
+            if(ModelErrors.HasErrors(ModelState, out var errors))
+            {
+                TempData.Put("ModelErrors", errors);
+                return RedirectToAction("Settings");
+            }
+
+            try
+            {
+                await applicationUserService.UpdateSettings(user.Id, request.Username, request.Name, request.ProfilePic);
+            }
+            catch (Exception)
+            {
+                // TODO:
+            }
 
             return RedirectToAction("Settings");
         }
