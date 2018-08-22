@@ -25,7 +25,7 @@ export class SetDetails extends React.Component<ISetDetailsProps> {
                     <div className="d-flex justify-content-between">
                         {/*Player 1*/}
                         <div className="d-flex">
-                            <img src="https://cdn2.iconfinder.com/data/icons/professions/512/user_boy_avatar-64.png"/>
+                            <img src={player1.profilePicture} width="100" height="100"/>
                             <div className="ml-2">
                                 <div>↓</div>
                                 <h3>{player1.rank === 0 ? "•" : player1.rank}</h3>
@@ -40,14 +40,14 @@ export class SetDetails extends React.Component<ISetDetailsProps> {
                                 <div>↑</div>
                                 <h3>{player2.rank === 0 ? "•" : player2.rank}</h3>
                             </div>
-                            <img src="https://cdn2.iconfinder.com/data/icons/professions/512/user_boy_avatar-64.png"/>
+                            <img src={player2.profilePicture} width="100" height="100"/>
                         </div>
                     </div>
 
                     {/*Usernames*/}
                     <div className="d-flex justify-content-between">
-                        <div>{player1.username}</div>
-                        <div>{player2.username}</div>
+                        <a href={`/users/home/${player1.userID}`}>{player1.username}</a>
+                        <a href={`/users/home/${player2.userID}`}>{player2.username}</a>
                     </div>
                 </div>
             </div>

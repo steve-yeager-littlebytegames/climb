@@ -7,6 +7,7 @@ using Climb.Extensions;
 using Climb.Models;
 using Climb.Requests.Leagues;
 using Climb.Responses.Models;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
 using Microsoft.Extensions.Configuration;
@@ -32,8 +33,9 @@ namespace Climb.Test.Api
             dbContext = DbContextUtility.CreateMockDb();
             var logger = Substitute.For<ILogger<LeagueApi>>();
             var configuration = Substitute.For<IConfiguration>();
+            var cdnService = Substitute.For<ICdnService>();
 
-            testObj = new LeagueApi(logger, dbContext, leagueService, configuration);
+            testObj = new LeagueApi(logger, dbContext, leagueService, configuration, cdnService);
         }
 
         [Test]
