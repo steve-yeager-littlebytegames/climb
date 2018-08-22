@@ -301,6 +301,8 @@ namespace Climb.Migrations
 
                     b.Property<bool>("IsActive");
 
+                    b.Property<bool>("IsComplete");
+
                     b.Property<int>("LeagueID");
 
                     b.Property<DateTime>("StartDate");
