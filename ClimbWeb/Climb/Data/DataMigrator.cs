@@ -212,7 +212,8 @@ namespace Climb.Data
                     StartDate = oldSeason.StartDate,
                     EndDate = oldSeason.StartDate + TimeSpan.FromDays(30),
                     Index = oldSeason.Index,
-                    IsActive = !oldSeason.IsComplete,
+                    IsActive = false,
+                    IsComplete = true,
                 };
             }
 
