@@ -526,5 +526,216 @@
         "Name": "Yamcha",
         "GameID": 3,
         "ImageKey": "dbf_yamcha.jpg"
+    },
+    // T7 http://tekken.wikia.com/wiki/Category:Characters
+    {
+        "Name": "Akuma",
+        "GameID": 4,
+        "ImageKey": "t7_akuma.png"
+    },
+    {
+        "Name": "Alisa",
+        "GameID": 4,
+        "ImageKey": "t7_alisa.png"
+    },
+    {
+        "Name": "Asuka",
+        "GameID": 4,
+        "ImageKey": "t7_asuka.png"
+    },
+    {
+        "Name": "Bob",
+        "GameID": 4,
+        "ImageKey": "t7_bob.png"
+    },
+    {
+        "Name": "Bryan",
+        "GameID": 4,
+        "ImageKey": "t7_bryan.png"
+    },
+    {
+        "Name": "Lucky Chloe",
+        "GameID": 4,
+        "ImageKey": "t7_chloe.png"
+    },
+    {
+        "Name": "Claudio",
+        "GameID": 4,
+        "ImageKey": "t7_claudio.png"
+    },
+    {
+        "Name": "Devil Jin",
+        "GameID": 4,
+        "ImageKey": "t7_deviljin.png"
+    },
+    {
+        "Name": "Dragunov",
+        "GameID": 4,
+        "ImageKey": "t7_dragunov.png"
+    },
+    {
+        "Name": "Eddy",
+        "GameID": 4,
+        "ImageKey": "t7_eddy.png"
+    },
+    {
+        "Name": "Eliza",
+        "GameID": 4,
+        "ImageKey": "t7_eliza.png"
+    },
+    {
+        "Name": "Feng",
+        "GameID": 4,
+        "ImageKey": "t7_feng.png"
+    },
+    {
+        "Name": "Geese",
+        "GameID": 4,
+        "ImageKey": "t7_geese.png"
+    },
+    {
+        "Name": "Gigas",
+        "GameID": 4,
+        "ImageKey": "t7_gigas.png"
+    },
+    {
+        "Name": "Heihachi",
+        "GameID": 4,
+        "ImageKey": "t7_heihachi.png"
+    },
+    {
+        "Name": "Hwoarang",
+        "GameID": 4,
+        "ImageKey": "t7_hwoarang.png"
+    },
+    {
+        "Name": "Jack-7",
+        "GameID": 4,
+        "ImageKey": "t7_jack.png"
+    },
+    {
+        "Name": "Jin",
+        "GameID": 4,
+        "ImageKey": "t7_jin.png"
+    },
+    {
+        "Name": "Josie",
+        "GameID": 4,
+        "ImageKey": "t7_josie.png"
+    },
+    {
+        "Name": "Katarina",
+        "GameID": 4,
+        "ImageKey": "t7_katarina.png"
+    },
+    {
+        "Name": "Kazumi",
+        "GameID": 4,
+        "ImageKey": "t7_kazumi.png"
+    },
+    {
+        "Name": "Kazuya",
+        "GameID": 4,
+        "ImageKey": "t7_kazuya.png"
+    },
+    {
+        "Name": "King",
+        "GameID": 4,
+        "ImageKey": "t7_king.png"
+    },
+    {
+        "Name": "Kuma",
+        "GameID": 4,
+        "ImageKey": "t7_kuma.png"
+    },
+    {
+        "Name": "Lars",
+        "GameID": 4,
+        "ImageKey": "t7_lars.png"
+    },
+    {
+        "Name": "Law",
+        "GameID": 4,
+        "ImageKey": "t7_law.png"
+    },
+    {
+        "Name": "Lee",
+        "GameID": 4,
+        "ImageKey": "t7_lee.png"
+    },
+    {
+        "Name": "Leo",
+        "GameID": 4,
+        "ImageKey": "t7_leo.png"
+    },
+    {
+        "Name": "Lili",
+        "GameID": 4,
+        "ImageKey": "t7_lili.png"
+    },
+    {
+        "Name": "Miguel",
+        "GameID": 4,
+        "ImageKey": "t7_miguel.png"
+    },
+    {
+        "Name": "Master Raven",
+        "GameID": 4,
+        "ImageKey": "t7_mraven.png"
+    },
+    {
+        "Name": "Nina",
+        "GameID": 4,
+        "ImageKey": "t7_nina.png"
+    },
+    {
+        "Name": "Noctis",
+        "GameID": 4,
+        "ImageKey": "t7_noctis.png"
+    },
+    {
+        "Name": "Panda",
+        "GameID": 4,
+        "ImageKey": "t7_panda.png"
+    },
+    {
+        "Name": "Paul",
+        "GameID": 4,
+        "ImageKey": "t7_paul.png"
+    },
+    {
+        "Name": "Shaheen",
+        "GameID": 4,
+        "ImageKey": "t7_shaheen.png"
+    },
+    {
+        "Name": "Steve",
+        "GameID": 4,
+        "ImageKey": "t7_steve.png"
+    },
+    {
+        "Name": "Violet",
+        "GameID": 4,
+        "ImageKey": "t7_violet.png"
+    },
+    {
+        "Name": "Xiaoyu",
+        "GameID": 4,
+        "ImageKey": "t7_xiaoyu.png"
+    },
+    {
+        "Name": "Yoshimitsu",
+        "GameID": 4,
+        "ImageKey": "t7_yoshimitsu.png"
+    },
+    {
+        "Name": "Anna",
+        "GameID": 4,
+        "ImageKey": "t7_anna.png"
+    },
+    {
+        "Name": "Lei",
+        "GameID": 4,
+        "ImageKey": "t7_lei.png"
     }
 ]
