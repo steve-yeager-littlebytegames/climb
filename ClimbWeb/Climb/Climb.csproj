@@ -58,7 +58,7 @@
     <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
     <Authors>Steve Yeager</Authors>
     <Company>Little Byte</Company>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
