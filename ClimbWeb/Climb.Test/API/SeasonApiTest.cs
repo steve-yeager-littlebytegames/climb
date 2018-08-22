@@ -65,7 +65,7 @@ namespace Climb.Test.Api
             var sets = SeasonUtility.CreateSets(dbContext, season);
 
             var result = await testObj.Sets(season.ID);
-            var resultObj = result.GetObject<HashSet<Set>>();
+            var resultObj = result.GetObject<List<Set>>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
             Assert.AreEqual(sets.Count, resultObj.Count);

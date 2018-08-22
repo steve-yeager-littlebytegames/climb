@@ -52,7 +52,7 @@ namespace Climb.Test.Services
             var (season, participants) = SeasonUtility.CreateSeason(dbContext, 2);
 
             var oldSet = SetUtility.Create(dbContext, participants[0].ID, participants[1].ID, season.LeagueID);
-            season.Sets = new HashSet<Set> {oldSet};
+            season.Sets = new List<Set> {oldSet};
 
             var newSet = new Set{
                 LeagueID = season.LeagueID,

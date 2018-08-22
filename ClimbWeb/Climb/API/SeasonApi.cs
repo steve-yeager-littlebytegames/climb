@@ -120,7 +120,22 @@ namespace Climb.API
             }
             catch(Exception exception)
             {
-                return GetExceptionResult(exception, seasonID);
+                return GetExceptionResult(exception, new {seasonID});
+            }
+        }
+
+        [HttpPost("/api/v1/seasons/end")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(Season))]
+        public async Task<IActionResult> End(int seasonID)
+        {
+            try
+            {
+                var season = await seasonService.End(seasonID);
+                return CodeResultAndLog(HttpStatusCode.OK, season, "Season ended.");
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {seasonID});
             }
         }
     }
