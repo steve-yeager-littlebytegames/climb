@@ -124,6 +124,8 @@ namespace Climb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("ActiveSeasonID");
+
                     b.Property<string>("AdminID");
 
                     b.Property<DateTime>("DateCreated");
@@ -138,6 +140,8 @@ namespace Climb.Migrations
                     b.Property<int>("SetsTillRank");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("ActiveSeasonID");
 
                     b.HasIndex("AdminID");
 
@@ -561,6 +565,11 @@ namespace Climb.Migrations
 
             modelBuilder.Entity("Climb.Models.League", b =>
                 {
+                    b.HasOne("Climb.Models.Season", "ActiveSeason")
+                        .WithMany()
+                        .HasForeignKey("ActiveSeasonID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Climb.Data.ApplicationUser", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminID")

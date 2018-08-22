@@ -86,6 +86,16 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
+        public async Task GenerateSchedule_Valid_LeagueActiveSeasonSet()
+        {
+            var season = CreateSeason();
+
+            season = await testObj.GenerateSchedule(season.ID);
+
+            Assert.AreEqual(season.ID, season.League.ActiveSeasonID);
+        }
+
+        [Test]
         public async Task UpdateStandings_Valid_PointsAssigned()
         {
             var (winnerPoints, loserPoints) = (2, 1);
@@ -316,20 +326,32 @@ namespace Climb.Test.Services.ModelServices
         public async Task End_Valid_MarkComplete()
         {
             var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
-            
+
             season = await testObj.End(season.ID);
 
             Assert.IsTrue(season.IsComplete);
         }
-        
+
         [Test]
         public async Task End_Valid_MarkNotActive()
         {
             var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
-            
+
             season = await testObj.End(season.ID);
 
             Assert.IsFalse(season.IsActive);
+        }
+
+        [Test]
+        public async Task End_Valid_RemoveLeagueActiveSeason()
+        {
+            var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+
+            Assert.IsNotNull(season.League.ActiveSeasonID);
+
+            season = await testObj.End(season.ID);
+
+            Assert.IsNull(season.League.ActiveSeasonID);
         }
     }
 }

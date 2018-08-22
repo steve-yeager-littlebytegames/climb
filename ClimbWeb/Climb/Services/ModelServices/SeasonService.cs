@@ -63,6 +63,7 @@ namespace Climb.Services.ModelServices
         public async Task<Season> GenerateSchedule(int seasonID)
         {
             var season = await dbContext.Seasons
+                .Include(s => s.League)
                 .Include(s => s.Sets)
                 .Include(s => s.Participants).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
@@ -72,6 +73,7 @@ namespace Climb.Services.ModelServices
             }
 
             await scheduleFactory.GenerateScheduleAsync(season, dbContext);
+            season.League.ActiveSeasonID = seasonID;
 
             return season;
         }
@@ -184,6 +186,7 @@ namespace Climb.Services.ModelServices
         public async Task<Season> End(int seasonID)
         {
             var season = await dbContext.Seasons
+                .Include(s => s.League)
                 .Include(s => s.Sets)
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if(season == null)
@@ -204,6 +207,7 @@ namespace Climb.Services.ModelServices
             dbContext.Update(season);
             season.IsComplete = true;
             season.IsActive = false;
+            season.League.ActiveSeasonID = null;
 
             for(var i = season.Sets.Count - 1; i >= 0; i--)
             {
