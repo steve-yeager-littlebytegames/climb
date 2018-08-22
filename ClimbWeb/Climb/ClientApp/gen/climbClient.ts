@@ -28,13 +28,14 @@ export class Admin extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
     }
 
-    migrate(): Promise<FileResponse | null> {
+    migrate(key: string | null | undefined): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/admin/data/migrate";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
             method: "POST",
             headers: {
+                "key": key !== undefined && key !== null ? "" + key : "", 
                 "Content-Type": "application/json", 
                 "Accept": "application/json"
             }
@@ -46,6 +47,40 @@ export class Admin extends BaseClass {
     }
 
     protected processMigrate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(<any>null);
+    }
+
+    updateAllLeagues(key: string | null | undefined): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/admin/update-all-leagues";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+                "key": key !== undefined && key !== null ? "" + key : "", 
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateAllLeagues(_response);
+        });
+    }
+
+    protected processUpdateAllLeagues(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -1014,6 +1049,45 @@ export class SeasonApi extends BaseClass {
         }
         return Promise.resolve<Set[]>(<any>null);
     }
+
+    end(seasonID: number): Promise<Season> {
+        let url_ = this.baseUrl + "/api/v1/seasons/end?";
+        if (seasonID === undefined || seasonID === null)
+            throw new Error("The parameter 'seasonID' must be defined and cannot be null.");
+        else
+            url_ += "seasonID=" + encodeURIComponent("" + seasonID) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processEnd(_response);
+        });
+    }
+
+    protected processEnd(response: Response): Promise<Season> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Season.fromJS(resultData200) : new Season();
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Season>(<any>null);
+    }
 }
 
 export class SetApi extends BaseClass {
@@ -1648,6 +1722,7 @@ export class League implements ILeague {
     setsTillRank!: number;
     dateCreated!: Date;
     adminID?: string | undefined;
+    activeSeasonID?: number | undefined;
     admin?: ApplicationUser | undefined;
     organization?: Organization | undefined;
 
@@ -1669,6 +1744,7 @@ export class League implements ILeague {
             this.setsTillRank = data["setsTillRank"];
             this.dateCreated = data["dateCreated"] ? new Date(data["dateCreated"].toString()) : <any>undefined;
             this.adminID = data["adminID"];
+            this.activeSeasonID = data["activeSeasonID"];
             this.admin = data["admin"] ? ApplicationUser.fromJS(data["admin"]) : <any>undefined;
             this.organization = data["organization"] ? Organization.fromJS(data["organization"]) : <any>undefined;
         }
@@ -1690,6 +1766,7 @@ export class League implements ILeague {
         data["setsTillRank"] = this.setsTillRank;
         data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
         data["adminID"] = this.adminID;
+        data["activeSeasonID"] = this.activeSeasonID;
         data["admin"] = this.admin ? this.admin.toJSON() : <any>undefined;
         data["organization"] = this.organization ? this.organization.toJSON() : <any>undefined;
         return data; 
@@ -1704,6 +1781,7 @@ export interface ILeague {
     setsTillRank: number;
     dateCreated: Date;
     adminID?: string | undefined;
+    activeSeasonID?: number | undefined;
     admin?: ApplicationUser | undefined;
     organization?: Organization | undefined;
 }
@@ -1718,6 +1796,7 @@ export class LeagueUser implements ILeagueUser {
     rank!: number;
     setCount!: number;
     joinDate!: Date;
+    isNewcomer!: boolean;
 
     constructor(data?: ILeagueUser) {
         if (data) {
@@ -1739,6 +1818,7 @@ export class LeagueUser implements ILeagueUser {
             this.rank = data["rank"];
             this.setCount = data["setCount"];
             this.joinDate = data["joinDate"] ? new Date(data["joinDate"].toString()) : <any>undefined;
+            this.isNewcomer = data["isNewcomer"];
         }
     }
 
@@ -1760,6 +1840,7 @@ export class LeagueUser implements ILeagueUser {
         data["rank"] = this.rank;
         data["setCount"] = this.setCount;
         data["joinDate"] = this.joinDate ? this.joinDate.toISOString() : <any>undefined;
+        data["isNewcomer"] = this.isNewcomer;
         return data; 
     }
 }
@@ -1774,6 +1855,7 @@ export interface ILeagueUser {
     rank: number;
     setCount: number;
     joinDate: Date;
+    isNewcomer: boolean;
 }
 
 export class GameDto implements IGameDto {
@@ -2132,6 +2214,7 @@ export class LeagueUserDto implements ILeagueUserDto {
     username!: string;
     points!: number;
     rank!: number;
+    profilePicture?: string | undefined;
 
     constructor(data?: ILeagueUserDto) {
         if (data) {
@@ -2151,6 +2234,7 @@ export class LeagueUserDto implements ILeagueUserDto {
             this.username = data["username"];
             this.points = data["points"];
             this.rank = data["rank"];
+            this.profilePicture = data["profilePicture"];
         }
     }
 
@@ -2170,6 +2254,7 @@ export class LeagueUserDto implements ILeagueUserDto {
         data["username"] = this.username;
         data["points"] = this.points;
         data["rank"] = this.rank;
+        data["profilePicture"] = this.profilePicture;
         return data; 
     }
 }
@@ -2182,6 +2267,7 @@ export interface ILeagueUserDto {
     username: string;
     points: number;
     rank: number;
+    profilePicture?: string | undefined;
 }
 
 export class Season implements ISeason {
@@ -2191,6 +2277,7 @@ export class Season implements ISeason {
     startDate!: Date;
     endDate!: Date;
     isActive!: boolean;
+    isComplete!: boolean;
 
     constructor(data?: ISeason) {
         if (data) {
@@ -2209,6 +2296,7 @@ export class Season implements ISeason {
             this.startDate = data["startDate"] ? new Date(data["startDate"].toString()) : <any>undefined;
             this.endDate = data["endDate"] ? new Date(data["endDate"].toString()) : <any>undefined;
             this.isActive = data["isActive"];
+            this.isComplete = data["isComplete"];
         }
     }
 
@@ -2227,6 +2315,7 @@ export class Season implements ISeason {
         data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
         data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
         data["isActive"] = this.isActive;
+        data["isComplete"] = this.isComplete;
         return data; 
     }
 }
@@ -2238,6 +2327,7 @@ export interface ISeason {
     startDate: Date;
     endDate: Date;
     isActive: boolean;
+    isComplete: boolean;
 }
 
 export class Set implements ISet {

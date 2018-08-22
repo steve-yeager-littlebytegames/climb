@@ -23,5 +23,94 @@
     {
         "Name": "Battlefield",
         "GameID": 1
+    },
+    // T7
+    {
+        "Name": "Brimstone & Fire",
+        "GameID": 4
+    },
+    {
+        "Name": "Infinite Azure",
+        "GameID": 4
+    },
+    {
+        "Name": "Precipice of Fate",
+        "GameID": 4
+    },
+    {
+        "Name": "Hammerhead",
+        "GameID": 4
+    },
+    {
+        "Name": "Devil's Pit",
+        "GameID": 4
+    },
+    {
+        "Name": "Mishima Dojo",
+        "GameID": 4
+    },
+    {
+        "Name": "Abandoned Temple",
+        "GameID": 4
+    },
+    {
+        "Name": "Twilight Conflict",
+        "GameID": 4
+    },
+    {
+        "Name": "Jungle Outpost",
+        "GameID": 4
+    },
+    {
+        "Name": "Forgotten Realm",
+        "GameID": 4
+    },
+    {
+        "Name": "Duomo di Sirio",
+        "GameID": 4
+    },
+    {
+        "Name": "Mishima Building",
+        "GameID": 4
+    },
+    {
+        "Name": "Kinder Gym",
+        "GameID": 4
+    },
+    {
+        "Name": "Dragon's Nest",
+        "GameID": 4
+    },
+    {
+        "Name": "Souq",
+        "GameID": 4
+    },
+    {
+        "Name": "Arena",
+        "GameID": 4
+    },
+    {
+        "Name": "G Corp. Helipad",
+        "GameID": 4
+    },
+    {
+        "Name": "G Corp. Helipad (Night)",
+        "GameID": 4
+    },
+    {
+        "Name": "Geometric Plane",
+        "GameID": 4
+    },
+    {
+        "Name": "Arctic Snowfall",
+        "GameID": 4
+    },
+    {
+        "Name": "Violet Systems",
+        "GameID": 4
+    },
+    {
+        "Name": "Howard Estate",
+        "GameID": 4
     }
 ]

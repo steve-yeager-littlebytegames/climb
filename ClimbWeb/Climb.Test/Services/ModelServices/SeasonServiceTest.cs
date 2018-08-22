@@ -86,6 +86,16 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
+        public async Task GenerateSchedule_Valid_LeagueActiveSeasonSet()
+        {
+            var season = CreateSeason();
+
+            season = await testObj.GenerateSchedule(season.ID);
+
+            Assert.AreEqual(season.ID, season.League.ActiveSeasonID);
+        }
+
+        [Test]
         public async Task UpdateStandings_Valid_PointsAssigned()
         {
             var (winnerPoints, loserPoints) = (2, 1);
@@ -139,10 +149,11 @@ namespace Climb.Test.Services.ModelServices
 
             var season = SeasonUtility.CreateSeason(dbContext, 4).season;
             dbContext.UpdateRange(season.Participants);
-            for(int i = 0; i < seasonPoints.Length; i++)
+            for(var i = 0; i < seasonPoints.Length; i++)
             {
                 season.Participants[i].Points = seasonPoints[i];
             }
+
             dbContext.SaveChanges();
 
             var set = SetUtility.Create(dbContext, season.Participants[0], season.Participants[1], season.LeagueID);
@@ -237,6 +248,110 @@ namespace Climb.Test.Services.ModelServices
                 var arg = info.Arg<Dictionary<IParticipant, ParticipantRecord>>();
                 onBreak(arg);
             });
+        }
+
+        [Test]
+        public async Task End_HasNonCompletedSets_SetsDeleted()
+        {
+            const int setCount = 4;
+            const int completedSets = 2;
+            var (season, participants) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+            var sets = new List<Set>();
+
+            for(var i = 0; i < setCount; i++)
+            {
+                sets.Add(SetUtility.Create(dbContext, participants[0].ID, participants[1].ID, season.LeagueID, season));
+            }
+
+            for(var i = 0; i < completedSets; i++)
+            {
+                var setIndex = i;
+                DbContextUtility.UpdateAndSave(dbContext, sets[setIndex], () => sets[setIndex].IsComplete = true);
+            }
+
+            season = await testObj.End(season.ID);
+
+            Assert.AreEqual(setCount - completedSets, season.Sets.Count);
+        }
+
+        [Test]
+        public async Task End_HasCompletedNonLockedSets_SetsLocked()
+        {
+            const int setCount = 4;
+            const int lockedSets = 2;
+            var (season, participants) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+            var sets = new List<Set>();
+
+            for(var i = 0; i < setCount; i++)
+            {
+                sets.Add(SetUtility.Create(dbContext, participants[0].ID, participants[1].ID, season.LeagueID, season));
+                var setIndex = i;
+                DbContextUtility.UpdateAndSave(dbContext, sets[setIndex], () => sets[setIndex].IsComplete = true);
+            }
+
+            for(var i = 0; i < lockedSets; i++)
+            {
+                var setIndex = i;
+                DbContextUtility.UpdateAndSave(dbContext, sets[setIndex], () => sets[setIndex].IsLocked = true);
+            }
+
+            season = await testObj.End(season.ID);
+
+            Assert.AreEqual(setCount, season.Sets.Count(s => s.IsLocked));
+        }
+
+        [Test]
+        public void End_NoSeason_NotFoundException()
+        {
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.End(0));
+        }
+
+        [Test]
+        public void End_NotStarted_BadRequestException()
+        {
+            var (season, _) = SeasonUtility.CreateSeason(dbContext, 2);
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.End(season.ID));
+        }
+
+        [Test]
+        public void End_Completed_BadRequestException()
+        {
+            var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsComplete = s.IsActive = true);
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.End(season.ID));
+        }
+
+        [Test]
+        public async Task End_Valid_MarkComplete()
+        {
+            var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+
+            season = await testObj.End(season.ID);
+
+            Assert.IsTrue(season.IsComplete);
+        }
+
+        [Test]
+        public async Task End_Valid_MarkNotActive()
+        {
+            var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+
+            season = await testObj.End(season.ID);
+
+            Assert.IsFalse(season.IsActive);
+        }
+
+        [Test]
+        public async Task End_Valid_RemoveLeagueActiveSeason()
+        {
+            var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+
+            Assert.IsNotNull(season.League.ActiveSeasonID);
+
+            season = await testObj.End(season.ID);
+
+            Assert.IsNull(season.League.ActiveSeasonID);
         }
     }
 }

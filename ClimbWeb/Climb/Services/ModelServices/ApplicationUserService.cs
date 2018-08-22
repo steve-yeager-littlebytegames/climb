@@ -54,7 +54,7 @@ namespace Climb.Services.ModelServices
                 return user;
             }
 
-            throw new BadRequestException();
+            throw new BadRequestException("Errors registering.");
         }
 
         public async Task<string> LogIn(LoginRequest request)
@@ -68,7 +68,7 @@ namespace Climb.Services.ModelServices
                 return token;
             }
 
-            throw new BadRequestException();
+            throw new BadRequestException("Errors logging in.");
         }
 
         public async Task<string> UploadProfilePic(string userID, IFormFile image)
