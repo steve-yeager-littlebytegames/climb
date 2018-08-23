@@ -63,6 +63,7 @@ namespace Climb.Services.ModelServices
         public async Task<Season> GenerateSchedule(int seasonID)
         {
             var season = await dbContext.Seasons
+                .Include(s => s.League)
                 .Include(s => s.Sets)
                 .Include(s => s.Participants).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
@@ -72,6 +73,7 @@ namespace Climb.Services.ModelServices
             }
 
             await scheduleFactory.GenerateScheduleAsync(season, dbContext);
+            season.League.ActiveSeasonID = seasonID;
 
             return season;
         }
@@ -179,6 +181,55 @@ namespace Climb.Services.ModelServices
 
                 ++rank;
             }
+        }
+
+        public async Task<Season> End(int seasonID)
+        {
+            var season = await dbContext.Seasons
+                .Include(s => s.League)
+                .Include(s => s.Sets)
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            if(season == null)
+            {
+                throw new NotFoundException(typeof(Season), seasonID);
+            }
+
+            if(season.IsComplete)
+            {
+                throw new BadRequestException($"Cannot end Season {seasonID} before it starts.");
+            }
+
+            if(!season.IsActive)
+            {
+                throw new BadRequestException($"Cannot end Season {seasonID} before it starts.");
+            }
+
+            dbContext.Update(season);
+            season.IsComplete = true;
+            season.IsActive = false;
+            season.League.ActiveSeasonID = null;
+
+            for(var i = season.Sets.Count - 1; i >= 0; i--)
+            {
+                var set = season.Sets[i];
+                if (set.IsComplete)
+                {
+                    if(!set.IsLocked)
+                    {
+                        set.IsLocked = true;
+                        dbContext.Update(set);
+                    }
+                }
+                else
+                {
+                    dbContext.Remove(set);
+                    season.Sets.RemoveAt(i);
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
+
+            return season;
         }
     }
 }

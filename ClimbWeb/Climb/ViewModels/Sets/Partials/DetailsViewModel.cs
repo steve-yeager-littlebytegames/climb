@@ -20,7 +20,7 @@ namespace Climb.ViewModels.Sets
             P2ProfilePic = p2ProfilePic;
             UserIsPlaying = userIsPlaying;
             OpponentProfilePic = opponentProfilePic;
-            SetType = set.Season != null ? "Season" : "Challenge";
+            SetType = set.SeasonID != null ? "Season" : "Challenge";
         }
 
         public static DetailsViewModel Create(ApplicationUser viewingUser, Set set, ICdnService cdnService)

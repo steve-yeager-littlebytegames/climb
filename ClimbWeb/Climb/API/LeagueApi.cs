@@ -7,6 +7,7 @@ using Climb.Data;
 using Climb.Models;
 using Climb.Requests.Leagues;
 using Climb.Responses.Models;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +21,14 @@ namespace Climb.API
         private readonly ApplicationDbContext dbContext;
         private readonly ILeagueService leagueService;
         private readonly string adminKey;
+        private readonly ICdnService cdnService;
 
-        public LeagueApi(ILogger<LeagueApi> logger, ApplicationDbContext dbContext, ILeagueService leagueService, IConfiguration configuration)
+        public LeagueApi(ILogger<LeagueApi> logger, ApplicationDbContext dbContext, ILeagueService leagueService, IConfiguration configuration, ICdnService cdnService)
             : base(logger)
         {
             this.dbContext = dbContext;
             this.leagueService = leagueService;
+            this.cdnService = cdnService;
             adminKey = configuration["AdminKey"];
         }
 
@@ -97,7 +100,7 @@ namespace Climb.API
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find League User with ID '{userID}'.");
             }
 
-            var response = new LeagueUserDto(leagueUser);
+            var response = new LeagueUserDto(leagueUser, cdnService);
             return CodeResult(HttpStatusCode.OK, response);
         }
 

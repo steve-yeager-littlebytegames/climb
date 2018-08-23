@@ -16,5 +16,11 @@
         "CharactersPerMatch": 3,
         "HasStages": false,
         "MaxMatchPoints": 1
+    },
+    {
+        "Name": "Tekken 7",
+        "CharactersPerMatch": 1,
+        "HasStages": true,
+        "MaxMatchPoints" :  2
     }
 ]
