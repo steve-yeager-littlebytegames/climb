@@ -145,9 +145,10 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
     }
 
     private onMatchDelete() {
-        if (!this.state.selectedMatch) throw new Error("Selected match can't be null.");
+        const selectedMatch = this.state.selectedMatch;
+        if (!selectedMatch) throw new Error("Selected match can't be null.");
 
-        const index = this.state.selectedMatch.index;
+        const index = selectedMatch.index;
 
         const set = this.state.set;
         if (!set || !set.matches) throw new Error("Set and Matches can't be null");
@@ -188,10 +189,14 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
 
     private onAddMatch() {
         const set = this.state.set;
-        if (!set || !set.matches) throw new Error();
+        const game = this.state.game;
+        if (!set || !set.matches || !game) throw new Error();
 
         const newMatch = new ClimbClient.MatchDto();
         newMatch.index = set.matches.length;
+
+        newMatch.player1Score = 0;
+        newMatch.player2Score = 0;
 
         if (newMatch.index > 0) {
             const prevMatch = set.matches[newMatch.index - 1];
@@ -199,8 +204,10 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             newMatch.player1Characters = prevMatch.player1Characters.slice(0);
             newMatch.player2Characters = prevMatch.player2Characters.slice(0);
         } else {
-            newMatch.player1Characters = [];
-            newMatch.player2Characters = [];
+            const characters = game.characters;
+
+            newMatch.player1Characters = [characters[0].id];
+            newMatch.player2Characters = [characters[0].id];
         }
 
         this.setState({ selectedMatch: newMatch });
