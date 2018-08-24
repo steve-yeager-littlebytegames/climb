@@ -20,8 +20,8 @@ namespace Climb.Responses.Sets
         public DateTime? UpdatedDate { get; }
         [Required]
         public MatchDto[] Matches { get; }
-        public bool IsLocked { get; set; }
-        public bool IsComplete { get; set; }
+        public bool IsLocked { get; }
+        public bool IsComplete { get; }
 
         private SetDto(Set set, MatchDto[] matches, int gameID)
         {
@@ -38,6 +38,8 @@ namespace Climb.Responses.Sets
             UpdatedDate = set.UpdatedDate;
             Matches = matches;
             GameID = gameID;
+            IsComplete = set.IsComplete;
+            IsLocked = set.IsLocked;
         }
 
         public static SetDto Create(Set set, int gameID)
