@@ -8,9 +8,9 @@ namespace Climb.Services
 {
     public abstract class ScheduleFactory : IScheduleFactory
     {
-        protected abstract HashSet<Set> GenerateScheduleInternal(Season season);
+        protected abstract List<Set> GenerateScheduleInternal(Season season);
 
-        public async Task<HashSet<Set>> GenerateScheduleAsync(Season season, ApplicationDbContext dbContext)
+        public async Task<List<Set>> GenerateScheduleAsync(Season season, ApplicationDbContext dbContext)
         {
             if(season.Participants == null || season.Participants.Count < 2)
             {

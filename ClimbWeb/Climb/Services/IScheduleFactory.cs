@@ -7,6 +7,6 @@ namespace Climb.Services
 {
     public interface IScheduleFactory
     {
-        Task<HashSet<Set>> GenerateScheduleAsync(Season season, ApplicationDbContext dbContext);
+        Task<List<Set>> GenerateScheduleAsync(Season season, ApplicationDbContext dbContext);
     }
 }
