@@ -80,7 +80,7 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
                 <div className="card-deck">{matches}</div>
 
                 {!set.isLocked &&
-                    <div>
+                    <div className="mt-4">
                         <div>
                             <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add Match</button>
                         </div>
