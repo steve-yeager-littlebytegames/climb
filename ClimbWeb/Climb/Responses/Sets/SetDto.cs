@@ -14,8 +14,8 @@ namespace Climb.Responses.Sets
         public int GameID { get; }
         public int Player1ID { get; }
         public int Player2ID { get; }
-        public int? Player1Score { get; }
-        public int? Player2Score { get; }
+        public int Player1Score { get; }
+        public int Player2Score { get; }
         public DateTime DueDate { get; }
         public DateTime? UpdatedDate { get; }
         [Required]
@@ -32,8 +32,8 @@ namespace Climb.Responses.Sets
             SeasonIndex = set.Season?.Index;
             Player1ID = set.Player1ID;
             Player2ID = set.Player2ID;
-            Player1Score = set.Player1Score;
-            Player2Score = set.Player2Score;
+            Player1Score = set.Player1Score ?? 0;
+            Player2Score = set.Player2Score ?? 0;
             DueDate = set.DueDate;
             UpdatedDate = set.UpdatedDate;
             Matches = matches;
