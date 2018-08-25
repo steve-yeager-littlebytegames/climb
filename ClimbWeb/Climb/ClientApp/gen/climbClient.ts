@@ -2691,7 +2691,6 @@ export class SetDto implements ISetDto {
     leagueID!: number;
     leagueName?: string | undefined;
     seasonID?: number | undefined;
-    seasonIndex?: number | undefined;
     gameID!: number;
     player1ID!: number;
     player2ID!: number;
@@ -2702,6 +2701,7 @@ export class SetDto implements ISetDto {
     matches!: MatchDto[];
     isLocked!: boolean;
     isComplete!: boolean;
+    setType!: SetTypes;
 
     constructor(data?: ISetDto) {
         if (data) {
@@ -2721,7 +2721,6 @@ export class SetDto implements ISetDto {
             this.leagueID = data["leagueID"];
             this.leagueName = data["leagueName"];
             this.seasonID = data["seasonID"];
-            this.seasonIndex = data["seasonIndex"];
             this.gameID = data["gameID"];
             this.player1ID = data["player1ID"];
             this.player2ID = data["player2ID"];
@@ -2736,6 +2735,7 @@ export class SetDto implements ISetDto {
             }
             this.isLocked = data["isLocked"];
             this.isComplete = data["isComplete"];
+            this.setType = data["setType"];
         }
     }
 
@@ -2752,7 +2752,6 @@ export class SetDto implements ISetDto {
         data["leagueID"] = this.leagueID;
         data["leagueName"] = this.leagueName;
         data["seasonID"] = this.seasonID;
-        data["seasonIndex"] = this.seasonIndex;
         data["gameID"] = this.gameID;
         data["player1ID"] = this.player1ID;
         data["player2ID"] = this.player2ID;
@@ -2767,6 +2766,7 @@ export class SetDto implements ISetDto {
         }
         data["isLocked"] = this.isLocked;
         data["isComplete"] = this.isComplete;
+        data["setType"] = this.setType;
         return data; 
     }
 }
@@ -2776,7 +2776,6 @@ export interface ISetDto {
     leagueID: number;
     leagueName?: string | undefined;
     seasonID?: number | undefined;
-    seasonIndex?: number | undefined;
     gameID: number;
     player1ID: number;
     player2ID: number;
@@ -2787,6 +2786,7 @@ export interface ISetDto {
     matches: MatchDto[];
     isLocked: boolean;
     isComplete: boolean;
+    setType: SetTypes;
 }
 
 export class MatchDto implements IMatchDto {
@@ -2867,6 +2867,11 @@ export interface IMatchDto {
     player1Characters: number[];
     player2Characters: number[];
     stageID?: number | undefined;
+}
+
+export enum SetTypes {
+    Challenge = 0, 
+    Season = 1, 
 }
 
 export class SetRequest implements ISetRequest {
