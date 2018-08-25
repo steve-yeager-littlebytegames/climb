@@ -37,10 +37,12 @@ namespace Climb.Data
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            builder.Entity<OrganizationUser>().HasQueryFilter(ou => ou.HasLeft == false);
-            builder.Entity<LeagueUser>().HasQueryFilter(lu => lu.HasLeft == false);
+            builder.Entity<OrganizationUser>().HasQueryFilter(ou => !ou.HasLeft);
+            builder.Entity<LeagueUser>().HasQueryFilter(lu => !lu.HasLeft);
+            builder.Entity<SeasonLeagueUser>().HasQueryFilter(slu => !slu.HasLeft);
             builder.Entity<MatchCharacter>().HasKey(m => new {m.MatchID, m.CharacterID, m.LeagueUserID});
             builder.Entity<SetRequest>().HasQueryFilter(lu => lu.IsOpen);
+            builder.Entity<Set>().HasQueryFilter(s => !s.IsDisabled);
         }
     }
 }

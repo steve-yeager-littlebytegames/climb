@@ -108,7 +108,7 @@ namespace Climb.Test.Services.ModelServices
             await testObj.Update(set.ID, matchForms);
 
 #pragma warning disable 4014
-            seasonService.Received(1).UpdateStandings(set.ID);
+            seasonService.Received(1).PlaySet(set.ID);
 #pragma warning restore 4014
         }
 
@@ -122,7 +122,7 @@ namespace Climb.Test.Services.ModelServices
             await testObj.Update(set.ID, matchForms);
 
 #pragma warning disable 4014
-            seasonService.DidNotReceive().UpdateStandings(set.ID);
+            seasonService.DidNotReceive().PlaySet(set.ID);
 #pragma warning restore 4014
         }
 

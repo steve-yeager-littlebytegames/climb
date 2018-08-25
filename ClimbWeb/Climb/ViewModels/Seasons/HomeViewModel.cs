@@ -2,6 +2,7 @@
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -9,40 +10,46 @@ namespace Climb.ViewModels.Seasons
     {
         public Season Season { get; }
         public int SeasonNumber { get; }
-        public bool IsParticipant { get; }
+        public SeasonLeagueUser Participant { get; }
         public bool CanStartSeason { get; }
         public IEnumerable<SeasonLeagueUser> Participants { get; }
         public IEnumerable<Set> AvailableSets { get; }
 
-        private HomeViewModel(ApplicationUser user, Season season, bool isParticipant)
+        public bool CanLeave => Participant != null && !Season.IsComplete;
+
+        private HomeViewModel(ApplicationUser user, Season season, SeasonLeagueUser participant, bool canStartSeason)
             : base(user)
         {
             Season = season;
-            IsParticipant = isParticipant;
+            Participant = participant;
             SeasonNumber = season.Index + 1;
 
             Participants = Season.Participants.OrderBy(p => p.Standing);
             AvailableSets = Season.Sets.Where(s => !s.IsComplete).OrderBy(s => s.DueDate);
 
-            if(season.IsActive)
-            {
-                CanStartSeason = false;
-            }
-            else
-            {
-#if DEBUG
-                CanStartSeason = true;
-#else
-                CanStartSeason = season.League.AdminID == user?.Id;
-#endif
-            }
+            CanStartSeason = canStartSeason;
         }
 
-        public static HomeViewModel Create(ApplicationUser user, Season season)
+        public static HomeViewModel Create(ApplicationUser user, Season season, IHostingEnvironment environment)
         {
-            var isParticipant = user.LeagueUsers.Any(lu => season.Participants.Any(slu => slu.LeagueUserID == lu.ID));
+            var participant = user.LeagueUsers
+                .FirstOrDefault(lu => season.LeagueID == lu.ID)
+                ?.Seasons.FirstOrDefault(slu => slu.SeasonID == season.ID);
 
-            return new HomeViewModel(user, season, isParticipant);
+            var canStartSeason = false;
+            if(!season.IsActive && !season.IsComplete)
+            {
+                if(environment.IsDevelopment())
+                {
+                    canStartSeason = true;
+                }
+                else
+                {
+                    canStartSeason = season.League.AdminID == user?.Id;
+                }
+            }
+
+            return new HomeViewModel(user, season, participant, canStartSeason);
         }
     }
 }

@@ -4,6 +4,7 @@ using Climb.Data;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
@@ -24,8 +25,9 @@ namespace Climb.Test.Controllers
             dbContext = DbContextUtility.CreateMockDb();
             var logger = Substitute.For<ILogger<SeasonController>>();
             var userManager = Substitute.For<IUserManager>();
+            var environment = Substitute.For<IHostingEnvironment>();
 
-            testObj = new SeasonController(seasonService, dbContext, logger, userManager);
+            testObj = new SeasonController(seasonService, dbContext, logger, userManager, environment);
         }
 
         [Test]

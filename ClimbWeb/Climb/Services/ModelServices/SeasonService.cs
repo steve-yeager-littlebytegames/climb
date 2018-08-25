@@ -52,7 +52,7 @@ namespace Climb.Services.ModelServices
             var season = new Season(leagueID, seasonCount, start, end);
             dbContext.Add(season);
 
-            var participants = league.Members.Select(lu => new SeasonLeagueUser(season.ID, lu.ID));
+            var participants = league.Members.Select(lu => new SeasonLeagueUser(season.ID, lu.ID, lu.UserID));
             dbContext.AddRange(participants);
 
             await dbContext.SaveChangesAsync();
@@ -78,7 +78,7 @@ namespace Climb.Services.ModelServices
             return season;
         }
 
-        public async Task<Season> UpdateStandings(int setID)
+        public async Task<Season> PlaySet(int setID)
         {
             var set = await dbContext.Sets
                 .Include(s => s.Season).ThenInclude(s => s.Participants).ThenInclude(slu => slu.LeagueUser)
@@ -88,12 +88,41 @@ namespace Climb.Services.ModelServices
             dbContext.Update(set);
 
             UpdatePoints(set);
-            BreakTies(set.Season);
-            UpdateRanks(set.Season);
 
             await dbContext.SaveChangesAsync();
 
             return set.Season;
+        }
+
+        public async Task<Season> UpdateRanksAsync(int seasonID)
+        {
+            var season = await dbContext.Seasons
+                .Include(s => s.Sets).ThenInclude(s => s.Player1)
+                .Include(s => s.Sets).ThenInclude(s => s.Player2)
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            dbContext.UpdateRange(season.Participants);
+
+            BreakTies(season);
+
+            var sortedParticipants = season.Participants
+                .OrderByDescending(slu => slu.Points)
+                .ThenByDescending(slu => slu.TieBreakerPoints)
+                .ToArray();
+
+            var rank = 1;
+            var lastPoints = -1;
+            foreach(var participant in sortedParticipants)
+            {
+                participant.Standing = rank;
+                if(participant.Points != lastPoints)
+                {
+                    lastPoints = participant.Points;
+                }
+
+                ++rank;
+            }
+
+            return season;
         }
 
         private void UpdatePoints(Set set)
@@ -160,29 +189,6 @@ namespace Climb.Services.ModelServices
             }
         }
 
-        private void UpdateRanks(Season season)
-        {
-            dbContext.UpdateRange(season.Participants);
-
-            var sortedParticipants = season.Participants
-                .OrderByDescending(slu => slu.Points)
-                .ThenByDescending(slu => slu.TieBreakerPoints)
-                .ToArray();
-
-            var rank = 1;
-            var lastPoints = -1;
-            foreach(var participant in sortedParticipants)
-            {
-                participant.Standing = rank;
-                if(participant.Points != lastPoints)
-                {
-                    lastPoints = participant.Points;
-                }
-
-                ++rank;
-            }
-        }
-
         public async Task<Season> End(int seasonID)
         {
             var season = await dbContext.Seasons
@@ -230,6 +236,42 @@ namespace Climb.Services.ModelServices
             await dbContext.SaveChangesAsync();
 
             return season;
+        }
+
+        public async Task<Season> LeaveAsync(int participantID)
+        {
+            var participant = await dbContext.SeasonLeagueUsers
+                .IgnoreQueryFilters()
+                .Include(slu => slu.Season)
+                .Include(slu => slu.P1Sets)
+                .Include(slu => slu.P2Sets)
+                .FirstOrDefaultAsync(slu => slu.ID == participantID);
+            if(participant == null)
+            {
+                throw new NotFoundException(typeof(SeasonLeagueUser), participantID);
+            }
+
+            if(participant.Season.IsComplete)
+            {
+                throw new BadRequestException($"Can't leave season '{participant.SeasonID}' because it's already completed.");
+            }
+
+            dbContext.Update(participant);
+            participant.HasLeft = true;
+
+            dbContext.UpdateRange(participant.P1Sets);
+            dbContext.UpdateRange(participant.P2Sets);
+            participant.P1Sets.ForEach(s => s.IsDisabled = true);
+            participant.P2Sets.ForEach(s => s.IsDisabled = true);
+
+            if(participant.Season.IsActive)
+            {
+                await UpdateRanksAsync(participant.SeasonID);
+            }
+
+            await dbContext.SaveChangesAsync();
+
+            return participant.Season;
         }
     }
 }

@@ -11,9 +11,12 @@
 <div>
     <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
 
-    @if (!Model.IsParticipant)
+    @if (Model.CanLeave)
     {
-        // TODO: Leave
+        <form asp-action="LeavePost">
+            <input type="hidden" name="participantID" value="@Model.Participant.ID"/>
+            <button class="btn btn-danger">Leave</button>
+        </form>
     }
 
     @if (Model.CanStartSeason)

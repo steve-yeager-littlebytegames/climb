@@ -11,5 +11,6 @@ namespace Climb.Data
 
         public List<OrganizationUser> Organizations { get; set; }
         public List<LeagueUser> LeagueUsers { get; set; }
+        public List<SeasonLeagueUser> Seasons { get; set; }
     }
 }

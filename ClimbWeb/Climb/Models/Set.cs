@@ -21,6 +21,7 @@ namespace Climb.Models
         public DateTime? UpdatedDate { get; set; }
         public bool IsLocked { get; set; }
         public bool IsComplete { get; set; }
+        public bool IsDisabled { get; set; }
         public int Player1SeasonPoints { get; set; }
         public int Player2SeasonPoints { get; set; }
 

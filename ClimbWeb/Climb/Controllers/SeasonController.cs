@@ -6,6 +6,7 @@ using Climb.Requests.Seasons;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.ViewModels.Seasons;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,11 +16,13 @@ namespace Climb.Controllers
     public class SeasonController : BaseController<SeasonController>
     {
         private readonly ISeasonService seasonService;
+        private readonly IHostingEnvironment environment;
 
-        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager)
+        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager, IHostingEnvironment environment)
             : base(logger, userManager, dbContext)
         {
             this.seasonService = seasonService;
+            this.environment = environment;
         }
 
         [HttpGet("seasons/home/{seasonID:int}")]
@@ -39,10 +42,10 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = HomeViewModel.Create(user, season);
+            var viewModel = HomeViewModel.Create(user, season, environment);
             return View(viewModel);
         }
-        
+
         [HttpPost("seasons/create")]
         public async Task<IActionResult> Create(CreateRequest request)
         {
@@ -75,6 +78,20 @@ namespace Climb.Controllers
             {
                 Console.WriteLine(exception);
                 throw;
+            }
+        }
+
+        [HttpPost("seasons/leave")]
+        public async Task<IActionResult> LeavePost(int participantID)
+        {
+            try
+            {
+                var season = await seasonService.LeaveAsync(participantID);
+                return RedirectToAction("Home", "League", new {leagueID = season.LeagueID});
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {participantID});
             }
         }
     }
