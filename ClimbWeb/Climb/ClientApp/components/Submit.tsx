@@ -37,6 +37,7 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         this.onMatchEdited = this.onMatchEdited.bind(this);
         this.onMatchCancelled = this.onMatchCancelled.bind(this);
         this.onMatchDelete = this.onMatchDelete.bind(this);
+        this.onSelectMatch = this.onSelectMatch.bind(this);
     }
 
     componentDidMount() {
@@ -67,7 +68,7 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             (m: any, i: any) => <MatchSummary key={i}
                                               game={game}
                                               match={m}
-                                              onSelect={match => this.setState({ selectedMatch: match })}/>);
+                                              onSelect={this.onSelectMatch}/>);
 
         const canSubmit = set.player1Score !== set.player2Score;
 
@@ -76,14 +77,19 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
                 <SetDetails set={set} player1={player1} player2={player2}/>
                 <SetCount set={set}/>
 
-                <div>
-                    <div className="card-deck">{matches}</div>
-                    <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add Match</button>
-                </div>
+                <div className="card-deck">{matches}</div>
 
-                <div className="d-flex justify-content-end">
-                    <button id="submit-button" className="btn btn-danger mt-4" disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
-                </div>
+                {!set.isLocked &&
+                    <div className="mt-4">
+                        <div>
+                            <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add Match</button>
+                        </div>
+                
+                        <div className="d-flex justify-content-end">
+                            <button id="submit-button" className="btn btn-danger mt-4" disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
+                        </div>
+                    </div>
+                }
             </div>
         );
     }
@@ -145,9 +151,10 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
     }
 
     private onMatchDelete() {
-        if (!this.state.selectedMatch) throw new Error("Selected match can't be null.");
+        const selectedMatch = this.state.selectedMatch;
+        if (!selectedMatch) throw new Error("Selected match can't be null.");
 
-        const index = this.state.selectedMatch.index;
+        const index = selectedMatch.index;
 
         const set = this.state.set;
         if (!set || !set.matches) throw new Error("Set and Matches can't be null");
@@ -188,10 +195,14 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
 
     private onAddMatch() {
         const set = this.state.set;
-        if (!set || !set.matches) throw new Error();
+        const game = this.state.game;
+        if (!set || !set.matches || !game) throw new Error();
 
         const newMatch = new ClimbClient.MatchDto();
         newMatch.index = set.matches.length;
+
+        newMatch.player1Score = 0;
+        newMatch.player2Score = 0;
 
         if (newMatch.index > 0) {
             const prevMatch = set.matches[newMatch.index - 1];
@@ -199,10 +210,24 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             newMatch.player1Characters = prevMatch.player1Characters.slice(0);
             newMatch.player2Characters = prevMatch.player2Characters.slice(0);
         } else {
+            const characters = game.characters;
+            
             newMatch.player1Characters = [];
             newMatch.player2Characters = [];
+
+            for (let i = 0; i < game.charactersPerMatch; i++) {
+                newMatch.player1Characters.push(characters[i].id);
+                newMatch.player2Characters.push(characters[i].id);
+            }
         }
 
         this.setState({ selectedMatch: newMatch });
+    }
+
+    private onSelectMatch(match: ClimbClient.MatchDto) {
+        const set = this.state.set;
+        if (set && !set.isLocked) {
+            this.setState({ selectedMatch: match });
+        }
     }
 }

@@ -311,7 +311,7 @@ namespace Climb.Data
                     LeagueID = leagueIDs[oldSet.LeagueID],
                     DueDate = oldSet.DueDate,
                     UpdatedDate = oldSet.UpdatedDate,
-                    IsLocked = oldSet.IsLocked,
+                    IsLocked = true,
                     Player1ID = leagueUserIDs[oldSet.Player1ID.Value],
                     Player2ID = leagueUserIDs[oldSet.Player2ID.Value],
                     Player1Score = oldSet.Player1Score,

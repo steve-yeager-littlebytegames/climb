@@ -16,9 +16,9 @@ namespace Climb.Test.Services
     {
         private class FakeScheduler : ScheduleFactory
         {
-            public HashSet<Set> generatedSets;
+            public List<Set> generatedSets;
 
-            protected override HashSet<Set> GenerateScheduleInternal(Season season)
+            protected override List<Set> GenerateScheduleInternal(Season season)
             {
                 return generatedSets;
             }
@@ -54,14 +54,15 @@ namespace Climb.Test.Services
             var oldSet = SetUtility.Create(dbContext, participants[0].ID, participants[1].ID, season.LeagueID);
             season.Sets = new List<Set> {oldSet};
 
-            var newSet = new Set{
+            var newSet = new Set
+            {
                 LeagueID = season.LeagueID,
-                SeasonID = season.ID, 
+                SeasonID = season.ID,
                 DueDate = DateTime.Now.AddDays(1),
-                Player1ID = participants[0].ID, 
-                Player2ID = participants[1].ID, 
+                Player1ID = participants[0].ID,
+                Player2ID = participants[1].ID,
             };
-            testObj.generatedSets = new HashSet<Set> {newSet};
+            testObj.generatedSets = new List<Set> {newSet};
 
             await testObj.GenerateScheduleAsync(season, dbContext);
 

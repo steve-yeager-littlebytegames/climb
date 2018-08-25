@@ -12,6 +12,7 @@ namespace Climb.ViewModels.Sets
         public bool UserIsPlaying { get; }
         public string OpponentProfilePic { get; }
         public string SetType { get; }
+        public string ActionName { get; }
 
         private DetailsViewModel(Set set, string p1ProfilePic, string p2ProfilePic, bool userIsPlaying, string opponentProfilePic)
         {
@@ -21,6 +22,19 @@ namespace Climb.ViewModels.Sets
             UserIsPlaying = userIsPlaying;
             OpponentProfilePic = opponentProfilePic;
             SetType = set.SeasonID != null ? "Season" : "Challenge";
+
+            if(set.IsLocked)
+            {
+                ActionName = "Details";
+            }
+            else if(set.IsComplete)
+            {
+                ActionName = "Edit";
+            }
+            else
+            {
+                ActionName = "Fight";
+            }
         }
 
         public static DetailsViewModel Create(ApplicationUser viewingUser, Set set, ICdnService cdnService)

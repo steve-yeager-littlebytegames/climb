@@ -22,7 +22,7 @@ namespace Climb.ViewModels.Seasons
             SeasonNumber = season.Index + 1;
 
             Participants = Season.Participants.OrderBy(p => p.Standing);
-            AvailableSets = Season.Sets.Where(s => !s.IsComplete);
+            AvailableSets = Season.Sets.Where(s => !s.IsComplete).OrderBy(s => s.DueDate);
 
             if(season.IsActive)
             {

@@ -70,7 +70,7 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         let characterInputs:JSX.Element[] = [];
         for (let i = 0; i < characterCount; i++) {
             characterInputs.push(
-                <select className="form-control" value={characterValues[i]} onChange={(e: any) => this.updateCharacter(playerNumber, i, parseInt(e.currentTarget.value))}>{characters}</select>
+                <select className="form-control" key={i} value={characterValues[i]} onChange={(e: any) => this.updateCharacter(playerNumber, i, parseInt(e.currentTarget.value))}>{characters}</select>
             );
         }
 

@@ -1861,7 +1861,7 @@ export interface ILeagueUser {
 export class GameDto implements IGameDto {
     id!: number;
     name?: string | undefined;
-    characters?: CharacterDto[] | undefined;
+    characters!: CharacterDto[];
     stages?: StageDto[] | undefined;
     charactersPerMatch!: number;
     hasStages!: boolean;
@@ -1872,6 +1872,9 @@ export class GameDto implements IGameDto {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.characters = [];
         }
     }
 
@@ -1924,7 +1927,7 @@ export class GameDto implements IGameDto {
 export interface IGameDto {
     id: number;
     name?: string | undefined;
-    characters?: CharacterDto[] | undefined;
+    characters: CharacterDto[];
     stages?: StageDto[] | undefined;
     charactersPerMatch: number;
     hasStages: boolean;
@@ -2692,8 +2695,8 @@ export class SetDto implements ISetDto {
     gameID!: number;
     player1ID!: number;
     player2ID!: number;
-    player1Score?: number | undefined;
-    player2Score?: number | undefined;
+    player1Score!: number;
+    player2Score!: number;
     dueDate!: Date;
     updatedDate?: Date | undefined;
     matches!: MatchDto[];
@@ -2777,8 +2780,8 @@ export interface ISetDto {
     gameID: number;
     player1ID: number;
     player2ID: number;
-    player1Score?: number | undefined;
-    player2Score?: number | undefined;
+    player1Score: number;
+    player2Score: number;
     dueDate: Date;
     updatedDate?: Date | undefined;
     matches: MatchDto[];
