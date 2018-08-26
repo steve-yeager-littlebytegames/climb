@@ -8,8 +8,31 @@
     ViewBag.Title = "Leagues-Home";
 }
 
-<div>
-    <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
+<div class="container">
+    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
+        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
+        @*@if (!Model.IsMember)
+            {
+                <form asp-action="Join">
+                    <input type="hidden" name="leagueID" value="@Model.League.ID" />
+                    <input type="hidden" name="userID" value="@Model.User.Id" />
+                    <button>Join</button>
+                </form>
+            }*@
+    </div>
+
+    <div class="home-menu d-flex justify-content-between">
+        <a asp-action="Home" asp-route-leaugeID="">Home</a>
+        <a asp-action="Membership" asp-route-leagueID="">Membership</a>
+        <a asp-action="Data" asp-route-leagueID="">Data</a>
+        <a asp-action="Sets" asp-route-leagueID="">Sets</a>
+        @*@foreach (var season in Model.League.Seasons)
+            {
+                <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
+            }*@
+        <a asp-action="Manage" asp-route-leagueID="">Manage</a>
+    </div>
+
 
     @if (!Model.IsParticipant)
     {
@@ -23,20 +46,47 @@
             <button class="btn btn-primary">Start Season</button>
         </form>
     }
+    <!-- Columns -->
+    <div class="row">
+        <!-- Participants -->
+        <div class="col-xl-6 page-section pb-2 mt-4">
+            <h3>Participants</h3>
+            <div class="page-section-child">
+                <div class="page-section-content">
+                    @if (Model.Participants.Any())
+                    {
+                        @foreach (var participant in Model.Participants)
+                        {
+                            //To Do: style Season Participant partial like league member partial
+                            <partial name="./Partials/SeasonParticipant" model="@SeasonParticipantViewModel.Create(participant, cdnService)" />
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-darker">
+                            <em>No participants</em>
+                        </div>
+                    }
 
-    <h3>Participants</h3>
-    @foreach (var participant in Model.Participants)
-    {
-        <partial name="./Partials/SeasonParticipant" model="@SeasonParticipantViewModel.Create(participant, cdnService)" />
-    }
+                </div>
+            </div>
+        </div>
 
-    @if (Model.Season.Sets.Count > 0)
-    {
-        <h3>Sets</h3>
-        foreach(var set in Model.AvailableSets)
-        {
-            <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
-        }
-    }
-
+        <!-- Sets -->
+        <div class="col-xl-6 page-section pb-2 mt-4">
+            <h3>Sets</h3>
+            <div class="page-section-child">
+                <div class="page-section-content">
+                    @if (Model.Season.Sets.Count > 0)
+                    {
+                        foreach (var set in Model.AvailableSets)
+                        {
+                            //To Do Style set details
+                            <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)" />
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
