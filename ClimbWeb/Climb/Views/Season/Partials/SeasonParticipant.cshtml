@@ -1,15 +1,15 @@
 ﻿@model Climb.ViewModels.Seasons.SeasonParticipantViewModel
 
-<link rel="stylesheet" href="~/dist/styles/league/leagueuser.css"/>
+<link rel="stylesheet" href="~/dist/styles/league/leagueuser.css" />
 
-<div class="leagueuser-container">
+<div class="seasonparticipant-container d-flex">
     <img src="@Model.ProfilePic" width="64" height="64"/>
-    <div>
-        <div><b>@Model.Participant.LeagueUser.User.UserName</b></div>
-        <div>
-            <div>Standing=@Model.Participant.Standing</div>
-            <div>Points=@Model.Participant.Points</div>
-            <div>Tie Breaker=@Model.Participant.TieBreakerPoints</div>
+    <div class="d-flex flex-column flex-grow-1 justify-content-center text-center">
+        <b class="name p-1">@Model.Participant.LeagueUser.User.UserName</b>
+        <div class="d-flex flex-grow-1 justify-content-around align-content-center">
+            <div class="points-text-small">(@Model.Participant.Points)</div>
+            <div class="rank-text-small">@Model.Participant.Standing</div>
         </div>
+        @*<div>Tie Breaker=@Model.Participant.TieBreakerPoints</div>*@
     </div>
 </div>

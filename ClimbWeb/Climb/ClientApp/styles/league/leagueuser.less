@@ -1,26 +1,29 @@
 ﻿@import "../vars.less";
 
-.leagueuser-container {
-    display: flex;
-    flex-direction: column;
+.leagueuser-container, .seasonparticipant-container {
     background-color: @color-light;
 }
 
 .leagueuser-details {
-    display: flex;
-    justify-content: space-around;
     border-bottom: 1px solid @color-dark;
 }
 
-.leagueuser-leaguename {
+.name {
     background-color: @color-med;
 }
 
-.leagueuser-rank-text {
+.rank-text {
     font-size: 1.75rem;
 }
 
-.leagueuser-points-text {
+.points-text, .rank-text-small {
     font-size: 1.25rem;
+}
+
+.points-text, .points-text-small {
     color: #AAA;
+}
+
+.seasonparticipant-container {
+    border-top: 1px solid @color-dark;
 }

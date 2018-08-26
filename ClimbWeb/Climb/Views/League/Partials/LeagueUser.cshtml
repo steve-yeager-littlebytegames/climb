@@ -2,15 +2,15 @@
 
 <link rel="stylesheet" href="~/dist/styles/league/leagueuser.css"/>
 
-<div class="leagueuser-container">
-    <div class="leagueuser-leaguename py-1">
+<div class="leagueuser-container d-flex flex-column">
+    <div class="name py-1">
         <a href="@Model.TitleLink">@Model.Title</a>
     </div>
     <div class="leagueuser-details d-flex justify-content-between align-items-center py-3 px-5">
         <img src="@Model.Picture" width="64" height="64" />
         <div class="d-flex flex-column">
-            <span class="leagueuser-rank-text"><strong>@Model.LeagueUser.Rank</strong></span>
-            <span class="leagueuser-points-text"><em>@($"({Model.LeagueUser.Points})")</em></span>
+            <span class="rank-text"><strong>@Model.LeagueUser.Rank</strong></span>
+            <span class="points-text"><em>@($"({Model.LeagueUser.Points})")</em></span>
         </div>
         <img src="https://cdn4.iconfinder.com/data/icons/defaulticon/icons/png/256x256/arrow-alt-up.png" width="32" height="32" style="opacity:0.5;"/>
     </div>
