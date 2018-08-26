@@ -7,7 +7,15 @@
     <div class="d-flex flex-column flex-grow-1 justify-content-center text-center">
         <b class="name p-1">@Model.Participant.LeagueUser.User.UserName</b>
         <div class="d-flex flex-grow-1 justify-content-around align-content-center">
-            <div class="points-text-small">(@Model.Participant.Points)</div>
+            <div>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIheOblDEWlXztqPWQXd6cp7h3MShCVCreDPnfjasqzqCm4cz1nQ" width="20" height="20" />
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIheOblDEWlXztqPWQXd6cp7h3MShCVCreDPnfjasqzqCm4cz1nQ" width="20" height="20" />
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIheOblDEWlXztqPWQXd6cp7h3MShCVCreDPnfjasqzqCm4cz1nQ" width="20" height="20" />
+            </div>
+            <div class="points-text-small">( @Model.Participant.Points )</div>
+            <div>
+                <img src="https://cdn4.iconfinder.com/data/icons/defaulticon/icons/png/256x256/arrow-alt-up.png" width="20" height="20" style="opacity: 0.5;"/>
+            </div>
             <div class="rank-text-small">@Model.Participant.Standing</div>
         </div>
         @*<div>Tie Breaker=@Model.Participant.TieBreakerPoints</div>*@
