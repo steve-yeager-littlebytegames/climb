@@ -86,16 +86,6 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task GenerateSchedule_Valid_LeagueActiveSeasonSet()
-        {
-            var season = CreateSeason();
-
-            season = await testObj.GenerateSchedule(season.ID);
-
-            Assert.AreEqual(season.ID, season.League.ActiveSeasonID);
-        }
-
-        [Test]
         public async Task PlaySets_Valid_PointsAssigned()
         {
             var (winnerPoints, loserPoints) = (2, 1);
@@ -272,6 +262,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task End_Valid_RemoveLeagueActiveSeason()
         {
             var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+            DbContextUtility.UpdateAndSave(dbContext, season.League, l => l.ActiveSeasonID = season.ID);
 
             Assert.IsNotNull(season.League.ActiveSeasonID);
 
@@ -312,7 +303,7 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task Leave_IsParticipant_DisableSets()
+        public async Task Leave_IsParticipant_ForfeitSets()
         {
             var season = CreateSeason((0, 0, 0), (0, 0, 0));
             var participant = season.Participants[0];
@@ -322,8 +313,8 @@ namespace Climb.Test.Services.ModelServices
 
             Assert.IsNotEmpty(participant.P1Sets, "P1 Sets");
             Assert.IsNotEmpty(participant.P2Sets, "P2 Sets");
-            Assert.IsTrue(participant.P1Sets.All(s => s.IsDisabled), "P1 Sets");
-            Assert.IsTrue(participant.P2Sets.All(s => s.IsDisabled), "P2 Sets");
+            Assert.IsTrue(participant.P1Sets.All(s => s.IsForfeit), "P1 Sets");
+            Assert.IsTrue(participant.P2Sets.All(s => s.IsForfeit), "P2 Sets");
         }
 
         [Test]
@@ -344,6 +335,81 @@ namespace Climb.Test.Services.ModelServices
             await testObj.LeaveAsync(season.Participants[0].ID);
 
             Assert.IsTrue(season.Participants.All(slu => slu.Standing == 0));
+        }
+
+        [Test]
+        public async Task Leave_HasPlayedSets_CompletedSetsNotForfeited()
+        {
+            var season = CreateSeason((0, 0, 0), (0, 0, 0));
+            var participant = season.Participants[0];
+            var set = SeasonUtility.CreateSets(dbContext, season)[0];
+            DbContextUtility.UpdateAndSave(dbContext, set, s => s.IsComplete = true);
+
+            await testObj.LeaveAsync(participant.ID);
+
+            Assert.IsNotEmpty(participant.P1Sets, "P1 Sets");
+            Assert.IsFalse(participant.P1Sets.All(s => s.IsForfeit), "P1 Sets");
+        }
+
+        [Test]
+        public async Task Join_SeasonNotStarted_CreateParticipant()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
+
+            await testObj.JoinAsync(season.ID, leagueUser.UserID);
+
+            Assert.AreEqual(2, season.Participants.Count);
+        }
+
+        [Test]
+        public void Join_NoSeason_NotFoundException()
+        {
+            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.JoinAsync(-1, user.Id));
+        }
+
+        [Test]
+        public void Join_NoUser_NotFoundException()
+        {
+            var season = CreateSeason();
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.JoinAsync(season.ID, ""));
+        }
+
+        [Test]
+        public async Task Join_AlreadyJoined_NoUserCreated()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var user = season.Participants[0].User;
+
+            await testObj.JoinAsync(season.ID, user.Id);
+
+            Assert.AreEqual(1, season.Participants.Count);
+        }
+
+        [Test]
+        public async Task Join_HasLeftSeasonNotStarted_ReactivateParticipant()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var participant = season.Participants[0];
+            DbContextUtility.UpdateAndSave(dbContext, participant, () => participant.HasLeft = true);
+
+            await testObj.JoinAsync(season.ID, participant.UserID);
+
+            Assert.IsFalse(participant.HasLeft);
+            Assert.AreEqual(1, season.Participants.Count);
+        }
+
+        [Test]
+        public void Join_SeasonStarted_BadResultException()
+        {
+            var season = CreateSeason();
+            DbContextUtility.UpdateAndSave(dbContext, season, s => s.IsActive = true);
+            var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.JoinAsync(season.ID, leagueUser.UserID));
         }
 
         #region Helpers

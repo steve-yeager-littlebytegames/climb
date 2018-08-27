@@ -32,9 +32,8 @@ namespace Climb.ViewModels.Seasons
 
         public static HomeViewModel Create(ApplicationUser user, Season season, IHostingEnvironment environment)
         {
-            var participant = user.LeagueUsers
-                .FirstOrDefault(lu => season.LeagueID == lu.ID)
-                ?.Seasons.FirstOrDefault(slu => slu.SeasonID == season.ID);
+            var participant = user.Seasons
+                .FirstOrDefault(slu => slu.SeasonID == season.ID);
 
             var canStartSeason = false;
             if(!season.IsActive && !season.IsComplete)

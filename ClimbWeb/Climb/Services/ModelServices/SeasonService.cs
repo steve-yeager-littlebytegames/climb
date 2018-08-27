@@ -72,8 +72,9 @@ namespace Climb.Services.ModelServices
                 throw new NotFoundException(typeof(Season), seasonID);
             }
 
-            await scheduleFactory.GenerateScheduleAsync(season, dbContext);
-            season.League.ActiveSeasonID = seasonID;
+            var sets = scheduleFactory.GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
+            dbContext.AddRange(sets);
+            await dbContext.SaveChangesAsync();
 
             return season;
         }
@@ -259,10 +260,10 @@ namespace Climb.Services.ModelServices
             dbContext.Update(participant);
             participant.HasLeft = true;
 
-            dbContext.UpdateRange(participant.P1Sets);
-            dbContext.UpdateRange(participant.P2Sets);
-            participant.P1Sets.ForEach(s => s.IsDisabled = true);
-            participant.P2Sets.ForEach(s => s.IsDisabled = true);
+            var sets = new List<Set>(participant.P1Sets.Count + participant.P2Sets.Count);
+            sets.AddRange(participant.P1Sets.Where(s => !s.IsComplete));
+            sets.AddRange(participant.P2Sets.Where(s => !s.IsComplete));
+            sets.ForEach(s => s.Forfeit(participant.LeagueUserID));
 
             if(participant.Season.IsActive)
             {
@@ -272,6 +273,55 @@ namespace Climb.Services.ModelServices
             await dbContext.SaveChangesAsync();
 
             return participant.Season;
+        }
+
+        public async Task<Season> JoinAsync(int seasonID, string userID)
+        {
+            var season = await dbContext.Seasons
+                .Include(s => s.Sets)
+                .Include(s => s.Participants).IgnoreQueryFilters()
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            if(season == null)
+            {
+                throw new NotFoundException(typeof(Season), seasonID);
+            }
+
+            if(season.IsActive)
+            {
+                throw new BadRequestException($"Can't join season '{seasonID}' because it's already started.");
+            }
+
+            if(!await dbContext.Users.AnyAsync(u => u.Id == userID))
+            {
+                throw new NotFoundException(typeof(ApplicationUser), userID);
+            }
+
+            var participant = season.Participants.FirstOrDefault(slu => slu.UserID == userID);
+            if(participant != null)
+            {
+                if(participant.HasLeft)
+                {
+                    dbContext.Update(participant);
+                    participant.HasLeft = false;
+                }
+                else
+                {
+                    return season;
+                }
+            }
+            else
+            {
+                var leagueUser = await dbContext.LeagueUsers.FirstOrDefaultAsync(lu => lu.LeagueID == season.LeagueID && lu.UserID == userID);
+
+                participant = new SeasonLeagueUser(seasonID, leagueUser.ID, userID);
+                season.Participants.Add(participant);
+                dbContext.Add(participant);
+            }
+
+
+            await dbContext.SaveChangesAsync();
+
+            return season;
         }
     }
 }

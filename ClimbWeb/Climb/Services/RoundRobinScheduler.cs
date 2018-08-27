@@ -5,27 +5,27 @@ using MoreLinq.Extensions;
 
 namespace Climb.Services
 {
-    public class RoundRobinScheduler : ScheduleFactory
+    public class RoundRobinScheduler : IScheduleFactory
     {
         private static readonly SeasonLeagueUser bye = new SeasonLeagueUser();
 
-        protected override List<Set> GenerateScheduleInternal(Season season)
+        public List<Set> GenerateSchedule(DateTime startDate, DateTime endDate, IReadOnlyList<SeasonLeagueUser> participants)
         {
-            var participants = GetParticipants(season);
-            var sets = new List<Set>(season.Participants.Count);
+            var participantsFull = GetParticipants(participants);
+            var sets = new List<Set>(participantsFull.Count);
 
-            var roundCount = participants.Count - 1;
-            var roundDays = (season.EndDate - season.StartDate).Days / roundCount;
+            var roundCount = participantsFull.Count - 1;
+            var roundDays = (endDate - startDate).Days / roundCount;
 
-            var nextDueDate = season.StartDate;
+            var nextDueDate = startDate;
             for(var i = 0; i < roundCount; i++)
             {
                 nextDueDate = nextDueDate.AddDays(roundDays);
-                var generatedSets = GenerateSets(participants, nextDueDate);
+                var generatedSets = GenerateSets(participantsFull, nextDueDate);
                 sets.AddRange(generatedSets);
 
-                participants.Insert(1, participants[participants.Count - 1]);
-                participants.RemoveAt(participants.Count - 1);
+                participantsFull.Insert(1, participantsFull[participantsFull.Count - 1]);
+                participantsFull.RemoveAt(participantsFull.Count - 1);
             }
 
             return sets;
@@ -66,16 +66,16 @@ namespace Climb.Services
             return sets;
         }
 
-        private static List<SeasonLeagueUser> GetParticipants(Season season)
+        private static List<SeasonLeagueUser> GetParticipants(IEnumerable<SeasonLeagueUser> participants)
         {
-            var participants = new List<SeasonLeagueUser>(season.Participants);
-            if(participants.Count % 2 == 1)
+            var participantsFull = new List<SeasonLeagueUser>(participants);
+            if(participantsFull.Count % 2 == 1)
             {
-                participants.Add(bye);
+                participantsFull.Add(bye);
             }
 
-            participants.Shuffle();
-            return participants;
+            participantsFull.Shuffle();
+            return participantsFull;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Climb.Test.Controllers
         }
 
         [Test]
-        public async Task Start_SeasonExists_SeasonIsActive()
+        public async Task Start_NotStarted_SetActive()
         {
             var season = SeasonUtility.CreateSeason(dbContext, 2).season;
             seasonService.GenerateSchedule(season.ID).Returns(season);
@@ -39,6 +39,17 @@ namespace Climb.Test.Controllers
             await testObj.Start(season.ID);
 
             Assert.IsTrue(season.IsActive);
+        }
+        
+        [Test]
+        public async Task Start_NotStarted_SetLeagueActiveSeason()
+        {
+            var season = SeasonUtility.CreateSeason(dbContext, 2).season;
+            seasonService.GenerateSchedule(season.ID).Returns(season);
+
+            await testObj.Start(season.ID);
+
+            Assert.AreEqual(season.ID, season.League.ActiveSeasonID);
         }
     }
 }

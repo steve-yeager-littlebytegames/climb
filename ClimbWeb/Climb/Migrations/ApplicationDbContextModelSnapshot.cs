@@ -324,6 +324,8 @@ namespace Climb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("HasLeft");
+
                     b.Property<int>("LeagueUserID");
 
                     b.Property<int>("Points");
@@ -334,11 +336,15 @@ namespace Climb.Migrations
 
                     b.Property<int>("TieBreakerPoints");
 
+                    b.Property<string>("UserID");
+
                     b.HasKey("ID");
 
                     b.HasIndex("LeagueUserID");
 
                     b.HasIndex("SeasonID");
+
+                    b.HasIndex("UserID");
 
                     b.ToTable("SeasonLeagueUsers");
                 });
@@ -352,6 +358,8 @@ namespace Climb.Migrations
                     b.Property<DateTime>("DueDate");
 
                     b.Property<bool>("IsComplete");
+
+                    b.Property<bool>("IsForfeit");
 
                     b.Property<bool>("IsLocked");
 
@@ -669,6 +677,11 @@ namespace Climb.Migrations
                     b.HasOne("Climb.Models.Season", "Season")
                         .WithMany("Participants")
                         .HasForeignKey("SeasonID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Climb.Data.ApplicationUser", "User")
+                        .WithMany("Seasons")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

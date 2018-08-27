@@ -5,7 +5,12 @@
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Leagues-Home";
+    ViewBag.Title = "Season-Home";
+}
+
+@section scripts
+{
+    <script type="module" src="~/dist/scripts/Seasons-Home.js"></script>
 }
 
 <div>
@@ -13,10 +18,7 @@
 
     @if (Model.CanLeave)
     {
-        <form asp-action="LeavePost">
-            <input type="hidden" name="participantID" value="@Model.Participant.ID"/>
-            <button class="btn btn-danger">Leave</button>
-        </form>
+        <button id="leave-season-button" class="btn btn-danger" data-participantID="@Model.Participant.ID">Leave</button>
     }
 
     @if (Model.CanStartSeason)

@@ -68,8 +68,13 @@ namespace Climb.Controllers
             try
             {
                 var season = await seasonService.GenerateSchedule(seasonID);
+
                 dbContext.Update(season);
                 season.IsActive = true;
+
+                dbContext.Update(season.League);
+                season.League.ActiveSeasonID = seasonID;
+
                 await dbContext.SaveChangesAsync();
 
                 return RedirectToAction("Home", new {seasonID});

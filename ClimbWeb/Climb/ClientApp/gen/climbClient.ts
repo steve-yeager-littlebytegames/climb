@@ -1088,6 +1088,41 @@ export class SeasonApi extends BaseClass {
         }
         return Promise.resolve<Season>(<any>null);
     }
+
+    leave(participantID: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/v1/seasons/leave?";
+        if (participantID === undefined || participantID === null)
+            throw new Error("The parameter 'participantID' must be defined and cannot be null.");
+        else
+            url_ += "participantID=" + encodeURIComponent("" + participantID) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processLeave(_response);
+        });
+    }
+
+    protected processLeave(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
 }
 
 export class SetApi extends BaseClass {
@@ -2423,7 +2458,7 @@ export class Set implements ISet {
     updatedDate?: Date | undefined;
     isLocked!: boolean;
     isComplete!: boolean;
-    isDisabled!: boolean;
+    isForfeit!: boolean;
     player1SeasonPoints!: number;
     player2SeasonPoints!: number;
     matches!: Match[];
@@ -2457,7 +2492,7 @@ export class Set implements ISet {
             this.updatedDate = data["updatedDate"] ? new Date(data["updatedDate"].toString()) : <any>undefined;
             this.isLocked = data["isLocked"];
             this.isComplete = data["isComplete"];
-            this.isDisabled = data["isDisabled"];
+            this.isForfeit = data["isForfeit"];
             this.player1SeasonPoints = data["player1SeasonPoints"];
             this.player2SeasonPoints = data["player2SeasonPoints"];
             if (data["matches"] && data["matches"].constructor === Array) {
@@ -2492,7 +2527,7 @@ export class Set implements ISet {
         data["updatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : <any>undefined;
         data["isLocked"] = this.isLocked;
         data["isComplete"] = this.isComplete;
-        data["isDisabled"] = this.isDisabled;
+        data["isForfeit"] = this.isForfeit;
         data["player1SeasonPoints"] = this.player1SeasonPoints;
         data["player2SeasonPoints"] = this.player2SeasonPoints;
         if (this.matches && this.matches.constructor === Array) {
@@ -2520,7 +2555,7 @@ export interface ISet {
     updatedDate?: Date | undefined;
     isLocked: boolean;
     isComplete: boolean;
-    isDisabled: boolean;
+    isForfeit: boolean;
     player1SeasonPoints: number;
     player2SeasonPoints: number;
     matches: Match[];

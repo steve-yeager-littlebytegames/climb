@@ -2,7 +2,6 @@
 using Climb.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Climb.Data
 {
@@ -42,7 +41,6 @@ namespace Climb.Data
             builder.Entity<SeasonLeagueUser>().HasQueryFilter(slu => !slu.HasLeft);
             builder.Entity<MatchCharacter>().HasKey(m => new {m.MatchID, m.CharacterID, m.LeagueUserID});
             builder.Entity<SetRequest>().HasQueryFilter(lu => lu.IsOpen);
-            builder.Entity<Set>().HasQueryFilter(s => !s.IsDisabled);
         }
     }
 }
