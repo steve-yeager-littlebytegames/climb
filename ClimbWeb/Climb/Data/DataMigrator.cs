@@ -134,11 +134,12 @@ namespace Climb.Data
 
             for(var i = 0; i < oldCharacters.Length; i++)
             {
-                var v1Character = oldCharacters[i];
+                var oldCharacter = oldCharacters[i];
                 characters[i] = new Character
                 {
-                    Name = v1Character.Name,
-                    GameID = gameIDs[v1Character.GameID],
+                    Name = oldCharacter.Name,
+                    GameID = gameIDs[oldCharacter.GameID],
+                    ImageKey = oldCharacter.PicKey,
                 };
             }
 
