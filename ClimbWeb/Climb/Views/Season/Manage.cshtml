@@ -33,12 +33,6 @@
         <a asp-action="Manage" asp-route-leagueID="">Manage</a>
     </div>
 
-
-    @if (!Model.IsParticipant)
-    {
-        // TODO: Leave
-    }
-
     @if (Model.CanStartSeason)
     {
         <form asp-controller="Season" asp-action="Start">

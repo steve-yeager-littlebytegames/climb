@@ -52,7 +52,7 @@ namespace Climb.Services.ModelServices
             var season = new Season(leagueID, seasonCount, start, end);
             dbContext.Add(season);
 
-            var participants = league.Members.Select(lu => new SeasonLeagueUser(season.ID, lu.ID));
+            var participants = league.Members.Select(lu => new SeasonLeagueUser(season.ID, lu.ID, lu.UserID));
             dbContext.AddRange(participants);
 
             await dbContext.SaveChangesAsync();
@@ -72,13 +72,14 @@ namespace Climb.Services.ModelServices
                 throw new NotFoundException(typeof(Season), seasonID);
             }
 
-            await scheduleFactory.GenerateScheduleAsync(season, dbContext);
-            season.League.ActiveSeasonID = seasonID;
+            var sets = scheduleFactory.GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
+            dbContext.AddRange(sets);
+            await dbContext.SaveChangesAsync();
 
             return season;
         }
 
-        public async Task<Season> UpdateStandings(int setID)
+        public async Task<Season> PlaySet(int setID)
         {
             var set = await dbContext.Sets
                 .Include(s => s.Season).ThenInclude(s => s.Participants).ThenInclude(slu => slu.LeagueUser)
@@ -88,12 +89,48 @@ namespace Climb.Services.ModelServices
             dbContext.Update(set);
 
             UpdatePoints(set);
-            BreakTies(set.Season);
-            UpdateRanks(set.Season);
 
             await dbContext.SaveChangesAsync();
 
             return set.Season;
+        }
+
+        public async Task<Season> UpdateRanksAsync(int seasonID)
+        {
+            var season = await dbContext.Seasons
+                .Include(s => s.Participants).IgnoreQueryFilters()
+                .Include(s => s.Sets).ThenInclude(s => s.Player1)
+                .Include(s => s.Sets).ThenInclude(s => s.Player2)
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            dbContext.UpdateRange(season.Participants);
+
+            BreakTies(season);
+
+            var sortedParticipants = season.Participants
+                .OrderByDescending(slu => slu.Points)
+                .ThenByDescending(slu => slu.TieBreakerPoints)
+                .ToArray();
+
+            var rank = 1;
+            var lastPoints = -1;
+            foreach(var participant in sortedParticipants)
+            {
+                if(participant.HasLeft)
+                {
+                    participant.Standing = 0;
+                    continue;
+                }
+
+                participant.Standing = rank;
+                if(participant.Points != lastPoints)
+                {
+                    lastPoints = participant.Points;
+                }
+
+                ++rank;
+            }
+
+            return season;
         }
 
         private void UpdatePoints(Set set)
@@ -160,29 +197,6 @@ namespace Climb.Services.ModelServices
             }
         }
 
-        private void UpdateRanks(Season season)
-        {
-            dbContext.UpdateRange(season.Participants);
-
-            var sortedParticipants = season.Participants
-                .OrderByDescending(slu => slu.Points)
-                .ThenByDescending(slu => slu.TieBreakerPoints)
-                .ToArray();
-
-            var rank = 1;
-            var lastPoints = -1;
-            foreach(var participant in sortedParticipants)
-            {
-                participant.Standing = rank;
-                if(participant.Points != lastPoints)
-                {
-                    lastPoints = participant.Points;
-                }
-
-                ++rank;
-            }
-        }
-
         public async Task<Season> End(int seasonID)
         {
             var season = await dbContext.Seasons
@@ -226,6 +240,92 @@ namespace Climb.Services.ModelServices
                     season.Sets.RemoveAt(i);
                 }
             }
+
+            await dbContext.SaveChangesAsync();
+
+            return season;
+        }
+
+        public async Task<Season> LeaveAsync(int participantID)
+        {
+            var participant = await dbContext.SeasonLeagueUsers
+                .IgnoreQueryFilters()
+                .Include(slu => slu.Season)
+                .Include(slu => slu.P1Sets)
+                .Include(slu => slu.P2Sets)
+                .FirstOrDefaultAsync(slu => slu.ID == participantID);
+            if(participant == null)
+            {
+                throw new NotFoundException(typeof(SeasonLeagueUser), participantID);
+            }
+
+            if(participant.Season.IsComplete)
+            {
+                throw new BadRequestException($"Can't leave season '{participant.SeasonID}' because it's already completed.");
+            }
+
+            dbContext.Update(participant);
+            participant.HasLeft = true;
+            participant.Standing = participant.Points = participant.TieBreakerPoints = 0;
+
+            var sets = new List<Set>(participant.P1Sets.Count + participant.P2Sets.Count);
+            sets.AddRange(participant.P1Sets.Where(s => !s.IsComplete));
+            sets.AddRange(participant.P2Sets.Where(s => !s.IsComplete));
+            sets.ForEach(s => s.Forfeit(participant.LeagueUserID));
+
+            if(participant.Season.IsActive)
+            {
+                await UpdateRanksAsync(participant.SeasonID);
+            }
+
+            await dbContext.SaveChangesAsync();
+
+            return participant.Season;
+        }
+
+        public async Task<Season> JoinAsync(int seasonID, string userID)
+        {
+            var season = await dbContext.Seasons
+                .Include(s => s.Sets)
+                .Include(s => s.Participants).IgnoreQueryFilters()
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            if(season == null)
+            {
+                throw new NotFoundException(typeof(Season), seasonID);
+            }
+
+            if(season.IsActive)
+            {
+                throw new BadRequestException($"Can't join season '{seasonID}' because it's already started.");
+            }
+
+            if(!await dbContext.Users.AnyAsync(u => u.Id == userID))
+            {
+                throw new NotFoundException(typeof(ApplicationUser), userID);
+            }
+
+            var participant = season.Participants.FirstOrDefault(slu => slu.UserID == userID);
+            if(participant != null)
+            {
+                if(participant.HasLeft)
+                {
+                    dbContext.Update(participant);
+                    participant.HasLeft = false;
+                }
+                else
+                {
+                    return season;
+                }
+            }
+            else
+            {
+                var leagueUser = await dbContext.LeagueUsers.FirstOrDefaultAsync(lu => lu.LeagueID == season.LeagueID && lu.UserID == userID);
+
+                participant = new SeasonLeagueUser(seasonID, leagueUser.ID, userID);
+                season.Participants.Add(participant);
+                dbContext.Add(participant);
+            }
+
 
             await dbContext.SaveChangesAsync();
 

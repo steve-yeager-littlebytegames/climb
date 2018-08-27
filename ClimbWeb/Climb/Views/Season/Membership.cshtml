@@ -1,11 +1,14 @@
 ﻿@using Climb.Services
-@using Climb.ViewModels.Seasons
-@using Climb.ViewModels.Sets
-@model HomeViewModel
+@model Climb.ViewModels.Seasons.HomeViewModel
 @inject ICdnService cdnService
 
 @{
     ViewBag.Title = "Leagues-Home";
+}
+
+@section scripts
+{
+    <script type="module" src="~/dist/scripts/Seasons-Home.js"></script>
 }
 
 <div class="container">
@@ -34,15 +37,15 @@
     </div>
 
 
-    @if (!Model.IsParticipant)
+    @if(Model.CanLeave)
     {
-        // TODO: Leave
+        <button id="leave-season-button" class="btn btn-danger" data-participantID="@Model.Participant.ID">Leave</button>
     }
 
-    @if (Model.CanStartSeason)
+    @if(Model.CanStartSeason)
     {
         <form asp-controller="Season" asp-action="Start">
-            <input type="hidden" name="SeasonID" value="@Model.Season.ID" />
+            <input type="hidden" name="SeasonID" value="@Model.Season.ID"/>
             <button class="btn btn-primary">Start Season</button>
         </form>
     }
@@ -50,7 +53,6 @@
     <div class="d-flex justify-content-center align-items-center body-temp">
         <p>Membership</p>
     </div>
-
 
 
 </div>

@@ -18,9 +18,8 @@ namespace Climb.Test.Utilities
             {
                 slu.LeagueUserID = members[i].ID;
                 slu.SeasonID = season.ID;
+                slu.UserID = members[i].UserID;
             });
-
-            DbContextUtility.UpdateAndSave(dbContext, league, () => league.ActiveSeasonID = season.ID);
 
             return (season, members);
         }

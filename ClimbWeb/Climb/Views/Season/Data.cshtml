@@ -1,7 +1,5 @@
 ﻿@using Climb.Services
-@using Climb.ViewModels.Seasons
-@using Climb.ViewModels.Sets
-@model HomeViewModel
+@model Climb.ViewModels.Seasons.HomeViewModel
 @inject ICdnService cdnService
 
 @{
@@ -33,16 +31,10 @@
         <a asp-action="Manage" asp-route-leagueID="">Manage</a>
     </div>
 
-
-    @if (!Model.IsParticipant)
-    {
-        // TODO: Leave
-    }
-
-    @if (Model.CanStartSeason)
+    @if(Model.CanStartSeason)
     {
         <form asp-controller="Season" asp-action="Start">
-            <input type="hidden" name="SeasonID" value="@Model.Season.ID" />
+            <input type="hidden" name="SeasonID" value="@Model.Season.ID"/>
             <button class="btn btn-primary">Start Season</button>
         </form>
     }
@@ -50,7 +42,6 @@
     <div class="d-flex justify-content-center align-items-center body-temp">
         <p>Data</p>
     </div>
-
 
 
 </div>

@@ -31,9 +31,8 @@ namespace Climb.ViewModels
                     .ToArray();
                 UserActiveLeagues = leagues;
 
-                UserActiveSeasons = user.LeagueUsers
-                    .Select(lu => lu.Seasons.FirstOrDefault(slu => slu.Season.IsActive))
-                    .Where(slu => slu != null)
+                UserActiveSeasons = user.Seasons
+                    .Where(slu => slu.Season.IsActive)
                     .Select(slu => slu.Season).ToArray();
             }
         }

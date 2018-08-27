@@ -86,79 +86,51 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task GenerateSchedule_Valid_LeagueActiveSeasonSet()
-        {
-            var season = CreateSeason();
-
-            season = await testObj.GenerateSchedule(season.ID);
-
-            Assert.AreEqual(season.ID, season.League.ActiveSeasonID);
-        }
-
-        [Test]
-        public async Task UpdateStandings_Valid_PointsAssigned()
+        public async Task PlaySets_Valid_PointsAssigned()
         {
             var (winnerPoints, loserPoints) = (2, 1);
             var set = CreateSet(loserPoints, winnerPoints);
 
-            await testObj.UpdateStandings(set.ID);
+            await testObj.PlaySet(set.ID);
 
             Assert.AreEqual(loserPoints, set.Season.Participants.First(slu => slu.LeagueUserID == set.Player1ID).Points);
             Assert.AreEqual(winnerPoints, set.Season.Participants.First(slu => slu.LeagueUserID == set.Player2ID).Points);
         }
 
         [Test]
-        public async Task UpdateStandings_Valid_PointsSaved()
+        public async Task PlaySets_Valid_PointsSaved()
         {
             var (winnerPoints, loserPoints) = (2, 1);
             var set = CreateSet(loserPoints, winnerPoints);
 
-            await testObj.UpdateStandings(set.ID);
+            await testObj.PlaySet(set.ID);
 
             Assert.AreEqual(loserPoints, set.Player1SeasonPoints);
             Assert.AreEqual(winnerPoints, set.Player2SeasonPoints);
         }
 
         [Test]
-        public async Task UpdateStandings_NoTies_RanksUpdated()
+        public async Task UpdateRanks_NoTies_RanksUpdated()
         {
-            var (winnerPoints, loserPoints) = (2, 1);
-            var set = CreateSet(loserPoints, winnerPoints);
+            var season = CreateSeason((0, 10, 0), (0, 20, 0));
 
-            await testObj.UpdateStandings(set.ID);
+            await testObj.UpdateRanksAsync(season.ID);
 
-            Assert.AreEqual(1, set.SeasonPlayer2.Standing);
-            Assert.AreEqual(2, set.SeasonPlayer1.Standing);
+            Assert.AreEqual(2, season.Participants[0].Standing);
+            Assert.AreEqual(1, season.Participants[1].Standing);
         }
 
         [TestCase(0, 0, 0, 0)]
         [TestCase(0, 0, 1, 1)]
         [TestCase(1, 1, 0, 0)]
         [TestCase(1, 0, 0, 1)]
-        public async Task UpdateStandings_Ties_NoTiedStandings(params int[] seasonPoints)
+        public async Task UpdateRanks_Ties_NoTiedStandings(params int[] seasonPoints)
         {
-            MockTieBreak(arg =>
-            {
-                var points = 1;
-                foreach(var entry in arg)
-                {
-                    entry.Key.TieBreakerPoints = points;
-                    ++points;
-                }
-            });
+            MockTieBreak();
 
-            var season = SeasonUtility.CreateSeason(dbContext, 4).season;
-            dbContext.UpdateRange(season.Participants);
-            for(var i = 0; i < seasonPoints.Length; i++)
-            {
-                season.Participants[i].Points = seasonPoints[i];
-            }
+            var season = CreateSeason(seasonPoints.Select(p => (0, p, 0)).ToArray());
 
-            dbContext.SaveChanges();
-
-            var set = SetUtility.Create(dbContext, season.Participants[0], season.Participants[1], season.LeagueID);
-
-            await testObj.UpdateStandings(set.ID);
+            await testObj.UpdateRanksAsync(season.ID);
 
             season.Participants.Sort();
             for(var i = 0; i < season.Participants.Count; i++)
@@ -168,86 +140,47 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task UpdateStandings_TieBrokenWithWin_TieBreakScoresReset()
+        public async Task UpdateRanks_TieBroken_TieBreakScoresReset()
         {
             var season = CreateSeason((1, 5, 100), (2, 5, 10));
-            var player1 = season.Participants[0];
-            var player2 = season.Participants[1];
 
-            var set = SetUtility.Create(dbContext, player1, player2, season.LeagueID);
+            await testObj.UpdateRanksAsync(season.ID);
 
-            await testObj.UpdateStandings(set.ID);
-
-            Assert.AreEqual(0, player1.TieBreakerPoints);
-            Assert.AreEqual(0, player2.TieBreakerPoints);
+            Assert.AreEqual(0, season.Participants[0].TieBreakerPoints);
+            Assert.AreEqual(0, season.Participants[1].TieBreakerPoints);
         }
 
         [Test]
-        public async Task UpdateStandings_3WayTieBrokenWithWin_2TiedUsersHaveCorrectTieBreakScores()
+        public async Task UpdateRanks_Ties_TiedUsersHaveTieBreakPoints()
         {
-            var season = CreateSeason((1, 5, 1000), (2, 5, 100), (3, 5, 10), (4, 2, 0));
+            var season = CreateSeason((0, 5, 10), (0, 1, 10), (0, 5, 10));
+            var p1 = season.Participants[0];
+            var p2 = season.Participants[1];
+            var p3 = season.Participants[2];
+            MockTieBreak();
+
+            await testObj.UpdateRanksAsync(season.ID);
+
+            Assert.Greater(p1.TieBreakerPoints, 0);
+            Assert.AreEqual(0, p2.TieBreakerPoints);
+            Assert.Greater(p3.TieBreakerPoints, 0);
+        }
+
+        [Test]
+        public async Task UpdateRanks_UsersHaveLeft_RanksIgnoreUsersThatLeft()
+        {
+            var season = CreateSeason((0, 30, 0), (0, 20, 0), (0, 10, 0));
             var player1 = season.Participants[0];
             var player2 = season.Participants[1];
             var player3 = season.Participants[2];
-            var player4 = season.Participants[3];
 
-            MockTieBreak(arg =>
-            {
-                arg.First(p => p.Key.ID == player1.ID).Key.TieBreakerPoints = 100;
-                arg.First(p => p.Key.ID == player3.ID).Key.TieBreakerPoints = 10;
-            });
+            DbContextUtility.UpdateAndSave(dbContext, player2, slu => slu.HasLeft = true);
 
-            pointCalculator.CalculatePointDeltas(player2, player4).Returns((2, 1));
+            await testObj.UpdateRanksAsync(season.ID);
 
-            var set = SetUtility.Create(dbContext, player2, player4, season.LeagueID);
-            DbContextUtility.UpdateAndSave(dbContext, set, () =>
-            {
-                set.Player1Score = 1;
-                set.Player2Score = 0;
-            });
-
-            await testObj.UpdateStandings(set.ID);
-
-            Assert.Greater(player1.TieBreakerPoints, 0);
-            Assert.Greater(player3.TieBreakerPoints, 0);
-
-            Assert.AreEqual(0, player2.TieBreakerPoints);
-        }
-
-        private Season CreateSeason(params (int standing, int points, int tieBreak)[] participants)
-        {
-            var season = SeasonUtility.CreateSeason(dbContext, participants.Length).season;
-            for(var i = 0; i < participants.Length; i++)
-            {
-                season.Participants[i].Standing = participants[i].standing;
-                season.Participants[i].Points = participants[i].points;
-                season.Participants[i].TieBreakerPoints = participants[i].tieBreak;
-            }
-
-            return season;
-        }
-
-        private Set CreateSet(int p1Score, int p2Score)
-        {
-            var winnerScore = p1Score > p2Score ? p1Score : p2Score;
-            var loserScore = p1Score > p2Score ? p2Score : p1Score;
-
-            pointCalculator.CalculatePointDeltas(null, null).ReturnsForAnyArgs((winnerScore, loserScore));
-            var season = SeasonUtility.CreateSeason(dbContext, 2).season;
-            var set = SeasonUtility.CreateSets(dbContext, season)[0];
-            set.Player1Score = p1Score;
-            set.Player2Score = p2Score;
-
-            return set;
-        }
-
-        private void MockTieBreak(Action<Dictionary<IParticipant, ParticipantRecord>> onBreak)
-        {
-            tieBreaker.WhenForAnyArgs(tb => tb.Break(null)).Do(info =>
-            {
-                var arg = info.Arg<Dictionary<IParticipant, ParticipantRecord>>();
-                onBreak(arg);
-            });
+            Assert.AreEqual(1, player1.Standing);
+            Assert.AreEqual(0, player2.Standing);
+            Assert.AreEqual(2, player3.Standing);
         }
 
         [Test]
@@ -346,6 +279,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task End_Valid_RemoveLeagueActiveSeason()
         {
             var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
+            DbContextUtility.UpdateAndSave(dbContext, season.League, l => l.ActiveSeasonID = season.ID);
 
             Assert.IsNotNull(season.League.ActiveSeasonID);
 
@@ -353,5 +287,209 @@ namespace Climb.Test.Services.ModelServices
 
             Assert.IsNull(season.League.ActiveSeasonID);
         }
+
+        [Test]
+        public async Task Leave_IsParticipant_MarkedAsLeft()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var participant = season.Participants[0];
+
+            await testObj.LeaveAsync(participant.ID);
+
+            Assert.IsTrue(participant.HasLeft);
+        }
+
+        [Test]
+        public async Task Leave_HasLeft_NoException()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var participant = season.Participants[0];
+            DbContextUtility.UpdateAndSave(dbContext, participant, () => participant.HasLeft = true);
+
+            await testObj.LeaveAsync(participant.ID);
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public void Leave_NotFound_NotFoundException()
+        {
+            CreateSeason((0, 0, 0));
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.LeaveAsync(-1));
+        }
+
+        [Test]
+        public async Task Leave_IsParticipant_ForfeitSets()
+        {
+            var season = CreateSeason((0, 0, 0), (0, 0, 0));
+            var participant = season.Participants[0];
+            CreateSets(season, participant);
+
+            await testObj.LeaveAsync(participant.ID);
+
+            Assert.IsNotEmpty(participant.P1Sets, "P1 Sets");
+            Assert.IsNotEmpty(participant.P2Sets, "P2 Sets");
+            Assert.IsTrue(participant.P1Sets.All(s => s.IsForfeit), "P1 Sets");
+            Assert.IsTrue(participant.P2Sets.All(s => s.IsForfeit), "P2 Sets");
+        }
+
+        [Test]
+        public async Task Leave_HasPoints_StatsZeroed()
+        {
+            var season = CreateSeason((2, 10, 15));
+            var participant = season.Participants[0];
+
+            await testObj.LeaveAsync(participant.ID);
+
+            Assert.AreEqual(0, participant.Standing);
+            Assert.AreEqual(0, participant.Points);
+            Assert.AreEqual(0, participant.TieBreakerPoints);
+        }
+
+        [Test]
+        public void Leave_SeasonComplete_BadRequestException()
+        {
+            var season = CreateSeason((0, 0, 0));
+            DbContextUtility.UpdateAndSave(dbContext, season, () => season.IsComplete = true);
+            var participant = season.Participants[0];
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.LeaveAsync(participant.ID));
+        }
+
+        [Test]
+        public async Task Leave_SeasonNotStarted_StandingsNotUpdated()
+        {
+            var season = CreateSeason((0, 0, 0), (0, 0, 0), (0, 0, 0));
+
+            await testObj.LeaveAsync(season.Participants[0].ID);
+
+            Assert.IsTrue(season.Participants.All(slu => slu.Standing == 0));
+        }
+
+        [Test]
+        public async Task Leave_HasPlayedSets_CompletedSetsNotForfeited()
+        {
+            var season = CreateSeason((0, 0, 0), (0, 0, 0));
+            var participant = season.Participants[0];
+            var set = SeasonUtility.CreateSets(dbContext, season)[0];
+            DbContextUtility.UpdateAndSave(dbContext, set, s => s.IsComplete = true);
+
+            await testObj.LeaveAsync(participant.ID);
+
+            Assert.IsNotEmpty(participant.P1Sets, "P1 Sets");
+            Assert.IsFalse(participant.P1Sets.All(s => s.IsForfeit), "P1 Sets");
+        }
+
+        [Test]
+        public async Task Join_SeasonNotStarted_CreateParticipant()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
+
+            await testObj.JoinAsync(season.ID, leagueUser.UserID);
+
+            Assert.AreEqual(2, season.Participants.Count);
+        }
+
+        [Test]
+        public void Join_NoSeason_NotFoundException()
+        {
+            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.JoinAsync(-1, user.Id));
+        }
+
+        [Test]
+        public void Join_NoUser_NotFoundException()
+        {
+            var season = CreateSeason();
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.JoinAsync(season.ID, ""));
+        }
+
+        [Test]
+        public async Task Join_AlreadyJoined_NoUserCreated()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var user = season.Participants[0].User;
+
+            await testObj.JoinAsync(season.ID, user.Id);
+
+            Assert.AreEqual(1, season.Participants.Count);
+        }
+
+        [Test]
+        public async Task Join_HasLeftSeasonNotStarted_ReactivateParticipant()
+        {
+            var season = CreateSeason((0, 0, 0));
+            var participant = season.Participants[0];
+            DbContextUtility.UpdateAndSave(dbContext, participant, () => participant.HasLeft = true);
+
+            await testObj.JoinAsync(season.ID, participant.UserID);
+
+            Assert.IsFalse(participant.HasLeft);
+            Assert.AreEqual(1, season.Participants.Count);
+        }
+
+        [Test]
+        public void Join_SeasonStarted_BadResultException()
+        {
+            var season = CreateSeason();
+            DbContextUtility.UpdateAndSave(dbContext, season, s => s.IsActive = true);
+            var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.JoinAsync(season.ID, leagueUser.UserID));
+        }
+
+        #region Helpers
+        private Season CreateSeason(params (int standing, int points, int tieBreak)[] participants)
+        {
+            var season = SeasonUtility.CreateSeason(dbContext, participants.Length).season;
+            for(var i = 0; i < participants.Length; i++)
+            {
+                season.Participants[i].Standing = participants[i].standing;
+                season.Participants[i].Points = participants[i].points;
+                season.Participants[i].TieBreakerPoints = participants[i].tieBreak;
+            }
+
+            return season;
+        }
+
+        private Set CreateSet(int p1Score, int p2Score)
+        {
+            var winnerScore = p1Score > p2Score ? p1Score : p2Score;
+            var loserScore = p1Score > p2Score ? p2Score : p1Score;
+
+            pointCalculator.CalculatePointDeltas(null, null).ReturnsForAnyArgs((winnerScore, loserScore));
+            var season = SeasonUtility.CreateSeason(dbContext, 2).season;
+            var set = SeasonUtility.CreateSets(dbContext, season)[0];
+            set.Player1Score = p1Score;
+            set.Player2Score = p2Score;
+
+            return set;
+        }
+
+        private void MockTieBreak()
+        {
+            tieBreaker.WhenForAnyArgs(tb => tb.Break(null)).Do(info =>
+            {
+                var arg = info.Arg<Dictionary<IParticipant, ParticipantRecord>>();
+                var points = 1;
+                foreach(var entry in arg)
+                {
+                    entry.Key.TieBreakerPoints = points;
+                    ++points;
+                }
+            });
+        }
+
+        private void CreateSets(Season season, SeasonLeagueUser participant)
+        {
+            var opponent = season.Participants[1];
+            SetUtility.Create(dbContext, participant, opponent, season.LeagueID);
+            SetUtility.Create(dbContext, opponent, participant, season.LeagueID);
+        } 
+        #endregion
     }
 }

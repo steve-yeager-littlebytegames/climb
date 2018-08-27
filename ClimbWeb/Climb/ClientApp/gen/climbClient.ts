@@ -1088,6 +1088,41 @@ export class SeasonApi extends BaseClass {
         }
         return Promise.resolve<Season>(<any>null);
     }
+
+    leave(participantID: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/v1/seasons/leave?";
+        if (participantID === undefined || participantID === null)
+            throw new Error("The parameter 'participantID' must be defined and cannot be null.");
+        else
+            url_ += "participantID=" + encodeURIComponent("" + participantID) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processLeave(_response);
+        });
+    }
+
+    protected processLeave(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
 }
 
 export class SetApi extends BaseClass {
@@ -1526,6 +1561,7 @@ export class ApplicationUser extends IdentityUser implements IApplicationUser {
     name?: string | undefined;
     organizations?: OrganizationUser[] | undefined;
     leagueUsers?: LeagueUser[] | undefined;
+    seasons?: SeasonLeagueUser[] | undefined;
 
     constructor(data?: IApplicationUser) {
         super(data);
@@ -1545,6 +1581,11 @@ export class ApplicationUser extends IdentityUser implements IApplicationUser {
                 this.leagueUsers = [];
                 for (let item of data["leagueUsers"])
                     this.leagueUsers.push(LeagueUser.fromJS(item));
+            }
+            if (data["seasons"] && data["seasons"].constructor === Array) {
+                this.seasons = [];
+                for (let item of data["seasons"])
+                    this.seasons.push(SeasonLeagueUser.fromJS(item));
             }
         }
     }
@@ -1570,6 +1611,11 @@ export class ApplicationUser extends IdentityUser implements IApplicationUser {
             for (let item of this.leagueUsers)
                 data["leagueUsers"].push(item.toJSON());
         }
+        if (this.seasons && this.seasons.constructor === Array) {
+            data["seasons"] = [];
+            for (let item of this.seasons)
+                data["seasons"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data; 
     }
@@ -1580,6 +1626,7 @@ export interface IApplicationUser extends IIdentityUser {
     name?: string | undefined;
     organizations?: OrganizationUser[] | undefined;
     leagueUsers?: LeagueUser[] | undefined;
+    seasons?: SeasonLeagueUser[] | undefined;
 }
 
 export class OrganizationUser implements IOrganizationUser {
@@ -1856,6 +1903,70 @@ export interface ILeagueUser {
     setCount: number;
     joinDate: Date;
     isNewcomer: boolean;
+}
+
+export class SeasonLeagueUser implements ISeasonLeagueUser {
+    id!: number;
+    seasonID!: number;
+    leagueUserID!: number;
+    userID?: string | undefined;
+    standing!: number;
+    points!: number;
+    tieBreakerPoints!: number;
+    hasLeft!: boolean;
+
+    constructor(data?: ISeasonLeagueUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.seasonID = data["seasonID"];
+            this.leagueUserID = data["leagueUserID"];
+            this.userID = data["userID"];
+            this.standing = data["standing"];
+            this.points = data["points"];
+            this.tieBreakerPoints = data["tieBreakerPoints"];
+            this.hasLeft = data["hasLeft"];
+        }
+    }
+
+    static fromJS(data: any): SeasonLeagueUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new SeasonLeagueUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["seasonID"] = this.seasonID;
+        data["leagueUserID"] = this.leagueUserID;
+        data["userID"] = this.userID;
+        data["standing"] = this.standing;
+        data["points"] = this.points;
+        data["tieBreakerPoints"] = this.tieBreakerPoints;
+        data["hasLeft"] = this.hasLeft;
+        return data; 
+    }
+}
+
+export interface ISeasonLeagueUser {
+    id: number;
+    seasonID: number;
+    leagueUserID: number;
+    userID?: string | undefined;
+    standing: number;
+    points: number;
+    tieBreakerPoints: number;
+    hasLeft: boolean;
 }
 
 export class GameDto implements IGameDto {
@@ -2347,6 +2458,7 @@ export class Set implements ISet {
     updatedDate?: Date | undefined;
     isLocked!: boolean;
     isComplete!: boolean;
+    isForfeit!: boolean;
     player1SeasonPoints!: number;
     player2SeasonPoints!: number;
     matches!: Match[];
@@ -2380,6 +2492,7 @@ export class Set implements ISet {
             this.updatedDate = data["updatedDate"] ? new Date(data["updatedDate"].toString()) : <any>undefined;
             this.isLocked = data["isLocked"];
             this.isComplete = data["isComplete"];
+            this.isForfeit = data["isForfeit"];
             this.player1SeasonPoints = data["player1SeasonPoints"];
             this.player2SeasonPoints = data["player2SeasonPoints"];
             if (data["matches"] && data["matches"].constructor === Array) {
@@ -2414,6 +2527,7 @@ export class Set implements ISet {
         data["updatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : <any>undefined;
         data["isLocked"] = this.isLocked;
         data["isComplete"] = this.isComplete;
+        data["isForfeit"] = this.isForfeit;
         data["player1SeasonPoints"] = this.player1SeasonPoints;
         data["player2SeasonPoints"] = this.player2SeasonPoints;
         if (this.matches && this.matches.constructor === Array) {
@@ -2441,6 +2555,7 @@ export interface ISet {
     updatedDate?: Date | undefined;
     isLocked: boolean;
     isComplete: boolean;
+    isForfeit: boolean;
     player1SeasonPoints: number;
     player2SeasonPoints: number;
     matches: Match[];

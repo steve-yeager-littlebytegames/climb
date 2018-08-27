@@ -142,7 +142,8 @@ namespace Climb.Services.ModelServices
 
             if (set.SeasonID != null)
             {
-                await seasonService.UpdateStandings(setID);
+                await seasonService.PlaySet(setID);
+                await seasonService.UpdateRanksAsync(set.SeasonID.Value);
             }
 
             return set;
