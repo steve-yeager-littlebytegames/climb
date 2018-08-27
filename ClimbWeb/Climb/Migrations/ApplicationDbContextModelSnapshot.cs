@@ -219,6 +219,8 @@ namespace Climb.Migrations
 
                     b.Property<int>("LeagueUserID");
 
+                    b.Property<DateTime>("CreatedDate");
+
                     b.HasKey("MatchID", "CharacterID", "LeagueUserID");
 
                     b.HasIndex("CharacterID");

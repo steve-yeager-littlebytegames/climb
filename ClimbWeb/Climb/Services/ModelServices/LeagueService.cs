@@ -214,5 +214,36 @@ namespace Climb.Services.ModelServices
 
             return rankSnapshots;
         }
+
+        public async Task<List<Character>> GetUsersRecentCharactersAsync(int leagueUserID, int characterCount)
+        {
+            const int charactersToPull = 20;
+
+            var matchCharacters = await dbContext.MatchCharacters
+                .Where(mc => mc.LeagueUserID == leagueUserID)
+                .OrderByDescending(mc => mc.CreatedDate)
+                .Take(charactersToPull)
+                .Include(mc => mc.Character)
+                .ToArrayAsync();
+
+            var characterUsage = new Dictionary<MatchCharacter, int>(charactersToPull);
+            foreach(var matchCharacter in matchCharacters)
+            {
+                if(characterUsage.ContainsKey(matchCharacter))
+                {
+                    ++characterUsage[matchCharacter];
+                }
+                else
+                {
+                    characterUsage[matchCharacter] = 1;
+                }
+            }
+
+            return characterUsage
+                .OrderBy(x => x.Value)
+                .Take(characterCount)
+                .Select(x => x.Key.Character)
+                .ToList();
+        }
     }
 }
