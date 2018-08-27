@@ -226,23 +226,26 @@ namespace Climb.Services.ModelServices
                 .Include(mc => mc.Character)
                 .ToArrayAsync();
 
-            var characterUsage = new Dictionary<MatchCharacter, int>(charactersToPull);
+            var characterMap = new Dictionary<int, Character>(matchCharacters.Length);
+
+            var characterUsage = new Dictionary<int, int>(charactersToPull);
             foreach(var matchCharacter in matchCharacters)
             {
-                if(characterUsage.ContainsKey(matchCharacter))
+                if(characterUsage.ContainsKey(matchCharacter.CharacterID))
                 {
-                    ++characterUsage[matchCharacter];
+                    characterMap[matchCharacter.CharacterID] = matchCharacter.Character;
+                    ++characterUsage[matchCharacter.CharacterID];
                 }
                 else
                 {
-                    characterUsage[matchCharacter] = 1;
+                    characterUsage[matchCharacter.CharacterID] = 1;
                 }
             }
 
             return characterUsage
-                .OrderBy(x => x.Value)
+                .OrderByDescending(x => x.Value)
                 .Take(characterCount)
-                .Select(x => x.Key.Character)
+                .Select(x => characterMap[x.Key])
                 .ToList();
         }
     }
