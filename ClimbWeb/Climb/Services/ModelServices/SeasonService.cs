@@ -98,6 +98,7 @@ namespace Climb.Services.ModelServices
         public async Task<Season> UpdateRanksAsync(int seasonID)
         {
             var season = await dbContext.Seasons
+                .Include(s => s.Participants).IgnoreQueryFilters()
                 .Include(s => s.Sets).ThenInclude(s => s.Player1)
                 .Include(s => s.Sets).ThenInclude(s => s.Player2)
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
@@ -114,6 +115,12 @@ namespace Climb.Services.ModelServices
             var lastPoints = -1;
             foreach(var participant in sortedParticipants)
             {
+                if(participant.HasLeft)
+                {
+                    participant.Standing = 0;
+                    continue;
+                }
+
                 participant.Standing = rank;
                 if(participant.Points != lastPoints)
                 {
@@ -259,6 +266,7 @@ namespace Climb.Services.ModelServices
 
             dbContext.Update(participant);
             participant.HasLeft = true;
+            participant.Standing = participant.Points = participant.TieBreakerPoints = 0;
 
             var sets = new List<Set>(participant.P1Sets.Count + participant.P2Sets.Count);
             sets.AddRange(participant.P1Sets.Where(s => !s.IsComplete));

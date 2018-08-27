@@ -167,6 +167,23 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
+        public async Task UpdateRanks_UsersHaveLeft_RanksIgnoreUsersThatLeft()
+        {
+            var season = CreateSeason((0, 30, 0), (0, 20, 0), (0, 10, 0));
+            var player1 = season.Participants[0];
+            var player2 = season.Participants[1];
+            var player3 = season.Participants[2];
+
+            DbContextUtility.UpdateAndSave(dbContext, player2, slu => slu.HasLeft = true);
+
+            await testObj.UpdateRanksAsync(season.ID);
+
+            Assert.AreEqual(1, player1.Standing);
+            Assert.AreEqual(0, player2.Standing);
+            Assert.AreEqual(2, player3.Standing);
+        }
+
+        [Test]
         public async Task End_HasNonCompletedSets_SetsDeleted()
         {
             const int setCount = 4;
@@ -315,6 +332,19 @@ namespace Climb.Test.Services.ModelServices
             Assert.IsNotEmpty(participant.P2Sets, "P2 Sets");
             Assert.IsTrue(participant.P1Sets.All(s => s.IsForfeit), "P1 Sets");
             Assert.IsTrue(participant.P2Sets.All(s => s.IsForfeit), "P2 Sets");
+        }
+
+        [Test]
+        public async Task Leave_HasPoints_StatsZeroed()
+        {
+            var season = CreateSeason((2, 10, 15));
+            var participant = season.Participants[0];
+
+            await testObj.LeaveAsync(participant.ID);
+
+            Assert.AreEqual(0, participant.Standing);
+            Assert.AreEqual(0, participant.Points);
+            Assert.AreEqual(0, participant.TieBreakerPoints);
         }
 
         [Test]
