@@ -42,7 +42,91 @@ namespace Climb.Controllers
             var viewModel = HomeViewModel.Create(user, season);
             return View(viewModel);
         }
-        
+
+        [HttpGet("seasons/membership/{seasonID:int}")]
+        public async Task<IActionResult> Membership(int seasonID)
+        {
+            var user = await GetViewUserAsync();
+
+            var season = await dbContext.Seasons
+                .Include(s => s.Sets).ThenInclude(s => s.League).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.League).AsNoTracking()
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            if (season == null)
+            {
+                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+            }
+
+            var viewModel = HomeViewModel.Create(user, season);
+            return View(viewModel);
+        }
+
+        [HttpGet("seasons/data/{seasonID:int}")]
+        public async Task<IActionResult> Data(int seasonID)
+        {
+            var user = await GetViewUserAsync();
+
+            var season = await dbContext.Seasons
+                .Include(s => s.Sets).ThenInclude(s => s.League).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.League).AsNoTracking()
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            if (season == null)
+            {
+                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+            }
+
+            var viewModel = HomeViewModel.Create(user, season);
+            return View(viewModel);
+        }
+
+        [HttpGet("seasons/sets/{seasonID:int}")]
+        public async Task<IActionResult> Sets(int seasonID)
+        {
+            var user = await GetViewUserAsync();
+
+            var season = await dbContext.Seasons
+                .Include(s => s.Sets).ThenInclude(s => s.League).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.League).AsNoTracking()
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            if (season == null)
+            {
+                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+            }
+
+            var viewModel = HomeViewModel.Create(user, season);
+            return View(viewModel);
+        }
+
+        [HttpGet("seasons/manage/{seasonID:int}")]
+        public async Task<IActionResult> Manage(int seasonID)
+        {
+            var user = await GetViewUserAsync();
+
+            var season = await dbContext.Seasons
+                .Include(s => s.Sets).ThenInclude(s => s.League).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.League).AsNoTracking()
+                .FirstOrDefaultAsync(s => s.ID == seasonID);
+            if (season == null)
+            {
+                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+            }
+
+            var viewModel = HomeViewModel.Create(user, season);
+            return View(viewModel);
+        }
+
         [HttpPost("seasons/create")]
         public async Task<IActionResult> Create(CreateRequest request)
         {
