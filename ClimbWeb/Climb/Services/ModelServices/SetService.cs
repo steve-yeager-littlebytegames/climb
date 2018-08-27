@@ -110,10 +110,11 @@ namespace Climb.Services.ModelServices
                 set.Player2.SetCount++;
             }
 
-            dbContext.Sets.Update(set);
+            dbContext.Update(set);
 
             set.IsComplete = true;
             set.Player1Score = set.Player2Score = 0;
+            set.UpdatedDate = DateTime.Now;
 
             for(var i = 0; i < matchForms.Count; i++)
             {
@@ -141,7 +142,8 @@ namespace Climb.Services.ModelServices
 
             if (set.SeasonID != null)
             {
-                await seasonService.UpdateStandings(setID);
+                await seasonService.PlaySet(setID);
+                await seasonService.UpdateRanksAsync(set.SeasonID.Value);
             }
 
             return set;

@@ -33,6 +33,17 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
+        public async Task Update_Valid_DateUpdated()
+        {
+            var set = SetUtility.Create(dbContext);
+
+            var matchForms = CreateMatchForms(3);
+            await testObj.Update(set.ID, matchForms);
+
+            Assert.IsNotNull(set.UpdatedDate);
+        }
+
+        [Test]
         public async Task Update_FirstMatches_CreatesMatchesAndMatchCharacters()
         {
             var set = SetUtility.Create(dbContext);
@@ -97,7 +108,7 @@ namespace Climb.Test.Services.ModelServices
             await testObj.Update(set.ID, matchForms);
 
 #pragma warning disable 4014
-            seasonService.Received(1).UpdateStandings(set.ID);
+            seasonService.Received(1).PlaySet(set.ID);
 #pragma warning restore 4014
         }
 
@@ -111,7 +122,7 @@ namespace Climb.Test.Services.ModelServices
             await testObj.Update(set.ID, matchForms);
 
 #pragma warning disable 4014
-            seasonService.DidNotReceive().UpdateStandings(set.ID);
+            seasonService.DidNotReceive().PlaySet(set.ID);
 #pragma warning restore 4014
         }
 

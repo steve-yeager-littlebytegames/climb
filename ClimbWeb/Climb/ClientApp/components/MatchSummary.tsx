@@ -40,11 +40,11 @@ export class MatchSummary extends React.Component<IMatchSummaryProps> {
         );
     }
 
-    private renderCharacter(characterId: number, key: number) : JSX.Element {
+    private renderCharacter(characterId: number, key: number) : JSX.Element | null {
         const game = this.props.game;
-        if (!game || !game.characters) return <img/>;
+        if (!game || !game.characters) return null;
         const character = game.characters.find(gC => gC.id === characterId);
-        if (!character) return <img/>;
+        if (!character) return null;
         return <img key={key} src={character.picture} title={character.name} width="32" height="32"/>;
     }
 

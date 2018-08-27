@@ -25,7 +25,7 @@ namespace Climb.API
             this.seasonService = seasonService;
         }
 
-                [HttpGet("/api/v1/seasons/{seasonID:int}")]
+        [HttpGet("/api/v1/seasons/{seasonID:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(Season))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Get(int seasonID)
@@ -136,6 +136,21 @@ namespace Climb.API
             catch(Exception exception)
             {
                 return GetExceptionResult(exception, new {seasonID});
+            }
+        }
+
+        [HttpPost("/api/v1/seasons/leave")]
+        [SwaggerResponse(HttpStatusCode.OK, null)]
+        public async Task<IActionResult> Leave(int participantID)
+        {
+            try
+            {
+                var season = await seasonService.LeaveAsync(participantID);
+                return CodeResultAndLog(HttpStatusCode.OK, season, "Season ended.");
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {participantID});
             }
         }
     }

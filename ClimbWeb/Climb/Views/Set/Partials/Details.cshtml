@@ -2,7 +2,7 @@
 
 <div class="set-container pb-2">
     <small class="set-details">@Model.Set.League.Name - @Model.SetType - @Model.Set.DueDate.ToShortDateString()</small>
-    <div class="d-flex justify-content-between align-items-center p-2">
+    <div class="d-flex justify-content-between align-items-center p-2 background-dark">
         <div class="d-flex flex-column align-items-start w-40">
             <img src="@Model.P1ProfilePic" width="64" height="64"/>
             <span>
@@ -23,7 +23,7 @@
             </span>
         </div>
     </div>
-    <a class="btn btn-fight btn-sm w-25 m-auto" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
-        <strong>Fight</strong>
+    <a class="btn btn-fight btn-sm w-25 mx-auto mt-1 mb-2" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
+        <strong>@Model.ActionName</strong>
     </a>
 </div>

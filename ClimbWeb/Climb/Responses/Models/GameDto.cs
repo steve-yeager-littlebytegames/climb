@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Climb.Models;
 using Climb.Services;
 
@@ -8,6 +9,7 @@ namespace Climb.Responses.Models
     {
         public int ID { get; }
         public string Name { get; }
+        [Required]
         public CharacterDto[] Characters { get; }
         public StageDto[] Stages { get; }
         public int CharactersPerMatch { get; }

@@ -26,6 +26,7 @@ namespace Climb.Data
         private static readonly Dictionary<int, int> gameIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> characterIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> leagueIDs = new Dictionary<int, int>();
+        private static readonly Dictionary<int, string> leagueUserToUser = new Dictionary<int, string>();
         private static readonly Dictionary<int, int> leagueUserIDs = new Dictionary<int, int>();
         private static readonly Dictionary<string, int> seasonLeagueUserIDs = new Dictionary<string, int>();
         private static readonly Dictionary<int, int> seasonIDs = new Dictionary<int, int>();
@@ -249,6 +250,8 @@ namespace Climb.Data
                     SetCount = oldLeagueUser.SetsPlayed,
                     IsNewcomer = oldLeagueUser.SetsPlayed < SetsTillNotNewcomer, 
                 };
+
+                leagueUserToUser[oldLeagueUser.ID] = oldUserID;
             }
 
             context.LeagueUsers.AddRange(leagueUsers);
@@ -271,6 +274,7 @@ namespace Climb.Data
                 seasonLeagueUsers[i] = new SeasonLeagueUser
                 {
                     LeagueUserID = leagueUserIDs[oldLeagueUserSeason.LeagueUserID],
+                    UserID = leagueUserToUser[oldLeagueUserSeason.LeagueUserID],
                     SeasonID = seasonIDs[oldLeagueUserSeason.SeasonID],
                     Standing = oldLeagueUserSeason.Standing,
                     Points = oldLeagueUserSeason.Points,
@@ -311,7 +315,7 @@ namespace Climb.Data
                     LeagueID = leagueIDs[oldSet.LeagueID],
                     DueDate = oldSet.DueDate,
                     UpdatedDate = oldSet.UpdatedDate,
-                    IsLocked = oldSet.IsLocked,
+                    IsLocked = true,
                     Player1ID = leagueUserIDs[oldSet.Player1ID.Value],
                     Player2ID = leagueUserIDs[oldSet.Player2ID.Value],
                     Player1Score = oldSet.Player1Score,
