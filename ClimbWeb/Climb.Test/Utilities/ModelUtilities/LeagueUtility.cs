@@ -6,7 +6,7 @@ namespace Climb.Test.Utilities
 {
     public static class LeagueUtility
     {
-        public static League CreateLeague(ApplicationDbContext dbContext, string adminID = null)
+        public static League CreateLeague(ApplicationDbContext dbContext, int memberCount = 0, string adminID = null)
         {
             var game = DbContextUtility.AddNew<Game>(dbContext);
             var league = DbContextUtility.AddNew<League>(dbContext, l =>
@@ -17,6 +17,12 @@ namespace Climb.Test.Utilities
                     l.AdminID = adminID;
                 }
             });
+
+            if(memberCount > 0)
+            {
+                AddUsersToLeague(league, memberCount, dbContext);
+            }
+
             return league;
         }
 

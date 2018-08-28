@@ -36,5 +36,15 @@ namespace Climb.Test.Utilities
 
             return sets;
         }
+
+        public static List<SeasonLeagueUser> AddParticipants(ApplicationDbContext dbContext, Season season, params LeagueUser[] members)
+        {
+            return DbContextUtility.AddNewRange<SeasonLeagueUser>(dbContext, members.Length, (slu, i) =>
+            {
+                slu.LeagueUserID = members[i].ID;
+                slu.SeasonID = season.ID;
+                slu.UserID = members[i].UserID;
+            });
+        }
     }
 }
