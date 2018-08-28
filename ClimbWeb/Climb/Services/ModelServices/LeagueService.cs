@@ -71,7 +71,11 @@ namespace Climb.Services.ModelServices
             }
             else
             {
-                leagueUser = new LeagueUser(leagueID, userID) {JoinDate = DateTime.UtcNow};
+                leagueUser = new LeagueUser(leagueID, userID)
+                {
+                    JoinDate = DateTime.UtcNow,
+                    Points = League.StartingPoints
+                };
                 dbContext.Add(leagueUser);
             }
 

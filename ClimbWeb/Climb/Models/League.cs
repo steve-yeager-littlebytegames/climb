@@ -9,6 +9,8 @@ namespace Climb.Models
 {
     public class League
     {
+        public const int StartingPoints = 2000;
+
         public int ID { get; set; }
         public int GameID { get; set; }
         public int? OrganizationID { get; set; }

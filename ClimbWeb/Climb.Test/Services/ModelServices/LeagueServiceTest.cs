@@ -15,8 +15,6 @@ namespace Climb.Test.Services.ModelServices
     [TestFixture]
     public class LeagueServiceTest
     {
-        private const int StartingPoints = 2000;
-
         private LeagueService testObj;
         private ApplicationDbContext dbContext;
         private IPointService pointService;
@@ -140,6 +138,36 @@ namespace Climb.Test.Services.ModelServices
             var league = LeagueUtility.CreateLeague(dbContext);
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.Join(league.ID, ""));
+        }
+
+        [Test]
+        public async Task Join_NewUser_GetStartingPoints()
+        {
+            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var league = LeagueUtility.CreateLeague(dbContext);
+
+            var leagueUser = await testObj.Join(league.ID, user.Id);
+
+            Assert.AreEqual(League.StartingPoints, leagueUser.Points);
+        }
+        
+        [Test]
+        public async Task Join_OldUser_KeepsPoints()
+        {
+            const int userPoints = League.StartingPoints - 1;
+
+            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var league = LeagueUtility.CreateLeague(dbContext);
+
+            var leagueUser = await testObj.Join(league.ID, user.Id);
+            DbContextUtility.UpdateAndSave(dbContext, leagueUser, lu =>
+            {
+                lu.Points = userPoints;
+                lu.HasLeft = true;
+            });
+            leagueUser = await testObj.Join(league.ID, user.Id);
+
+            Assert.AreEqual(userPoints, leagueUser.Points);
         }
 
         [Test]
@@ -419,7 +447,7 @@ namespace Climb.Test.Services.ModelServices
             for(var i = 0; i < league.Members.Count; i++)
             {
                 var member = league.Members[i];
-                member.Points = StartingPoints - i;
+                member.Points = League.StartingPoints - i;
                 member.Rank = i + 1;
             }
 
