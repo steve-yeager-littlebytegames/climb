@@ -6,6 +6,7 @@ using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
+using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using NSubstitute;
 using NUnit.Framework;
@@ -18,14 +19,18 @@ namespace Climb.Test.Services.ModelServices
         private LeagueService testObj;
         private ApplicationDbContext dbContext;
         private IPointService pointService;
+        private ISeasonService seasonService;
+        private ISetService setService;
 
         [SetUp]
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
             pointService = Substitute.For<IPointService>();
+            seasonService = Substitute.For<ISeasonService>();
+            setService = Substitute.For<ISetService>();
 
-            testObj = new LeagueService(dbContext, pointService);
+            testObj = new LeagueService(dbContext, pointService, seasonService, setService);
         }
 
         [Test]
@@ -168,6 +173,101 @@ namespace Climb.Test.Services.ModelServices
             leagueUser = await testObj.Join(league.ID, user.Id);
 
             Assert.AreEqual(userPoints, leagueUser.Points);
+        }
+
+        [Test]
+        public async Task Leave_IsMember_HasLeftTrue()
+        {
+            var league = LeagueUtility.CreateLeague(dbContext, 1);
+            var member = league.Members[0];
+
+            member = await testObj.Leave(member.ID);
+
+            Assert.IsTrue(member.HasLeft);
+        }
+
+        [Test]
+        public async Task Leave_HasLeft_NoException()
+        {
+            var league = LeagueUtility.CreateLeague(dbContext, 1);
+            var member = league.Members[0];
+            DbContextUtility.UpdateAndSave(dbContext, member, lu => lu.HasLeft = true);
+
+            await testObj.Leave(member.ID);
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public void Leave_NoMember_NotFoundException()
+        {
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.Leave(-1));
+        }
+
+        [Test]
+        public async Task Leave_InSeasons_LeaveSeason()
+        {
+            var league = LeagueUtility.CreateLeague(dbContext, 1);
+            var member = league.Members[0];
+            var season = SeasonUtility.CreateSeason(dbContext, 0).season;
+            var participant = SeasonUtility.AddParticipants(dbContext, season, member)[0];
+
+            await testObj.Leave(member.ID);
+
+#pragma warning disable 4014
+            seasonService.Received(1).LeaveAsync(participant.ID);
+#pragma warning restore 4014
+        }
+
+        [Test]
+        public async Task Leave_IsChallenged_RequestDeclined()
+        {
+            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var member = league.Members[0];
+            var opponent = league.Members[1];
+            var request = DbContextUtility.AddNew<SetRequest>(dbContext, sr =>
+            {
+                sr.LeagueID = league.ID;
+                sr.ChallengedID = member.ID;
+                sr.RequesterID = opponent.ID;
+            });
+
+            await testObj.Leave(member.ID);
+
+#pragma warning disable 4014
+            setService.Received(1).RespondToSetRequestAsync(request.ID, false);
+#pragma warning restore 4014
+        }
+
+        [Test]
+        public async Task Leave_IsRequester_RequestDeleted()
+        {
+            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var member = league.Members[0];
+            var opponent = league.Members[1];
+            DbContextUtility.AddNew<SetRequest>(dbContext, sr =>
+            {
+                sr.LeagueID = league.ID;
+                sr.ChallengedID = opponent.ID;
+                sr.RequesterID = member.ID;
+            });
+
+            await testObj.Leave(member.ID);
+
+            Assert.IsEmpty(dbContext.SetRequests.ToArray());
+        }
+
+        [Test]
+        public async Task Leave_HasNonSeasonSet_SetDeleted()
+        {
+            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var member = league.Members[0];
+            var opponent = league.Members[1];
+            SetUtility.Create(dbContext, member.ID, opponent.ID, league.ID);
+
+            await testObj.Leave(member.ID);
+
+            Assert.IsEmpty(dbContext.Sets.ToArray());
         }
 
         [Test]
