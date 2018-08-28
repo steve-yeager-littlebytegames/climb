@@ -14,11 +14,15 @@ namespace Climb.Services.ModelServices
     {
         private readonly ApplicationDbContext dbContext;
         private readonly IPointService pointService;
+        private readonly ISeasonService seasonService;
+        private readonly ISetService setService;
 
-        public LeagueService(ApplicationDbContext dbContext, IPointService pointService)
+        public LeagueService(ApplicationDbContext dbContext, IPointService pointService, ISeasonService seasonService, ISetService setService)
         {
             this.dbContext = dbContext;
             this.pointService = pointService;
+            this.seasonService = seasonService;
+            this.setService = setService;
         }
 
         public async Task<League> Create(string name, int gameID, string adminID)
@@ -84,6 +88,67 @@ namespace Climb.Services.ModelServices
             await dbContext.SaveChangesAsync();
 
             return leagueUser;
+        }
+
+        public async Task<LeagueUser> Leave(int leagueUserID)
+        {
+            var member = await dbContext.LeagueUsers
+                .IgnoreQueryFilters()
+                .Include(lu => lu.Seasons)
+                .FirstOrDefaultAsync(lu => lu.ID == leagueUserID);
+            if(member == null)
+            {
+                throw new NotFoundException(typeof(LeagueUser), leagueUserID);
+            }
+
+            if(member.HasLeft)
+            {
+                return member;
+            }
+
+            dbContext.Update(member);
+            member.HasLeft = true;
+
+            foreach(var participant in member.Seasons)
+            {
+                await seasonService.LeaveAsync(participant.ID);
+            }
+
+            await DeleteChallenges();
+            await DeleteNonSeasonSets();
+
+            await dbContext.SaveChangesAsync();
+
+            return member;
+
+            async Task DeleteChallenges()
+            {
+                var requests = await dbContext.SetRequests
+                    .Where(sr => sr.IsOpen && (sr.RequesterID == member.ID || sr.ChallengedID == member.ID))
+                    .ToArrayAsync();
+                foreach(var request in requests)
+                {
+                    if(request.ChallengedID == member.ID)
+                    {
+                        await setService.RespondToSetRequestAsync(request.ID, false);
+                    }
+                    else
+                    {
+                        dbContext.Remove(request);
+                    }
+                }
+            }
+
+            async Task DeleteNonSeasonSets()
+            {
+                var sets = await dbContext.Sets
+                    .Where(s => !s.IsComplete && s.SeasonID == null && s.IsPlaying(member.ID))
+                    .ToArrayAsync();
+                foreach(var set in sets)
+                {
+                    dbContext.Remove(set);
+                }
+            }
         }
 
         public async Task<League> UpdateStandings(int leagueID)

@@ -98,7 +98,7 @@ namespace Climb.Test.Services.ModelServices
         #region Helpers
         private League CreateLeagueWithAdmin()
         {
-            return LeagueUtility.CreateLeague(dbContext, userID);
+            return LeagueUtility.CreateLeague(dbContext, 0, userID);
         }
 
         private Organization CreateOrgWithOwner()
