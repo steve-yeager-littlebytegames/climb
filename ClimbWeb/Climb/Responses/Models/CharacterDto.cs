@@ -1,4 +1,5 @@
-﻿using Climb.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Climb.Models;
 using Climb.Services;
 
 namespace Climb.Responses.Models
@@ -6,7 +7,9 @@ namespace Climb.Responses.Models
     public class CharacterDto
     {
         public int ID { get; }
+        [Required]
         public string Name { get; }
+        [Required]
         public string Picture { get; }
 
         private CharacterDto(int id, string name, string picture)

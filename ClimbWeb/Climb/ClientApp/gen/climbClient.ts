@@ -2046,8 +2046,8 @@ export interface IGameDto {
 
 export class CharacterDto implements ICharacterDto {
     id!: number;
-    name?: string | undefined;
-    picture?: string | undefined;
+    name!: string;
+    picture!: string;
 
     constructor(data?: ICharacterDto) {
         if (data) {
@@ -2084,13 +2084,13 @@ export class CharacterDto implements ICharacterDto {
 
 export interface ICharacterDto {
     id: number;
-    name?: string | undefined;
-    picture?: string | undefined;
+    name: string;
+    picture: string;
 }
 
 export class StageDto implements IStageDto {
     id!: number;
-    name?: string | undefined;
+    name!: string;
 
     constructor(data?: IStageDto) {
         if (data) {
@@ -2125,7 +2125,7 @@ export class StageDto implements IStageDto {
 
 export interface IStageDto {
     id: number;
-    name?: string | undefined;
+    name: string;
 }
 
 export class Game implements IGame {
@@ -2638,6 +2638,7 @@ export class MatchCharacter implements IMatchCharacter {
     matchID!: number;
     characterID!: number;
     leagueUserID!: number;
+    createdDate!: Date;
 
     constructor(data?: IMatchCharacter) {
         if (data) {
@@ -2653,6 +2654,7 @@ export class MatchCharacter implements IMatchCharacter {
             this.matchID = data["matchID"];
             this.characterID = data["characterID"];
             this.leagueUserID = data["leagueUserID"];
+            this.createdDate = data["createdDate"] ? new Date(data["createdDate"].toString()) : <any>undefined;
         }
     }
 
@@ -2668,6 +2670,7 @@ export class MatchCharacter implements IMatchCharacter {
         data["matchID"] = this.matchID;
         data["characterID"] = this.characterID;
         data["leagueUserID"] = this.leagueUserID;
+        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
         return data; 
     }
 }
@@ -2676,6 +2679,7 @@ export interface IMatchCharacter {
     matchID: number;
     characterID: number;
     leagueUserID: number;
+    createdDate: Date;
 }
 
 export class SubmitRequest implements ISubmitRequest {
