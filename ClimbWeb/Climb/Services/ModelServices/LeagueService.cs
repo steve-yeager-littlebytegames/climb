@@ -14,11 +14,15 @@ namespace Climb.Services.ModelServices
     {
         private readonly ApplicationDbContext dbContext;
         private readonly IPointService pointService;
+        private readonly ISeasonService seasonService;
+        private readonly ISetService setService;
 
-        public LeagueService(ApplicationDbContext dbContext, IPointService pointService)
+        public LeagueService(ApplicationDbContext dbContext, IPointService pointService, ISeasonService seasonService, ISetService setService)
         {
             this.dbContext = dbContext;
             this.pointService = pointService;
+            this.seasonService = seasonService;
+            this.setService = setService;
         }
 
         public async Task<League> Create(string name, int gameID, string adminID)
@@ -71,7 +75,11 @@ namespace Climb.Services.ModelServices
             }
             else
             {
-                leagueUser = new LeagueUser(leagueID, userID) {JoinDate = DateTime.UtcNow};
+                leagueUser = new LeagueUser(leagueID, userID)
+                {
+                    JoinDate = DateTime.UtcNow,
+                    Points = League.StartingPoints
+                };
                 dbContext.Add(leagueUser);
             }
 
@@ -80,6 +88,67 @@ namespace Climb.Services.ModelServices
             await dbContext.SaveChangesAsync();
 
             return leagueUser;
+        }
+
+        public async Task<LeagueUser> Leave(int leagueUserID)
+        {
+            var member = await dbContext.LeagueUsers
+                .IgnoreQueryFilters()
+                .Include(lu => lu.Seasons).ThenInclude(slu => slu.Season)
+                .FirstOrDefaultAsync(lu => lu.ID == leagueUserID);
+            if(member == null)
+            {
+                throw new NotFoundException(typeof(LeagueUser), leagueUserID);
+            }
+
+            if(member.HasLeft)
+            {
+                return member;
+            }
+
+            dbContext.Update(member);
+            member.HasLeft = true;
+
+            foreach(var participant in member.Seasons.Where(s => !s.Season.IsComplete))
+            {
+                await seasonService.LeaveAsync(participant.ID);
+            }
+
+            await DeleteChallenges();
+            await DeleteNonSeasonSets();
+
+            await dbContext.SaveChangesAsync();
+
+            return member;
+
+            async Task DeleteChallenges()
+            {
+                var requests = await dbContext.SetRequests
+                    .Where(sr => sr.IsOpen && (sr.RequesterID == member.ID || sr.ChallengedID == member.ID))
+                    .ToArrayAsync();
+                foreach(var request in requests)
+                {
+                    if(request.ChallengedID == member.ID)
+                    {
+                        await setService.RespondToSetRequestAsync(request.ID, false);
+                    }
+                    else
+                    {
+                        dbContext.Remove(request);
+                    }
+                }
+            }
+
+            async Task DeleteNonSeasonSets()
+            {
+                var sets = await dbContext.Sets
+                    .Where(s => !s.IsComplete && s.SeasonID == null && s.IsPlaying(member.ID))
+                    .ToArrayAsync();
+                foreach(var set in sets)
+                {
+                    dbContext.Remove(set);
+                }
+            }
         }
 
         public async Task<League> UpdateStandings(int leagueID)
@@ -213,6 +282,51 @@ namespace Climb.Services.ModelServices
             await dbContext.SaveChangesAsync();
 
             return rankSnapshots;
+        }
+
+        public async Task<List<Character>> GetUsersRecentCharactersAsync(int leagueUserID, int characterCount)
+        {
+            const int charactersToPull = 20;
+            const int requiredCount = 1;
+
+            if(characterCount < requiredCount)
+            {
+                throw new BadRequestException(nameof(characterCount), $"Min characters to request is {requiredCount}.");
+            }
+
+            if(!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == leagueUserID))
+            {
+                throw new NotFoundException(typeof(LeagueUser), leagueUserID);
+            }
+
+            var matchCharacters = await dbContext.MatchCharacters
+                .Where(mc => mc.LeagueUserID == leagueUserID)
+                .OrderByDescending(mc => mc.CreatedDate)
+                .Take(charactersToPull)
+                .Include(mc => mc.Character)
+                .ToArrayAsync();
+
+            var characterMap = new Dictionary<int, Character>(matchCharacters.Length);
+
+            var characterUsage = new Dictionary<int, int>(charactersToPull);
+            foreach(var matchCharacter in matchCharacters)
+            {
+                if(characterUsage.ContainsKey(matchCharacter.CharacterID))
+                {
+                    ++characterUsage[matchCharacter.CharacterID];
+                }
+                else
+                {
+                    characterMap[matchCharacter.CharacterID] = matchCharacter.Character;
+                    characterUsage[matchCharacter.CharacterID] = 1;
+                }
+            }
+
+            return characterUsage
+                .OrderByDescending(x => x.Value)
+                .Take(characterCount)
+                .Select(x => characterMap[x.Key])
+                .ToList();
         }
     }
 }

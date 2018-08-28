@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Climb.Models
 {
@@ -7,6 +8,7 @@ namespace Climb.Models
         public int MatchID { get; set; }
         public int CharacterID { get; set; }
         public int LeagueUserID { get; set; }
+        public DateTime CreatedDate { get; set; }
 
         [JsonIgnore]
         public Match Match { get; set; }

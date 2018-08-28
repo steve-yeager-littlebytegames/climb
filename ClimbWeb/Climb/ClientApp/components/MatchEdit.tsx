@@ -39,6 +39,9 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         if (!game.characters || !game.stages) throw new Error();
         if (!match.player1Characters || !match.player2Characters) throw new Error();
 
+        game.characters.sort((c1, c2) => c1.name.localeCompare(c2.name));
+        game.stages.sort((s1, s2) => s1.name.localeCompare(s2.name));
+
         const characters = game.characters.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>);
         const canOk = match.player1Score !== match.player2Score;
         const stageInput = this.renderStageInput(game.hasStages, game.stages, match.stageID);

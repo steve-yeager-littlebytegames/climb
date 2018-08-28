@@ -8,9 +8,10 @@
         <b class="name p-1">@Model.LeagueUser.User.UserName</b>
         <div class="d-flex flex-grow-1 justify-content-around align-content-center">
             <div>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIheOblDEWlXztqPWQXd6cp7h3MShCVCreDPnfjasqzqCm4cz1nQ" width="20" height="20" />
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIheOblDEWlXztqPWQXd6cp7h3MShCVCreDPnfjasqzqCm4cz1nQ" width="20" height="20" />
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIheOblDEWlXztqPWQXd6cp7h3MShCVCreDPnfjasqzqCm4cz1nQ" width="20" height="20" />
+                @foreach(var character in Model.Characters)
+                {
+                    <img src="@character" width="20" height="20"/>
+                }
             </div>
             <div class="points-text-small">( @Model.LeagueUser.Points )</div>
             <div>

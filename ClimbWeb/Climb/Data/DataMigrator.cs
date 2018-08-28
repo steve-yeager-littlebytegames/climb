@@ -134,11 +134,12 @@ namespace Climb.Data
 
             for(var i = 0; i < oldCharacters.Length; i++)
             {
-                var v1Character = oldCharacters[i];
+                var oldCharacter = oldCharacters[i];
                 characters[i] = new Character
                 {
-                    Name = v1Character.Name,
-                    GameID = gameIDs[v1Character.GameID],
+                    Name = oldCharacter.Name,
+                    GameID = gameIDs[oldCharacter.GameID],
+                    ImageKey = oldCharacter.PicKey,
                 };
             }
 
@@ -387,9 +388,8 @@ namespace Climb.Data
             var oldMatchCharacters = await v1Context.MatchCharacters.ToArrayAsync();
             var matchCharacters = new List<MatchCharacter>(oldMatchCharacters.Length);
 
-            for(var i = 0; i < oldMatchCharacters.Length; i++)
+            foreach(var oldMatchCharacter in oldMatchCharacters)
             {
-                var oldMatchCharacter = oldMatchCharacters[i];
                 if(!matchIDs.ContainsKey(oldMatchCharacter.MatchID))
                 {
                     continue;
@@ -400,6 +400,7 @@ namespace Climb.Data
                     MatchID = matchIDs[oldMatchCharacter.MatchID],
                     LeagueUserID = leagueUserIDs[oldMatchCharacter.LeagueUserID],
                     CharacterID = characterIDs[oldMatchCharacter.CharacterID],
+                    CreatedDate = DateTime.Now,
                 });
             }
 
