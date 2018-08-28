@@ -1,4 +1,5 @@
-﻿using Climb.Data;
+﻿using System.Collections.Generic;
+using Climb.Data;
 using Climb.Models;
 
 namespace Climb.Test.Utilities
@@ -42,6 +43,15 @@ namespace Climb.Test.Utilities
             var (season, members) = SeasonUtility.CreateSeason(dbContext, 2);
             var set = Create(dbContext, members[0].ID, members[1].ID, season.LeagueID, season);
             return set;
+        }
+
+        public static List<Match> AddMatches(ApplicationDbContext dbContext, Set set, int count)
+        {
+            return DbContextUtility.AddNewRange<Match>(dbContext, count, (m, i) =>
+            {
+                m.Index = i;
+                m.SetID = set.ID;
+            });
         }
     }
 }

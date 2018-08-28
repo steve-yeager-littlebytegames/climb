@@ -218,6 +218,17 @@ namespace Climb.Services.ModelServices
         public async Task<List<Character>> GetUsersRecentCharactersAsync(int leagueUserID, int characterCount)
         {
             const int charactersToPull = 20;
+            const int requiredCount = 1;
+
+            if(characterCount < requiredCount)
+            {
+                throw new BadRequestException(nameof(characterCount), $"Min characters to request is {requiredCount}.");
+            }
+
+            if(!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == leagueUserID))
+            {
+                throw new NotFoundException(typeof(LeagueUser), leagueUserID);
+            }
 
             var matchCharacters = await dbContext.MatchCharacters
                 .Where(mc => mc.LeagueUserID == leagueUserID)
@@ -233,11 +244,11 @@ namespace Climb.Services.ModelServices
             {
                 if(characterUsage.ContainsKey(matchCharacter.CharacterID))
                 {
-                    characterMap[matchCharacter.CharacterID] = matchCharacter.Character;
                     ++characterUsage[matchCharacter.CharacterID];
                 }
                 else
                 {
+                    characterMap[matchCharacter.CharacterID] = matchCharacter.Character;
                     characterUsage[matchCharacter.CharacterID] = 1;
                 }
             }

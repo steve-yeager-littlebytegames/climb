@@ -6,6 +6,7 @@ using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
+using MoreLinq;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -304,6 +305,111 @@ namespace Climb.Test.Services.ModelServices
             Assert.AreEqual(member.Points, snapshot.Points, "Points");
             Assert.AreEqual(-deltaRank, snapshot.DeltaRank, "Delta Rank");
             Assert.AreEqual(-deltaPoints, snapshot.DeltaPoints, "Delta Points");
+        }
+
+        [Test]
+        public void GetUsersRecentCharacters_NoUser_NotFoundException()
+        {
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.GetUsersRecentCharactersAsync(-1, 3));
+        }
+
+        [TestCase(-1)]
+        [TestCase(0)]
+        public void GetUsersRecentCharacters_CountTooSmall_BadRequestException(int characterCount)
+        {
+            var league = LeagueUtility.CreateLeague(dbContext);
+            var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.GetUsersRecentCharactersAsync(leagueUser.ID, characterCount));
+
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public async Task GetUsersRecentCharacters_HasSets_ReturnsCharacters(int characterCount)
+        {
+            var league = LeagueUtility.CreateLeague(dbContext);
+            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            var leagueUser = members[0];
+
+            var characters = GameUtility.Create(dbContext, characterCount + 1, 0).Characters;
+            var set = SetUtility.Create(dbContext, leagueUser.ID, members[1].ID, league.ID);
+            var matches = SetUtility.AddMatches(dbContext, set, 2);
+
+            DbContextUtility.AddNewRange<MatchCharacter>(dbContext, characterCount+1, (mc, i) =>
+            {
+                mc.LeagueUserID = leagueUser.ID;
+                mc.CharacterID = characters[i].ID;
+                mc.MatchID = matches[0].ID;
+            });
+
+            DbContextUtility.AddNewRange<MatchCharacter>(dbContext, characterCount, (mc, i) =>
+            {
+                mc.LeagueUserID = leagueUser.ID;
+                mc.CharacterID = characters[i + 1].ID;
+                mc.MatchID = matches[1].ID;
+            });
+
+            var result = await testObj.GetUsersRecentCharactersAsync(leagueUser.ID, characterCount);
+
+            Assert.AreEqual(characterCount, result.Count);
+            for(int i = 0; i < result.Count; i++)
+            {
+                Assert.AreEqual(characters[i + 1].ID, result[i].ID);
+            }
+        }
+
+        [Test]
+        public async Task GetUsersRecentCharacters_NotEnoughMatches_ReturnsAsManyAsPossible()
+        {
+            const int requestCount = 5;
+            const int matchCharacterCount = 3;
+            
+            var league = LeagueUtility.CreateLeague(dbContext);
+            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            var leagueUser = members[0];
+
+            var characters = GameUtility.Create(dbContext, matchCharacterCount, 0).Characters;
+            var set = SetUtility.Create(dbContext, leagueUser.ID, members[1].ID, league.ID);
+            var match = SetUtility.AddMatches(dbContext, set, 1)[0];
+
+            DbContextUtility.AddNewRange<MatchCharacter>(dbContext, matchCharacterCount, (mc, i) =>
+            {
+                mc.LeagueUserID = leagueUser.ID;
+                mc.CharacterID = characters[i].ID;
+                mc.MatchID = match.ID;
+            });
+
+            var result = await testObj.GetUsersRecentCharactersAsync(leagueUser.ID, requestCount);
+
+            Assert.AreEqual(matchCharacterCount, result.Count);
+        }
+
+        [Test]
+        public async Task GetUsersRecentCharacters_HasCharacters_ReturnsNoDuplicates()
+        {
+            const int requestCount = 5;
+            const int matchCharacterCount = 3;
+            
+            var league = LeagueUtility.CreateLeague(dbContext);
+            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            var leagueUser = members[0];
+
+            var characters = GameUtility.Create(dbContext, matchCharacterCount, 0).Characters;
+            var set = SetUtility.Create(dbContext, leagueUser.ID, members[1].ID, league.ID);
+            var match = SetUtility.AddMatches(dbContext, set, 1)[0];
+
+            DbContextUtility.AddNewRange<MatchCharacter>(dbContext, matchCharacterCount, (mc, i) =>
+            {
+                mc.LeagueUserID = leagueUser.ID;
+                mc.CharacterID = characters[i].ID;
+                mc.MatchID = match.ID;
+            });
+
+            var result = await testObj.GetUsersRecentCharactersAsync(leagueUser.ID, requestCount);
+
+            Assert.AreEqual(matchCharacterCount, result.DistinctBy(c => c.ID).Count());
         }
 
         #region Helpers
