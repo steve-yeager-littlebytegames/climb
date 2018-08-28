@@ -1,23 +1,26 @@
 ﻿@using Climb.Services
-@using Climb.ViewModels.Leagues
-@model HomeViewModel
+@model Climb.ViewModels.Leagues.HomeViewModel
 @inject ICdnService cdnService
 
 @{
     ViewBag.Title = "Leagues-Home";
 }
 
+@section scripts
+{
+    <script type="module" src="~/dist/scripts/Leagues-Membership.js"></script>
+}
 
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>Welcome to @Model.League.Name</h1>
-        @if (!Model.IsMember)
+        @if(!Model.IsMember)
         {
-        <form asp-action="Join">
-            <input type="hidden" name="leagueID" value="@Model.League.ID" />
-            <input type="hidden" name="userID" value="@Model.User.Id" />
-            <button>Join</button>
-        </form>
+            <form asp-action="Join">
+                <input type="hidden" name="leagueID" value="@Model.League.ID"/>
+                <input type="hidden" name="userID" value="@Model.User.Id"/>
+                <button>Join</button>
+            </form>
         }
     </div>
 
@@ -30,14 +33,17 @@
         {
             <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
         }*@
-        @if (Model.IsAdmin)
+        @if(Model.IsAdmin)
         {
             <a asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
         }
     </div>
 
     <div class="d-flex justify-content-center align-items-center body-temp">
-        <p>Membership</p>
+        @if (Model.IsMember)
+        {
+            <button id="leave-league-button" class="btn btn-danger" data-leagueUserId="@Model.Member.ID">Leave</button>
+        }
     </div>
 
 </div>

@@ -138,5 +138,21 @@ namespace Climb.API
                 return GetExceptionResult(exception, new {leagueID});
             }
         }
+        
+        [HttpPost("/api/v1/leagues/leave")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(LeagueUser))]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Can't find user.")]
+        public async Task<IActionResult> Leave(int leagueUserID)
+        {
+            try
+            {
+                var leagueUser = await leagueService.Leave(leagueUserID);
+                return CodeResultAndLog(HttpStatusCode.OK, leagueUser, "User left league.");
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {leagueUserID});
+            }
+        }
     }
 }

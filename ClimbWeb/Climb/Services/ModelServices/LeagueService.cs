@@ -94,7 +94,7 @@ namespace Climb.Services.ModelServices
         {
             var member = await dbContext.LeagueUsers
                 .IgnoreQueryFilters()
-                .Include(lu => lu.Seasons)
+                .Include(lu => lu.Seasons).ThenInclude(slu => slu.Season)
                 .FirstOrDefaultAsync(lu => lu.ID == leagueUserID);
             if(member == null)
             {
@@ -109,7 +109,7 @@ namespace Climb.Services.ModelServices
             dbContext.Update(member);
             member.HasLeft = true;
 
-            foreach(var participant in member.Seasons)
+            foreach(var participant in member.Seasons.Where(s => !s.Season.IsComplete))
             {
                 await seasonService.LeaveAsync(participant.ID);
             }
