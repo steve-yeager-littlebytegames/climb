@@ -214,5 +214,50 @@ namespace Climb.Services.ModelServices
 
             return rankSnapshots;
         }
+
+        public async Task<List<Character>> GetUsersRecentCharactersAsync(int leagueUserID, int characterCount)
+        {
+            const int charactersToPull = 20;
+            const int requiredCount = 1;
+
+            if(characterCount < requiredCount)
+            {
+                throw new BadRequestException(nameof(characterCount), $"Min characters to request is {requiredCount}.");
+            }
+
+            if(!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == leagueUserID))
+            {
+                throw new NotFoundException(typeof(LeagueUser), leagueUserID);
+            }
+
+            var matchCharacters = await dbContext.MatchCharacters
+                .Where(mc => mc.LeagueUserID == leagueUserID)
+                .OrderByDescending(mc => mc.CreatedDate)
+                .Take(charactersToPull)
+                .Include(mc => mc.Character)
+                .ToArrayAsync();
+
+            var characterMap = new Dictionary<int, Character>(matchCharacters.Length);
+
+            var characterUsage = new Dictionary<int, int>(charactersToPull);
+            foreach(var matchCharacter in matchCharacters)
+            {
+                if(characterUsage.ContainsKey(matchCharacter.CharacterID))
+                {
+                    ++characterUsage[matchCharacter.CharacterID];
+                }
+                else
+                {
+                    characterMap[matchCharacter.CharacterID] = matchCharacter.Character;
+                    characterUsage[matchCharacter.CharacterID] = 1;
+                }
+            }
+
+            return characterUsage
+                .OrderByDescending(x => x.Value)
+                .Take(characterCount)
+                .Select(x => characterMap[x.Key])
+                .ToList();
+        }
     }
 }

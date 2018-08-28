@@ -1,5 +1,9 @@
-﻿using Climb.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Climb.Models;
 using Climb.Services;
+using Climb.Services.ModelServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Climb.ViewModels.Leagues
@@ -10,16 +14,18 @@ namespace Climb.ViewModels.Leagues
         public string Title { get; }
         public string TitleLink { get; }
         public string Picture { get; }
+        public IEnumerable<string> Characters { get; }
 
-        private LeagueUserViewModel(LeagueUser leagueUser, string title, string titleLink, string picture)
+        private LeagueUserViewModel(LeagueUser leagueUser, string title, string titleLink, string picture, IEnumerable<string> characters)
         {
             LeagueUser = leagueUser;
             Picture = picture;
+            Characters = characters;
             TitleLink = titleLink;
             Title = title;
         }
 
-        public static LeagueUserViewModel Create(LeagueUser leagueUser, ICdnService cdnService, bool showUser, IUrlHelper urlHelper)
+        public static async Task<LeagueUserViewModel> Create(LeagueUser leagueUser, ICdnService cdnService, bool showUser, IUrlHelper urlHelper, ILeagueService leagueService)
         {
             string title;
             string titleLink;
@@ -38,7 +44,10 @@ namespace Climb.ViewModels.Leagues
                 picture = cdnService.GetImageUrl(leagueUser.League.Game.LogoImageKey, ClimbImageRules.GameLogo);
             }
 
-            return new LeagueUserViewModel(leagueUser, title, titleLink, picture);
+            var characters = await leagueService.GetUsersRecentCharactersAsync(leagueUser.ID, 3);
+            var characterUrls = characters.Select(c => cdnService.GetImageUrl(c.ImageKey, ClimbImageRules.CharacterPic));
+
+            return new LeagueUserViewModel(leagueUser, title, titleLink, picture, characterUrls);
         }
     }
 }
