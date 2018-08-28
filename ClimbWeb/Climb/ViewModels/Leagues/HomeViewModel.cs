@@ -8,11 +8,13 @@ namespace Climb.ViewModels.Leagues
     public class HomeViewModel : BaseViewModel
     {
         public League League { get; }
-        public bool IsMember { get; }
         public bool IsAdmin { get; }
         public IReadOnlyList<LeagueUser> Members { get; }
         public IReadOnlyList<LeagueUser> Newcomers { get; }
         public bool CanStartSeason { get; }
+        public LeagueUser Member { get; }
+
+        public bool IsMember => Member != null;
 
         public HomeViewModel(ApplicationUser user, League league)
             : base(user)
@@ -22,7 +24,7 @@ namespace Climb.ViewModels.Leagues
             league.Members.Sort();
             Members = league.Members.Where(lu => !lu.IsNewcomer).ToList();
             Newcomers = league.Members.Where(lu => lu.IsNewcomer).ToList();
-            IsMember = league.Members.Any(lu => lu.UserID == user?.Id);
+            Member = league.Members.FirstOrDefault(lu => lu.UserID == user?.Id);
 
 #if DEBUG
             IsAdmin = true;

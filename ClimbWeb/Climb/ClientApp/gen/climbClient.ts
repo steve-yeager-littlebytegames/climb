@@ -740,6 +740,52 @@ export class LeagueApi extends BaseClass {
         }
         return Promise.resolve<League>(<any>null);
     }
+
+    leave(leagueUserID: number): Promise<LeagueUser> {
+        let url_ = this.baseUrl + "/api/v1/leagues/leave?";
+        if (leagueUserID === undefined || leagueUserID === null)
+            throw new Error("The parameter 'leagueUserID' must be defined and cannot be null.");
+        else
+            url_ += "leagueUserID=" + encodeURIComponent("" + leagueUserID) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processLeave(_response);
+        });
+    }
+
+    protected processLeave(response: Response): Promise<LeagueUser> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? LeagueUser.fromJS(resultData200) : new LeagueUser();
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<LeagueUser>(<any>null);
+    }
 }
 
 export class SeasonApi extends BaseClass {
