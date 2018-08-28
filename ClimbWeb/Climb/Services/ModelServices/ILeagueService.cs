@@ -8,6 +8,7 @@ namespace Climb.Services.ModelServices
     {
         Task<League> Create(string name, int gameID, string adminID);
         Task<LeagueUser> Join(int leagueID, string userID);
+        Task<LeagueUser> Leave(int leagueUserID);
         Task<League> UpdateStandings(int leagueID);
         Task<IReadOnlyList<RankSnapshot>> TakeSnapshots(int leagueID);
         Task<List<Character>> GetUsersRecentCharactersAsync(int leagueUserID, int characterCount);
