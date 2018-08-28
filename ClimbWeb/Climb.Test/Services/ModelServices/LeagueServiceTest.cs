@@ -209,13 +209,18 @@ namespace Climb.Test.Services.ModelServices
         {
             var league = LeagueUtility.CreateLeague(dbContext, 1);
             var member = league.Members[0];
+            
             var season = SeasonUtility.CreateSeason(dbContext, 0).season;
             var participant = SeasonUtility.AddParticipants(dbContext, season, member)[0];
+
+            var seasonCompleted = SeasonUtility.CreateSeason(dbContext, 0, s => s.IsComplete = true).season;
+            var participantCompleted = SeasonUtility.AddParticipants(dbContext, seasonCompleted, member)[0];
 
             await testObj.Leave(member.ID);
 
 #pragma warning disable 4014
             seasonService.Received(1).LeaveAsync(participant.ID);
+            seasonService.DidNotReceive().LeaveAsync(participantCompleted.ID);
 #pragma warning restore 4014
         }
 
