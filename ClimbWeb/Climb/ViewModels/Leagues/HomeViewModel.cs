@@ -35,7 +35,7 @@ namespace Climb.ViewModels.Leagues
 #if DEBUG
             CanStartSeason = true;
 #else
-            CanStartSeason = league.AdminID == user.Id;
+            CanStartSeason = league.AdminID == user?.Id;
 #endif
         }
     }
