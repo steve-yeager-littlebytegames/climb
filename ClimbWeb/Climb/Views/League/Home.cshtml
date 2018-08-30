@@ -43,7 +43,7 @@
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Members</h3>
             <div class="page-section-child">
-                @if (Model.Members.Count > 0)
+                @if (Model.Members.Count + Model.Newcomers.Count > 0)
                 {
                 <div class="page-section-content">
                     @foreach (var member in Model.Members)
