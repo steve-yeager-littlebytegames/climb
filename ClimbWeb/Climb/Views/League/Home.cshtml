@@ -12,7 +12,7 @@
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>Welcome to @Model.League.Name</h1>
-        @if (!Model.IsMember)
+        @if (!Model.IsMember && Model.User != null)
         {
             <form asp-action="Join">
                 <input type="hidden" name="leagueID" value="@Model.League.ID" />
@@ -43,7 +43,7 @@
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Members</h3>
             <div class="page-section-child">
-                @if (Model.Members.Count > 0)
+                @if (Model.Members.Count + Model.Newcomers.Count > 0)
                 {
                 <div class="page-section-content">
                     @foreach (var member in Model.Members)
