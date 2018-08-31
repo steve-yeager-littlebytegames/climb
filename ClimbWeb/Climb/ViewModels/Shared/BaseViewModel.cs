@@ -10,7 +10,7 @@ namespace Climb.ViewModels
     {
         public ApplicationUser User { get; }
         public IReadOnlyList<League> UserActiveLeagues { get; }
-        public IReadOnlyList<Season> UserActiveSeasons { get; }
+        public IReadOnlyList<Season> UserSeasons { get; }
 
         public bool IsLoggedIn => User != null;
 
@@ -21,7 +21,7 @@ namespace Climb.ViewModels
             if(user == null)
             {
                 UserActiveLeagues = new League[0];
-                UserActiveSeasons = new Season[0];
+                UserSeasons = new Season[0];
             }
             else
             {
@@ -31,8 +31,8 @@ namespace Climb.ViewModels
                     .ToArray();
                 UserActiveLeagues = leagues;
 
-                UserActiveSeasons = user.Seasons
-                    .Where(slu => slu.Season.IsActive)
+                UserSeasons = user.Seasons
+                    .Where(slu => !slu.Season.IsComplete)
                     .Select(slu => slu.Season).ToArray();
             }
         }
