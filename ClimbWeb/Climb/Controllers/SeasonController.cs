@@ -35,14 +35,14 @@ namespace Climb.Controllers
                 .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
-                .Include(s => s.League).AsNoTracking()
+                .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if(season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = HomeViewModel.Create(user, season, environment);
+            var viewModel = new HomeViewModel(user, season);
             return View(viewModel);
         }
 
@@ -55,15 +55,16 @@ namespace Climb.Controllers
                 .Include(s => s.Sets).ThenInclude(s => s.League).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Participants).IgnoreQueryFilters()
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
-                .Include(s => s.League).AsNoTracking()
+                .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = HomeViewModel.Create(user, season, environment);
+            var viewModel = new MembershipViewModel(user, season);
             return View(viewModel);
         }
 
@@ -77,14 +78,14 @@ namespace Climb.Controllers
                 .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
-                .Include(s => s.League).AsNoTracking()
+                .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = HomeViewModel.Create(user, season, environment);
+            var viewModel = new DataViewModel(user, season);
             return View(viewModel);
         }
 
@@ -98,14 +99,14 @@ namespace Climb.Controllers
                 .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
-                .Include(s => s.League).AsNoTracking()
+                .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = HomeViewModel.Create(user, season, environment);
+            var viewModel = new SetsViewModel(user, season);
             return View(viewModel);
         }
 
@@ -119,14 +120,14 @@ namespace Climb.Controllers
                 .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
-                .Include(s => s.League).AsNoTracking()
+                .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = HomeViewModel.Create(user, season, environment);
+            var viewModel = new ManageViewModel(user, season, environment);
             return View(viewModel);
         }
 
@@ -181,6 +182,20 @@ namespace Climb.Controllers
             catch(Exception exception)
             {
                 return GetExceptionResult(exception, new {participantID});
+            }
+        }
+
+        [HttpPost("seasons/join")]
+        public async Task<IActionResult> JoinPost(string userID, int seasonID)
+        {
+            try
+            {
+                await seasonService.JoinAsync(seasonID, userID);
+                return RedirectToAction("Home", new {seasonID});
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {userID, seasonID});
             }
         }
     }

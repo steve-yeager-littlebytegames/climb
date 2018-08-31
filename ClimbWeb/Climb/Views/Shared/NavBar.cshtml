@@ -39,7 +39,7 @@
                         Seasons
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @foreach(var season in Model.UserActiveSeasons)
+                        @foreach(var season in Model.UserSeasons)
                         {
                             <a class="dropdown-item" asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">@season.League.Name Season @(season.Index + 1)</a>
                         }

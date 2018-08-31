@@ -1,5 +1,5 @@
 ﻿@using Climb.Services
-@model Climb.ViewModels.Seasons.HomeViewModel
+@model Climb.ViewModels.Seasons.DataViewModel
 @inject ICdnService cdnService
 
 @{
@@ -9,14 +9,6 @@
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
-        @*@if (!Model.IsMember)
-            {
-                <form asp-action="Join">
-                    <input type="hidden" name="leagueID" value="@Model.League.ID" />
-                    <input type="hidden" name="userID" value="@Model.User.Id" />
-                    <button>Join</button>
-                </form>
-            }*@
     </div>
 
     <div class="home-menu d-flex justify-content-between">
@@ -24,24 +16,29 @@
         <a asp-action="Membership" asp-route-leagueID="@Model.Season.ID">Membership</a>
         <a asp-action="Data" asp-route-leagueID="@Model.Season.ID">Data</a>
         <a asp-action="Sets" asp-route-leagueID="@Model.Season.ID">Sets</a>
-        @*@foreach (var season in Model.League.Seasons)
-            {
-                <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
-            }*@
         <a asp-action="Manage" asp-route-leagueID="">Manage</a>
     </div>
 
-    @if(Model.CanStartSeason)
-    {
-        <form asp-controller="Season" asp-action="Start">
-            <input type="hidden" name="SeasonID" value="@Model.Season.ID"/>
-            <button class="btn btn-primary">Start Season</button>
-        </form>
-    }
-
-    <div class="d-flex justify-content-center align-items-center body-temp">
-        <p>Data</p>
+    <div class="d-flex flex-column justify-content-center align-items-center body-temp">
+        <div>
+            <span>Completed Sets</span>
+            <span>@Model.CompletedSets</span>
+        </div>
+        <div>
+            <span>Overdue Sets</span>
+            <span>@Model.OverdueSets</span>
+        </div>
+        <div>
+            <span>Remaining Sets</span>
+            <span>@Model.RemainingSets</span>
+        </div>
+        <div>
+            <span>Completed Percent</span>
+            <span>@Model.CompletePercent.ToString("P0")</span>
+        </div>
+        <div>
+            <span>Target Percent</span>
+            <span>@Model.TargetPercent.ToString("P0")</span>
+        </div>
     </div>
-
-
 </div>
