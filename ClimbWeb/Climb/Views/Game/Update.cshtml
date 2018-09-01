@@ -30,7 +30,9 @@
         </div>
         <div class="form-group row">
             <label class="col-5 col-form-label text-left">Has Stages</label>
-            <input class="form-control col-7" type="checkbox" name="hasStages" value="@(Model.Game?.HasStages ?? false)"/>
+            <div class="col-7" >
+                @Html.CheckBox("hasStages", Model.Game?.HasStages ?? false)
+            </div>
         </div>
         <button class="btn btn-primary">@Model.Action</button>
     </form>
