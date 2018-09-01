@@ -2,17 +2,11 @@
 // Move all common detail styles to site.less
 
 .set-container {
-    display: flex;
-    flex-direction: column;
-    border-bottom: 1px solid @color-darker;
-}
-
-.set-container:first-of-type  {
-    border-top: 1px solid @color-darker;
+    padding-bottom: 4px;
 }
 
 .set-container:last-of-type {
-    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .set-details {
@@ -35,6 +29,7 @@
 .btn-fight {
     color: #ffb;
     background-color: @color-accent;
+    margin-top: -1.5rem;
 }
 
 .btn-fight:hover {

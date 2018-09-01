@@ -15,12 +15,16 @@ namespace Climb.ViewModels.Leagues
         public string TitleLink { get; }
         public string Picture { get; }
         public IEnumerable<string> Characters { get; }
+        public int EmptyCharacterCount { get; }
+        public string RankWhiteSpace { get; }
 
-        private LeagueUserViewModel(LeagueUser leagueUser, string title, string titleLink, string picture, IEnumerable<string> characters)
+        private LeagueUserViewModel(LeagueUser leagueUser, string title, string titleLink, string picture, IEnumerable<string> characters, int emptyCharacterCount, string rankWhiteSpace)
         {
             LeagueUser = leagueUser;
             Picture = picture;
             Characters = characters;
+            EmptyCharacterCount = emptyCharacterCount;
+            RankWhiteSpace = rankWhiteSpace;
             TitleLink = titleLink;
             Title = title;
         }
@@ -44,10 +48,19 @@ namespace Climb.ViewModels.Leagues
                 picture = cdnService.GetImageUrl(leagueUser.League.Game.LogoImageKey, ClimbImageRules.GameLogo);
             }
 
-            var characters = await leagueService.GetUsersRecentCharactersAsync(leagueUser.ID, 3);
+            const int maxCharacterCount = 3;
+            var characters = await leagueService.GetUsersRecentCharactersAsync(leagueUser.ID, maxCharacterCount);
             var characterUrls = characters.Select(c => cdnService.GetImageUrl(c.ImageKey, ClimbImageRules.CharacterPic));
+            var emptyCharacterCount = maxCharacterCount - characters.Count;
 
-            return new LeagueUserViewModel(leagueUser, title, titleLink, picture, characterUrls);
+            var rank = leagueUser.Rank.ToString();
+            var rankWhiteSpace = "";
+            for (int i = 0; i < 3 - rank.Length; i++)
+            {
+                rankWhiteSpace += "0";
+            }
+
+            return new LeagueUserViewModel(leagueUser, title, titleLink, picture, characterUrls, emptyCharacterCount, rankWhiteSpace);
         }
     }
 }
