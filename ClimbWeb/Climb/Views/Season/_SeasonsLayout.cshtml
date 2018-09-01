@@ -1,5 +1,5 @@
 ﻿@using Climb.ViewModels.Seasons
-@model Climb.ViewModels.Seasons.PageViewModel
+@model PageViewModel
 
 @{
     Layout = "_LayoutWithNavbar";
@@ -9,15 +9,15 @@
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
     </div>
-
-    <div class="list-group list-group-horizontal">
-        <a class="list-group-item list-group-item-action @(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
-        <a class="list-group-item list-group-item-action @(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-leaugeID="@Model.Season.ID">Membership</a>
-        <a class="list-group-item list-group-item-action @(Model.IsSubPageActive<DataViewModel>() ? "active" : "")" asp-action="Data" asp-route-leaugeID="@Model.Season.ID">Data</a>
-        <a class="list-group-item list-group-item-action @(Model.IsSubPageActive<SetsViewModel>() ? "active" : "")" asp-action="Sets" asp-route-leaugeID="@Model.Season.ID">Sets</a>
-        @if(Model.CanManage)
+    
+    <div class="home-menu d-flex justify-content-between">
+        <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
+        <a class="@(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-leaugeID="@Model.Season.ID">Membership</a>
+        <a class="@(Model.IsSubPageActive<DataViewModel>() ? "active" : "")" asp-action="Data" asp-route-leaugeID="@Model.Season.ID">Data</a>
+        <a class="@(Model.IsSubPageActive<SetsViewModel>() ? "active" : "")" asp-action="Sets" asp-route-leaugeID="@Model.Season.ID">Sets</a>
+        @if (Model.CanManage)
         {
-            <a class="list-group-item list-group-item-action @(Model.IsSubPageActive<ManageViewModel>() ? "active" : "")" asp-action="Manage" asp-route-leaugeID="@Model.Season.ID">Manage</a>
+            <a class="@(Model.IsSubPageActive<ManageViewModel>() ? "active" : "")" asp-action="Manage" asp-route-leaugeID="@Model.Season.ID">Manage</a>
         }
     </div>
 
