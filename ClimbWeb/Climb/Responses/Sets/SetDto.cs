@@ -6,11 +6,16 @@ namespace Climb.Responses.Sets
 {
     public class SetDto
     {
+        public enum SetTypes
+        {
+            Challenge,
+            Season,
+        }
+
         public int ID { get; }
         public int LeagueID { get; }
         public string LeagueName { get; }
         public int? SeasonID { get; }
-        public int? SeasonIndex { get; }
         public int GameID { get; }
         public int Player1ID { get; }
         public int Player2ID { get; }
@@ -22,6 +27,7 @@ namespace Climb.Responses.Sets
         public MatchDto[] Matches { get; }
         public bool IsLocked { get; }
         public bool IsComplete { get; }
+        public SetTypes SetType { get; }
 
         private SetDto(Set set, MatchDto[] matches, int gameID)
         {
@@ -29,7 +35,6 @@ namespace Climb.Responses.Sets
             LeagueID = set.LeagueID;
             LeagueName = set.League.Name;
             SeasonID = set.SeasonID;
-            SeasonIndex = set.Season?.Index;
             Player1ID = set.Player1ID;
             Player2ID = set.Player2ID;
             Player1Score = set.Player1Score ?? 0;
@@ -40,6 +45,7 @@ namespace Climb.Responses.Sets
             GameID = gameID;
             IsComplete = set.IsComplete;
             IsLocked = set.IsLocked;
+            SetType = set.SeasonID == null ? SetTypes.Challenge : SetTypes.Season;
         }
 
         public static SetDto Create(Set set, int gameID)

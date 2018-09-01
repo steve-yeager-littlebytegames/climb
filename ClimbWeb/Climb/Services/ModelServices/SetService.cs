@@ -124,8 +124,8 @@ namespace Climb.Services.ModelServices
 
                 for(var j = 0; j < matchForm.Player1Characters.Length; j++)
                 {
-                    AddCharacter(match, matchForm.Player1Characters[j], set.Player1ID);
-                    AddCharacter(match, matchForm.Player2Characters[j], set.Player2ID);
+                    AddCharacter(match, matchForm.Player1Characters[j], set.Player1ID, set.UpdatedDate.Value);
+                    AddCharacter(match, matchForm.Player2Characters[j], set.Player2ID, set.UpdatedDate.Value);
                 }
 
                 if(matchForm.Player1Score > matchForm.Player2Score)
@@ -142,14 +142,18 @@ namespace Climb.Services.ModelServices
 
             if (set.SeasonID != null)
             {
-                await seasonService.UpdateStandings(setID);
+                await seasonService.PlaySet(setID);
+                await seasonService.UpdateRanksAsync(set.SeasonID.Value);
             }
 
             return set;
 
-            void AddCharacter(Match match, int characterID, int playerID)
+            void AddCharacter(Match match, int characterID, int playerID, DateTime createdDate)
             {
-                var character = new MatchCharacter(match.ID, characterID, playerID);
+                var character = new MatchCharacter(match.ID, characterID, playerID)
+                {
+                    CreatedDate = createdDate,
+                };
                 dbContext.MatchCharacters.Add(character);
             }
         }

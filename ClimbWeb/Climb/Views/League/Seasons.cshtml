@@ -1,7 +1,10 @@
-﻿@using Climb.Services
+﻿@using Climb.Extensions
+@using Climb.Services
+@using Climb.Services.ModelServices
 @using Climb.ViewModels.Leagues
-@model HomeViewModel
+@model SeasonsViewModel
 @inject ICdnService cdnService
+@inject ILeagueService leagueService
 
 @{
     ViewBag.Title = "Leagues-Home";
@@ -11,14 +14,6 @@
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>Welcome to @Model.League.Name</h1>
-        @if (!Model.IsMember)
-        {
-            <form asp-action="Join">
-                <input type="hidden" name="leagueID" value="@Model.League.ID" />
-                <input type="hidden" name="userID" value="@Model.User.Id" />
-                <button>Join</button>
-            </form>
-        }
     </div>
 
     <div class="home-menu d-flex justify-content-between">
@@ -26,10 +21,6 @@
         <a asp-action="Membership" asp-route-leagueID="@Model.League.ID">Membership</a>
         <a asp-action="Data" asp-route-leagueID="@Model.League.ID">Data</a>
         <a asp-action="Seasons" asp-route-leagueID="@Model.League.ID">Seasons</a>
-        @*@foreach (var season in Model.League.Seasons)
-        {
-            <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
-        }*@
         @if (Model.IsAdmin)
         {
             <a asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
@@ -40,33 +31,29 @@
     <div class="row">
         <!-- Members -->
         <div class="col-xl-6 page-section pb-2 mt-4">
-            <h3>Final Rankings</h3>
-            <div class="page-section-child">
-                @foreach (var member in Model.Members)
+            <h3>Seasons</h3>
+            @if (Model.ActiveSeason != null)
+            {
+                <h4>Active Season</h4>
+                <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.ActiveSeason.ID">Season @((Model.ActiveSeason.Index + 1).ToRoman())</a>
+            }
+
+            @if (Model.NextSeason != null)
+            {
+                <h4>Next Season</h4>
+                <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.NextSeason.ID">Season @((Model.NextSeason.Index + 1).ToRoman())</a>
+            }
+
+            @if (Model.CompletedSeasons.Count > 0)
+            {
+                <h4>Completed Seasons</h4>
+                foreach (var season in Model.CompletedSeasons)
                 {
-                    <partial name="./Partials/LeagueUser" model="@LeagueUserViewModel.Create(member, cdnService, true, Url)" />
+                    <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@season.ID">Season @((season.Index + 1).ToRoman())</a>
                 }
-            </div>
+            }
         </div>
-        <!-- Activity -->
-        <div class="col-xl-6 page-section pb-2 mt-4">
-            <h3>Activity</h3>
-            <div class="page-section-child">
-                @*@if (Model.RecentSets.Count == 0)
-                    {*@
-                <div class="text-darker">
-                    <em> No recent activity</em>
-                </div>
-                @*}
-                    else
-                    {
-                        foreach (var set in Model.RecentSets)
-                        {
-                            <div>@set.ID</div>
-                        }
-                    }*@
-            </div>
-        </div>
+        
     </div>
 
 </div>

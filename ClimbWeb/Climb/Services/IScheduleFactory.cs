@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Climb.Data;
+﻿using System;
+using System.Collections.Generic;
 using Climb.Models;
 
 namespace Climb.Services
 {
     public interface IScheduleFactory
     {
-        Task<List<Set>> GenerateScheduleAsync(Season season, ApplicationDbContext dbContext);
+        List<Set> GenerateSchedule(DateTime startDate, DateTime endDate, IReadOnlyList<SeasonLeagueUser> participants);
     }
 }

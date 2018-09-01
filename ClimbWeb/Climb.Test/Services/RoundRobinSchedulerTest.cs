@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Models;
 using Climb.Services;
@@ -26,28 +25,26 @@ namespace Climb.Test.Services
         [TestCase(2, 1)]
         [TestCase(4, 6)]
         [TestCase(11, 55)]
-        public async Task GenerateSchedule_Valid_CreateSets(int userCount, int setCount)
+        public void GenerateSchedule_Valid_CreateSets(int userCount, int setCount)
         {
             var season = SeasonUtility.CreateSeason(dbContext, userCount).season;
-            season.Sets = new List<Set>();
 
-            await testObj.GenerateScheduleAsync(season, dbContext);
+            var sets = testObj.GenerateSchedule(DateTime.MinValue, DateTime.MaxValue, season.Participants);
 
-            Assert.AreEqual(setCount, season.Sets.Count);
+            Assert.AreEqual(setCount, sets.Count);
         }
 
         [TestCase(10)]
         [TestCase(15)]
-        public async Task GenerateSchedule_Valid_EveryoneFightsEveryone(int userCount)
+        public void GenerateSchedule_Valid_EveryoneFightsEveryone(int userCount)
         {
             var season = SeasonUtility.CreateSeason(dbContext, userCount).season;
-            season.Sets = new List<Set>();
 
-            await testObj.GenerateScheduleAsync(season, dbContext);
+            var sets = testObj.GenerateSchedule(DateTime.MinValue, DateTime.MaxValue, season.Participants);
 
             Assert.IsTrue(season.Participants.All(slu =>
             {
-                var fightCount = season.Sets.Where(s => s
+                var fightCount = sets.Where(s => s
                         .IsPlaying(slu.LeagueUserID))
                     .Select(s => s.GetOpponentID(slu.LeagueUserID))
                     .Distinct()
@@ -60,7 +57,7 @@ namespace Climb.Test.Services
         [TestCase(5, 3)]
         [TestCase(4, 6)]
         [TestCase(5, 6)]
-        public async Task GenerateSchedule_Valid_SpacesOutDueDates(int userCount, int days)
+        public void GenerateSchedule_Valid_SpacesOutDueDates(int userCount, int days)
         {
             DateTime startDate = DateTime.MinValue;
             var season = SeasonUtility.CreateSeason(dbContext, userCount, s =>
@@ -70,7 +67,7 @@ namespace Climb.Test.Services
                 s.Sets = new List<Set>();
             }).season;
 
-            var sets = await testObj.GenerateScheduleAsync(season, dbContext);
+            var sets = testObj.GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
 
             var roundCount = userCount - 1;
             var setsPerRound = userCount / 2;

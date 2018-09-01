@@ -26,6 +26,7 @@ namespace Climb.Data
         private static readonly Dictionary<int, int> gameIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> characterIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> leagueIDs = new Dictionary<int, int>();
+        private static readonly Dictionary<int, string> leagueUserToUser = new Dictionary<int, string>();
         private static readonly Dictionary<int, int> leagueUserIDs = new Dictionary<int, int>();
         private static readonly Dictionary<string, int> seasonLeagueUserIDs = new Dictionary<string, int>();
         private static readonly Dictionary<int, int> seasonIDs = new Dictionary<int, int>();
@@ -133,11 +134,12 @@ namespace Climb.Data
 
             for(var i = 0; i < oldCharacters.Length; i++)
             {
-                var v1Character = oldCharacters[i];
+                var oldCharacter = oldCharacters[i];
                 characters[i] = new Character
                 {
-                    Name = v1Character.Name,
-                    GameID = gameIDs[v1Character.GameID],
+                    Name = oldCharacter.Name,
+                    GameID = gameIDs[oldCharacter.GameID],
+                    ImageKey = oldCharacter.PicKey,
                 };
             }
 
@@ -249,6 +251,8 @@ namespace Climb.Data
                     SetCount = oldLeagueUser.SetsPlayed,
                     IsNewcomer = oldLeagueUser.SetsPlayed < SetsTillNotNewcomer, 
                 };
+
+                leagueUserToUser[oldLeagueUser.ID] = oldUserID;
             }
 
             context.LeagueUsers.AddRange(leagueUsers);
@@ -271,6 +275,7 @@ namespace Climb.Data
                 seasonLeagueUsers[i] = new SeasonLeagueUser
                 {
                     LeagueUserID = leagueUserIDs[oldLeagueUserSeason.LeagueUserID],
+                    UserID = leagueUserToUser[oldLeagueUserSeason.LeagueUserID],
                     SeasonID = seasonIDs[oldLeagueUserSeason.SeasonID],
                     Standing = oldLeagueUserSeason.Standing,
                     Points = oldLeagueUserSeason.Points,
@@ -383,9 +388,8 @@ namespace Climb.Data
             var oldMatchCharacters = await v1Context.MatchCharacters.ToArrayAsync();
             var matchCharacters = new List<MatchCharacter>(oldMatchCharacters.Length);
 
-            for(var i = 0; i < oldMatchCharacters.Length; i++)
+            foreach(var oldMatchCharacter in oldMatchCharacters)
             {
-                var oldMatchCharacter = oldMatchCharacters[i];
                 if(!matchIDs.ContainsKey(oldMatchCharacter.MatchID))
                 {
                     continue;
@@ -396,6 +400,7 @@ namespace Climb.Data
                     MatchID = matchIDs[oldMatchCharacter.MatchID],
                     LeagueUserID = leagueUserIDs[oldMatchCharacter.LeagueUserID],
                     CharacterID = characterIDs[oldMatchCharacter.CharacterID],
+                    CreatedDate = DateTime.Now,
                 });
             }
 

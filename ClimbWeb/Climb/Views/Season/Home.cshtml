@@ -5,7 +5,7 @@
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Leagues-Home";
+    ViewBag.Title = "Season-Home";
 }
 
 <div class="container">
@@ -33,19 +33,6 @@
         <a asp-action="Manage" asp-route-leagueID="">Manage</a>
     </div>
 
-
-    @if (!Model.IsParticipant)
-    {
-        // TODO: Leave
-    }
-
-    @if (Model.CanStartSeason)
-    {
-        <form asp-controller="Season" asp-action="Start">
-            <input type="hidden" name="SeasonID" value="@Model.Season.ID" />
-            <button class="btn btn-primary">Start Season</button>
-        </form>
-    }
     <!-- Columns -->
     <div class="row">
         <!-- Participants -->
@@ -55,7 +42,7 @@
                 <div class="page-section-content">
                     @if (Model.Participants.Any())
                     {
-                        @foreach (var participant in Model.Participants)
+                        foreach (var participant in Model.Participants)
                         {
                             //To Do: style Season Participant partial like league member partial
                             <partial name="./Partials/SeasonParticipant" model="@SeasonParticipantViewModel.Create(participant, cdnService)" />

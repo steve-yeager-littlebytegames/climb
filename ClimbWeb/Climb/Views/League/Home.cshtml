@@ -1,7 +1,9 @@
 ﻿@using Climb.Services
+@using Climb.Services.ModelServices
 @using Climb.ViewModels.Leagues
 @model HomeViewModel
 @inject ICdnService cdnService
+@inject ILeagueService leagueService
 
 @{
     ViewBag.Title = "Leagues-Home";
@@ -10,7 +12,7 @@
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>Welcome to @Model.League.Name</h1>
-        @if (!Model.IsMember)
+        @if (!Model.IsMember && Model.User != null)
         {
             <form asp-action="Join">
                 <input type="hidden" name="leagueID" value="@Model.League.ID" />
@@ -26,9 +28,9 @@
         <a asp-action="Data" asp-route-leagueID="@Model.League.ID">Data</a>
         <a asp-action="Seasons" asp-route-leagueID="@Model.League.ID">Seasons</a>
         @*@foreach (var season in Model.League.Seasons)
-        {
-            <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
-        }*@
+            {
+                <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
+            }*@
         @if (Model.IsAdmin)
         {
             <a asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
@@ -41,25 +43,25 @@
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Members</h3>
             <div class="page-section-child">
-                @if (Model.Members.Count > 0)
+                @if (Model.Members.Count + Model.Newcomers.Count > 0)
                 {
-                    <div class="page-section-content">
-                        @foreach (var member in Model.Members)
-                        {
-                            <partial name="./Partials/LeagueUser" model="@LeagueUserViewModel.Create(member, cdnService, true, Url)" />
-                        }
-                        @if (Model.Newcomers.Count > 0)
-                        {
-                            <div class="section-divider">
-                                <h5>Newcomers</h5>
-                            </div>
+                <div class="page-section-content">
+                    @foreach (var member in Model.Members)
+                    {
+                        <partial name="./Partials/LeagueUser" model="@await LeagueUserViewModel.Create(member, cdnService, true, Url, leagueService)" />
+                    }
+                    @if (Model.Newcomers.Count > 0)
+                    {
+                        <div class="section-divider">
+                            <h5>Newcomers</h5>
+                        </div>
 
-                            foreach (var newcomer in Model.Newcomers)
-                            {
-                                <partial name="./Partials/LeagueUser" model="@LeagueUserViewModel.Create(newcomer, cdnService, true, Url)" />
-                            }
+                        foreach (var newcomer in Model.Newcomers)
+                        {
+                            <partial name="./Partials/LeagueUser" model="@await LeagueUserViewModel.Create(newcomer, cdnService, true, Url, leagueService)" />
                         }
-                    </div>
+                    }
+                </div>
                 }
                 else
                 {

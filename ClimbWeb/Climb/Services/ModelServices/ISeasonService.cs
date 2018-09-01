@@ -8,7 +8,10 @@ namespace Climb.Services.ModelServices
     {
         Task<Season> Create(int leagueID, DateTime start, DateTime end);
         Task<Season> GenerateSchedule(int seasonID);
-        Task<Season> UpdateStandings(int setID);
+        Task<Season> PlaySet(int setID);
+        Task<Season> UpdateRanksAsync(int seasonID);
         Task<Season> End(int seasonID);
+        Task<Season> LeaveAsync(int participantID);
+        Task<Season> JoinAsync(int seasonID, string userID);
     }
 }

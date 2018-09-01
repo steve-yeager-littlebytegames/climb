@@ -12,13 +12,12 @@ export class SetDetails extends React.Component<ISetDetailsProps> {
         const set = this.props.set;
         const player1 = this.props.player1;
         const player2 = this.props.player2;
-        const setType = set.seasonIndex == null ? "Challenge" : `Season ${set.seasonIndex}`;
 
         return (
             <div className="card">
                 {/*Set info*/}
                 <div className="card-header">
-                    <span>{set.leagueName} - {setType} - {set.dueDate.toLocaleDateString()}</span>
+                    <span>{set.leagueName} - {ClimbClient.SetTypes[set.setType]} - {set.dueDate.toLocaleDateString()}</span>
                 </div>
 
                 <div className="p-2">

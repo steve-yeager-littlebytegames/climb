@@ -1,8 +1,10 @@
 ﻿@using Climb.Services
+@using Climb.Services.ModelServices
 @using Climb.ViewModels.Leagues
 @using Climb.ViewModels.Sets
 @model Climb.ViewModels.Users.HomeViewModel
 @inject ICdnService cdnService
+@inject ILeagueService leagueService
 
 @{
     ViewBag.Title = "Users-Home";
@@ -75,24 +77,24 @@
     <!-- Header -->
     <div id="home-header" class="row justify-content-md-center mt-4">
         <div id="user-info" class="col-sm-6">
-            <img src="@Model.ProfilePic" />
+            <img src="@Model.ProfilePic" width="150" height="150"/>
 
             <div id="user-info-names">
                 <h2>@Model.HomeUser.UserName</h2>
-                <h4 id="real-name"><em>@Model.HomeUser.Name</em></h4>
+                <h4 id="real-name">
+                    <em>@Model.HomeUser.Name</em>
+                </h4>
+                @if(Model.IsViewingUserHome)
+                {
+                    <button id="challenges-button" class="header-button btn" type="button" data-toggle="modal" data-target="#exampleModal">
+                        Challenges <span class="badge badge-light">@Model.SetRequests.Count</span>
+                    </button>
+                }
+                else
+                {
+                    <button id="fight-button" class="header-button btn" type="button" data-toggle="modal" data-target="#exampleModal">Fight!</button>
+                }
             </div>
-        </div>
-        <div id="header-button-col" class="col-sm-3">
-            @if (Model.IsViewingUserHome)
-            {
-                <button id="challenges-button" class="header-button btn" type="button" data-toggle="modal" data-target="#exampleModal">
-                    Challenges <span class="badge badge-light">@Model.SetRequests.Count</span>
-                </button>
-            }
-            else
-            {
-                <button id="fight-button" class="header-button btn" type="button" data-toggle="modal" data-target="#exampleModal">Fight!</button>
-            }
         </div>
     </div>
 
@@ -102,9 +104,9 @@
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Leagues</h3>
             <div class="page-section-child">
-                @foreach (var leagueUser in Model.HomeUser.LeagueUsers)
+                @foreach(var leagueUser in Model.HomeUser.LeagueUsers)
                 {
-                    <partial name="../League/Partials/LeagueUser" model="@LeagueUserViewModel.Create(leagueUser, cdnService, false, Url)" />
+                    <partial name="../League/Partials/LeagueUser" model="@await LeagueUserViewModel.Create(leagueUser, cdnService, false, Url, leagueService)"/>
                 }
             </div>
         </div>
@@ -113,7 +115,7 @@
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Activity</h3>
             <div class="page-section-child">
-                @if (Model.RecentSets.Count == 0)
+                @if(Model.RecentSets.Count == 0)
                 {
                     <div class="text-darker">
                         <em> No recent activity</em>
@@ -121,9 +123,9 @@
                 }
                 else
                 {
-                    foreach (var set in Model.RecentSets)
+                    foreach(var set in Model.RecentSets)
                     {
-                        <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)" />
+                        <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
                     }
                 }
             </div>
@@ -133,9 +135,9 @@
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Sets</h3>
             <div class="page-section-child">
-                @foreach (var set in Model.AvailableSets)
+                @foreach(var set in Model.AvailableSets)
                 {
-                    <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)" />
+                    <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
                 }
             </div>
         </div>

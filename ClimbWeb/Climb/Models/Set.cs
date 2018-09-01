@@ -8,6 +8,8 @@ namespace Climb.Models
 {
     public class Set
     {
+        private const int ForfeitScore = -1;
+
         public int ID { get; set; }
         public int LeagueID { get; set; }
         public int? SeasonID { get; set; }
@@ -21,6 +23,7 @@ namespace Climb.Models
         public DateTime? UpdatedDate { get; set; }
         public bool IsLocked { get; set; }
         public bool IsComplete { get; set; }
+        public bool IsForfeit { get; set; }
         public int Player1SeasonPoints { get; set; }
         public int Player2SeasonPoints { get; set; }
 
@@ -76,6 +79,27 @@ namespace Climb.Models
             }
 
             throw new ArgumentException($"LeagueUser with ID '{leagueUserID}' is not playing this set.");
+        }
+
+        public void Forfeit(int leagueUserID)
+        {
+            if(Player1ID == leagueUserID)
+            {
+                Player1Score = ForfeitScore;
+                Player2Score = 0;
+            }
+            else if(Player2ID == leagueUserID)
+            {
+                Player1Score = 0;
+                Player2Score = ForfeitScore;
+            }
+            else
+            {
+                throw new ArgumentException($"League User '{leagueUserID}' is not in Set '{ID}'.", nameof(leagueUserID));
+            }
+
+            IsForfeit = true;
+            IsComplete = true;
         }
     }
 }
