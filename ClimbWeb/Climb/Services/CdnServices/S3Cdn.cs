@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
@@ -19,29 +17,17 @@ namespace Climb.Services
         private readonly string bucketName;
         private readonly string environment;
 
-        public S3Cdn(IConfiguration configuration, IHostingEnvironment environment)
+        public S3Cdn(IConfiguration configuration)
         {
             var awsSection = configuration.GetSection("AWS");
 
             accessKey = awsSection["AccessKey"];
             secretKey = awsSection["SecretKey"];
             bucketName = awsSection["Bucket"];
+            environment = awsSection["Environment"];
             var region = RegionEndpoint.GetBySystemName(awsSection["Region"]);
 
-            if(environment.IsDevelopment())
-            {
-                this.environment = "v2/dev";
-            }
-            else if(environment.IsProduction())
-            {
-                this.environment = "v2/rel";
-            }
-            else
-            {
-                throw new NotSupportedException($"Environment {environment.EnvironmentName} does not have a corresponding CDN bucket.");
-            }
-
-            root = $"https://s3.amazonaws.com/{bucketName}/{this.environment}";
+            root = $"https://s3.amazonaws.com/{bucketName}/{environment}";
 
             var credentials = new BasicAWSCredentials(accessKey, secretKey);
             s3Client = new AmazonS3Client(credentials, region);
