@@ -1,5 +1,5 @@
 ﻿@using Climb.ViewModels.Seasons
-@model PageViewModel
+@model Climb.ViewModels.Seasons.PageViewModel
 
 @{
     Layout = "_LayoutWithNavbar";
@@ -8,14 +8,23 @@
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
+        @if (Model.CanJoin)
+        {
+            <form asp-action="JoinPost" asp-route-userid="@Model.User.Id" asp-route-seasonid="@Model.Season.ID">
+                <button class="btn btn-danger">Join</button>
+            </form>
+        }
     </div>
-    
+
     <div class="home-menu d-flex justify-content-between">
         <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
-        <a class="@(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-leaugeID="@Model.Season.ID">Membership</a>
+        @if(Model.IsParticipant)
+        {
+            <a class="@(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-leaugeID="@Model.Season.ID">Membership</a>
+        }
         <a class="@(Model.IsSubPageActive<DataViewModel>() ? "active" : "")" asp-action="Data" asp-route-leaugeID="@Model.Season.ID">Data</a>
         <a class="@(Model.IsSubPageActive<SetsViewModel>() ? "active" : "")" asp-action="Sets" asp-route-leaugeID="@Model.Season.ID">Sets</a>
-        @if (Model.CanManage)
+        @if(Model.CanManage)
         {
             <a class="@(Model.IsSubPageActive<ManageViewModel>() ? "active" : "")" asp-action="Manage" asp-route-leaugeID="@Model.Season.ID">Manage</a>
         }

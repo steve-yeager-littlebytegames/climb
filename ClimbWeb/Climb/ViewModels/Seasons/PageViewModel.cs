@@ -10,10 +10,12 @@ namespace Climb.ViewModels.Seasons
     {
         public Season Season { get; }
         public SeasonLeagueUser Participant { get; }
-        protected LeagueUser Member { get; }
+        private LeagueUser Member { get; }
         public bool CanManage { get; }
 
         public int SeasonNumber => Season.Index + 1;
+        public bool IsParticipant => Participant != null;
+        public bool CanJoin => Participant == null && User != null && Member != null && !Season.IsComplete;
 
         protected PageViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
             : base(user)
