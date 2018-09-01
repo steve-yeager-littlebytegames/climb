@@ -1,26 +1,15 @@
 ﻿@using Climb.Services
-@using Climb.ViewModels.Seasons
 @using Climb.ViewModels.Sets
-@model SetsViewModel
+@model Climb.ViewModels.Seasons.SetsViewModel
 @inject ICdnService cdnService
 
 @{
     ViewBag.Title = "Leagues-Home";
+    Layout = "_SeasonsLayout";
 }
 
-<div class="container">
-    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
-    </div>
-
-    <div class="home-menu d-flex justify-content-between">
-        <a asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
-        <a asp-action="Membership" asp-route-leagueID="@Model.Season.ID">Membership</a>
-        <a asp-action="Data" asp-route-leagueID="@Model.Season.ID">Data</a>
-        <a asp-action="Sets" asp-route-leagueID="@Model.Season.ID">Sets</a>
-        <a asp-action="Manage" asp-route-leagueID="">Manage</a>
-    </div>
-
+@section SeasonsBody
+{
     <div class="col-xl-4 page-section pb-2 mt-4">
         <h3>Sets</h3>
         <div class="page-section-child">
@@ -30,4 +19,4 @@
             }
         </div>
     </div>
-</div>
+}

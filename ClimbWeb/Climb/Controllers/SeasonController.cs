@@ -42,7 +42,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new HomeViewModel(user, season);
+            var viewModel = new HomeViewModel(user, season, environment);
             return View(viewModel);
         }
 
@@ -64,7 +64,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new MembershipViewModel(user, season);
+            var viewModel = new MembershipViewModel(user, season, environment);
             return View(viewModel);
         }
 
@@ -85,7 +85,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new DataViewModel(user, season);
+            var viewModel = new DataViewModel(user, season, environment);
             return View(viewModel);
         }
 
@@ -106,7 +106,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new SetsViewModel(user, season);
+            var viewModel = new SetsViewModel(user, season, environment);
             return View(viewModel);
         }
 
