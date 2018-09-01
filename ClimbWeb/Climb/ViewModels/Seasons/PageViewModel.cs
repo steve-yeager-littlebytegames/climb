@@ -14,6 +14,7 @@ namespace Climb.ViewModels.Seasons
         public bool CanManage { get; }
 
         public int SeasonNumber => Season.Index + 1;
+        public bool IsParticipant => Participant != null;
 
         protected PageViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
             : base(user)
