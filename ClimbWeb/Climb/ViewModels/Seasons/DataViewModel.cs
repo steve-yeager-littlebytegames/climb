@@ -1,6 +1,7 @@
 ﻿using System;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -12,8 +13,8 @@ namespace Climb.ViewModels.Seasons
         public decimal CompletePercent { get; }
         public decimal TargetPercent { get; }
 
-        public DataViewModel(ApplicationUser user, Season season)
-            : base(user, season)
+        public DataViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
+            : base(user, season, environment)
         {
             if(!season.IsActive)
             {

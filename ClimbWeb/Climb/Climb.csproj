@@ -83,6 +83,9 @@
     <Content Update="Views\League\Membership.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Season\_SeasonsLayout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Season\Manage.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
