@@ -50,7 +50,7 @@ namespace Climb.Services.ModelServices
                 var callbackUrl = urlUtility.EmailConfirmationLink(urlHelper, user.Id, code, requestScheme);
                 await emailSender.SendEmailConfirmationAsync(request.Email, callbackUrl);
 
-                await signInManager.SignInAsync(user, false);
+                await signInManager.SignInAsync(user, request.RememberMe);
                 return user;
             }
 
