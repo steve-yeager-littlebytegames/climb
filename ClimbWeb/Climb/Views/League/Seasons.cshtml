@@ -1,59 +1,43 @@
 ﻿@using Climb.Extensions
 @using Climb.Services
 @using Climb.Services.ModelServices
-@using Climb.ViewModels.Leagues
-@model SeasonsViewModel
+@model Climb.ViewModels.Leagues.SeasonsViewModel
 @inject ICdnService cdnService
 @inject ILeagueService leagueService
 
 @{
     ViewBag.Title = "Leagues-Home";
+    Layout = "_LeaguesLayout";
 }
 
-
-<div class="container">
-    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>Welcome to @Model.League.Name</h1>
-    </div>
-
-    <div class="home-menu d-flex justify-content-between">
-        <a asp-action="Home" asp-route-leaugeID="@Model.League.ID">Home</a>
-        <a asp-action="Membership" asp-route-leagueID="@Model.League.ID">Membership</a>
-        <a asp-action="Data" asp-route-leagueID="@Model.League.ID">Data</a>
-        <a asp-action="Seasons" asp-route-leagueID="@Model.League.ID">Seasons</a>
-        @if (Model.IsAdmin)
-        {
-            <a asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
-        }
-    </div>
-
+@section LeaguesBody
+{
     <!-- Columns -->
     <div class="row">
         <!-- Members -->
         <div class="col-xl-6 page-section pb-2 mt-4">
             <h3>Seasons</h3>
-            @if (Model.ActiveSeason != null)
+            @if(Model.ActiveSeason != null)
             {
                 <h4>Active Season</h4>
                 <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.ActiveSeason.ID">Season @((Model.ActiveSeason.Index + 1).ToRoman())</a>
             }
 
-            @if (Model.NextSeason != null)
+            @if(Model.NextSeason != null)
             {
                 <h4>Next Season</h4>
                 <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.NextSeason.ID">Season @((Model.NextSeason.Index + 1).ToRoman())</a>
             }
 
-            @if (Model.CompletedSeasons.Count > 0)
+            @if(Model.CompletedSeasons.Count > 0)
             {
                 <h4>Completed Seasons</h4>
-                foreach (var season in Model.CompletedSeasons)
+                foreach(var season in Model.CompletedSeasons)
                 {
                     <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@season.ID">Season @((season.Index + 1).ToRoman())</a>
                 }
             }
         </div>
-        
-    </div>
 
-</div>
+    </div>
+}
