@@ -1,4 +1,5 @@
-﻿@model Climb.ViewModels.Games.CharacterAddViewModel
+﻿@using Climb.Extensions
+@model Climb.ViewModels.Games.CharacterAddViewModel
 
 @{
     ViewBag.Title = "Character-Add";
@@ -6,24 +7,37 @@
 
 <link rel="stylesheet" href="~/dist/styles/game/game-home.css"/>
 
-<div>
+<div class="container mt-4">
     <h1>@Model.Game.Name</h1>
     <h3>@Model.ActionName Character</h3>
 
-    <a asp-action="Home" asp-route-gameID="@Model.Game.ID">Cancel</a>
+    <div class="mb-4">
+        <a asp-action="Home" asp-route-gameID="@Model.Game.ID">Cancel</a>
+    </div>
 
     <form asp-action="CharacterAddPost" enctype="multipart/form-data">
-        <input name="gameID" value="@Model.Game.ID" type="hidden"/>
-        <input name="characterID" value="@Model.Character?.ID" type="hidden"/>
-        <div>
-            <label>Name</label>
-            <input name="name" type="text" value="@Model.Character?.Name"/>
+        <input asp-for="Request.GameID" value="@Model.Game.ID" />
+        <input asp-for="Request.CharacterID" value="@Model.Character?.ID" />
+
+        <!--Name-->
+        <div class="form-group row">
+            <label class="col-5 col-form-label text-left">Name</label>
+            <input type="text" asp-for="Request.Name" class="form-control col-7" value="@Model.Character?.Name" autofocus />
+            <span class="text-danger" asp-validation-for="Request.Name"></span>
         </div>
-        <div>
-            <label>Image</label>
-            <img src="@Model.ImageUrl" height="64" width="64"/>
-            <input name="image" type="file" accept=".png"/>
+
+        <!--Image-->
+        <div class="form-group row">
+            <div class="col-5 col-form-label text-left d-flex flex-column">
+                <label class="col-form-label">Image</label>
+                <small>Max size of @ClimbImageRules.CharacterPic.MaxSize.ToBytesReadable()</small>
+            </div>
+            <div class="col-7">
+                <img class="border" src="@Model.ImageUrl" width="100" height="100" />
+                <input asp-for="Request.Image" class="form-control-file" type="file" accept="image/*" />
+                <span class="text-danger" asp-validation-for="Request.Image"></span>
+            </div>
         </div>
-        <button>@Model.ActionName</button>
+        <button class="btn btn-danger">@Model.ActionName</button>
     </form>
 </div>

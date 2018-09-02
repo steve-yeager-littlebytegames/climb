@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Climb.Data;
+using Climb.Extensions;
 using Climb.Models;
 using Climb.Requests.Games;
 using Climb.Services;
@@ -15,6 +16,7 @@ namespace Climb.Controllers
 {
     public class GameController : BaseController<GameController>
     {
+        private const string AddCharacterErrorKey = "AddCharacterErrors";
         private readonly IGameService gameService;
         private readonly ICdnService cdnService;
 
@@ -49,25 +51,31 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpGet("games/characters/add/{gameID:int}")]
-        public async Task<IActionResult> CharacterAdd(int gameID, int? characterID)
+        [HttpGet("games/characters/add")]
+        public async Task<IActionResult> CharacterAdd(CharacterAddRequest request)
         {
             var user = await GetViewUserAsync();
 
-            var game = await dbContext.Games.FirstOrDefaultAsync(g => g.ID == gameID);
+            var game = await dbContext.Games.FirstOrDefaultAsync(g => g.ID == request.GameID);
             if(game == null)
             {
                 return NotFound();
             }
 
             Character character = null;
-            if(characterID != null)
+            if(request.CharacterID != null)
             {
-                character = await dbContext.Characters.FirstOrDefaultAsync(c => c.ID == characterID);
+                character = await dbContext.Characters.FirstOrDefaultAsync(c => c.ID == request.CharacterID);
                 if(character == null)
                 {
                     return NotFound();
                 }
+            }
+
+            if(TempData.ContainsKey(AddCharacterErrorKey))
+            {
+                var modelErrors = TempData.Get<ModelErrors>(AddCharacterErrorKey);
+                modelErrors.AssignErrors(ModelState);
             }
 
             var viewModel = CharacterAddViewModel.Create(user, game, character, cdnService);
@@ -77,6 +85,12 @@ namespace Climb.Controllers
         [HttpPost("games/characters/add")]
         public async Task<IActionResult> CharacterAddPost(AddCharacterRequest request)
         {
+            if(ModelErrors.HasErrors(ModelState, out var errors))
+            {
+                TempData.Put(AddCharacterErrorKey, errors);
+                return RedirectToAction("CharacterAdd", new CharacterAddRequest(request.GameID, request.CharacterID));
+            }
+
             try
             {
                 await gameService.AddCharacter(request.GameID, request.CharacterID, request.Name, request.Image);
