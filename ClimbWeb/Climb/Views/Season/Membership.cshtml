@@ -14,12 +14,5 @@
         {
             <button id="leave-season-button" class="btn btn-danger" data-participantID="@Model.Participant.ID">Leave</button>
         }
-
-        @if(Model.CanJoin)
-        {
-            <form asp-action="JoinPost" asp-route-userid="@Model.User.Id" asp-route-seasonid="@Model.Season.ID">
-                <button class="btn btn-danger">Join</button>
-            </form>
-        }
     </div>
 }

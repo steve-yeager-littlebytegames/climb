@@ -19,7 +19,8 @@
     <input type="password" id="inputPassword" name="Password" class="form-control" placeholder="Password" required>
     <div class="checkbox mb-3">
         <label>
-            <input type="checkbox" name="RememberMe" value="remember-me"> Remember me
+            @Html.CheckBox("RememberMe")
+            <span>Remember Me</span>
         </label>
     </div>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
