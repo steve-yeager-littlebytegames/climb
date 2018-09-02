@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
 using Climb.Extensions;
@@ -22,8 +21,9 @@ namespace Climb.Services.ModelServices
         private readonly ITokenHelper tokenHelper;
         private readonly IUrlUtility urlUtility;
         private readonly IUserManager userManager;
+        private readonly IDateService dateService;
 
-        public ApplicationUserService(ApplicationDbContext dbContext, ICdnService cdnService, ISignInManager signInManager, IEmailSender emailSender, IConfiguration configuration, ITokenHelper tokenHelper, IUrlUtility urlUtility, IUserManager userManager)
+        public ApplicationUserService(ApplicationDbContext dbContext, ICdnService cdnService, ISignInManager signInManager, IEmailSender emailSender, IConfiguration configuration, ITokenHelper tokenHelper, IUrlUtility urlUtility, IUserManager userManager, IDateService dateService)
         {
             this.dbContext = dbContext;
             this.cdnService = cdnService;
@@ -33,6 +33,7 @@ namespace Climb.Services.ModelServices
             this.tokenHelper = tokenHelper;
             this.urlUtility = urlUtility;
             this.userManager = userManager;
+            this.dateService = dateService;
         }
 
         public async Task<ApplicationUser> Register(RegisterRequest request, IUrlHelper urlHelper, string requestScheme)
@@ -64,7 +65,7 @@ namespace Climb.Services.ModelServices
             var result = await signInManager.PasswordSignInAsync(user?.UserName, request.Password, request.RememberMe, false);
             if(result.Succeeded)
             {
-                var token = tokenHelper.CreateUserToken(configuration.GetSecurityKey(), DateTime.Now.AddMinutes(30), request.Email);
+                var token = tokenHelper.CreateUserToken(configuration.GetSecurityKey(), dateService.Now.AddMinutes(30), request.Email);
                 return token;
             }
 

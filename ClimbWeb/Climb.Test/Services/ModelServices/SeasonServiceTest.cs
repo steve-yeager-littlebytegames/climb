@@ -22,6 +22,7 @@ namespace Climb.Test.Services.ModelServices
         private IScheduleFactory scheduler;
         private ISeasonPointCalculator pointCalculator;
         private ITieBreaker tieBreaker;
+        private IDateService dateService;
 
         private static DateTime StartDate => DateTime.Now.AddDays(1);
         private static DateTime EndDate => DateTime.Now.AddDays(2);
@@ -34,10 +35,11 @@ namespace Climb.Test.Services.ModelServices
             pointCalculator = Substitute.For<ISeasonPointCalculator>();
             var tieBreakerFactory = Substitute.For<ITieBreakerFactory>();
             tieBreaker = Substitute.For<ITieBreaker>();
+            dateService = Substitute.For<IDateService>();
 
-            tieBreakerFactory.Create().Returns(tieBreaker);
+            tieBreakerFactory.Create(Arg.Any<DateTime>()).Returns(tieBreaker);
 
-            testObj = new SeasonService(dbContext, scheduler, pointCalculator, tieBreakerFactory);
+            testObj = new SeasonService(dbContext, scheduler, pointCalculator, tieBreakerFactory, dateService);
         }
 
         [Test]
@@ -59,6 +61,8 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void Create_StartInPast_BadRequestException()
         {
+            dateService.Now.Returns(DateTime.Now);
+
             Assert.ThrowsAsync<BadRequestException>(() => testObj.Create(0, DateTime.MinValue, EndDate));
         }
 

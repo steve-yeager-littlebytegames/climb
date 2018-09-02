@@ -64,6 +64,15 @@ namespace Climb
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
 
+            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            {
+                services.AddTransient<IDateService, DateService>();
+            }
+            else
+            {
+                services.AddTransient<IDateService, ControlledDateService>();
+            }
+
             if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
             {
                 services.AddTransient<IEmailSender, NullEmailService>();

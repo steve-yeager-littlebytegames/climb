@@ -26,8 +26,9 @@ namespace Climb.Test.Controllers
             var logger = Substitute.For<ILogger<SeasonController>>();
             var userManager = Substitute.For<IUserManager>();
             var environment = Substitute.For<IHostingEnvironment>();
+            var dateService = Substitute.For<IDateService>();
 
-            testObj = new SeasonController(seasonService, dbContext, logger, userManager, environment);
+            testObj = new SeasonController(seasonService, dbContext, logger, userManager, environment, dateService);
         }
 
         [Test]

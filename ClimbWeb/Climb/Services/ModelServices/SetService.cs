@@ -14,11 +14,13 @@ namespace Climb.Services.ModelServices
     {
         private readonly ApplicationDbContext dbContext;
         private readonly ISeasonService seasonService;
+        private readonly IDateService dateService;
 
-        public SetService(ApplicationDbContext dbContext, ISeasonService seasonService)
+        public SetService(ApplicationDbContext dbContext, ISeasonService seasonService, IDateService dateService)
         {
             this.dbContext = dbContext;
             this.seasonService = seasonService;
+            this.dateService = dateService;
         }
 
         public async Task<SetRequest> RequestSetAsync(int requesterID, int challengedID, string message)
@@ -41,7 +43,7 @@ namespace Climb.Services.ModelServices
                 LeagueID = requester.LeagueID,
                 RequesterID = requesterID,
                 ChallengedID = challengedID,
-                DateCreated = DateTime.Now,
+                DateCreated = dateService.Now,
                 Message = message,
             };
             dbContext.Add(setRequest);
@@ -114,7 +116,7 @@ namespace Climb.Services.ModelServices
 
             set.IsComplete = true;
             set.Player1Score = set.Player2Score = 0;
-            set.UpdatedDate = DateTime.Now;
+            set.UpdatedDate = dateService.Now;
 
             for(var i = 0; i < matchForms.Count; i++)
             {

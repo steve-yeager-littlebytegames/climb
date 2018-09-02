@@ -6,7 +6,6 @@ using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
-using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using NSubstitute;
 using NUnit.Framework;
@@ -29,8 +28,9 @@ namespace Climb.Test.Services.ModelServices
             pointService = Substitute.For<IPointService>();
             seasonService = Substitute.For<ISeasonService>();
             setService = Substitute.For<ISetService>();
+            var dateService = Substitute.For<IDateService>();
 
-            testObj = new LeagueService(dbContext, pointService, seasonService, setService);
+            testObj = new LeagueService(dbContext, pointService, seasonService, setService, dateService);
         }
 
         [Test]

@@ -5,6 +5,7 @@ using Climb.Data;
 using Climb.Exceptions;
 using Climb.Models;
 using Climb.Requests.Sets;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
 using NSubstitute;
@@ -22,14 +23,16 @@ namespace Climb.Test.Services.ModelServices
         private SetService testObj;
         private ApplicationDbContext dbContext;
         private ISeasonService seasonService;
+        private IDateService dateService;
 
         [SetUp]
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
             seasonService = Substitute.For<ISeasonService>();
+            dateService = Substitute.For<IDateService>();
 
-            testObj = new SetService(dbContext, seasonService);
+            testObj = new SetService(dbContext, seasonService, dateService);
         }
 
         [Test]
@@ -187,6 +190,7 @@ namespace Climb.Test.Services.ModelServices
             LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var requester = league.Members[0];
             var challenged = league.Members[1];
+            dateService.Now.Returns(DateTime.Today);
 
             var request = await testObj.RequestSetAsync(requester.ID, challenged.ID, null);
 
