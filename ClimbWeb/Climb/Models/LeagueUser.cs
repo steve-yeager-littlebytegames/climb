@@ -20,6 +20,7 @@ namespace Climb.Models
         public int SetCount { get; set; }
         public DateTime JoinDate { get; set; }
         public bool IsNewcomer { get; set; } = true;
+        public RankTrends RankTrend { get; set; }
 
         [JsonIgnore]
         public League League { get; set; }
