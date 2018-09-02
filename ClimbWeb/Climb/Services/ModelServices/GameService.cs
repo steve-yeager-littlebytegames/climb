@@ -14,11 +14,13 @@ namespace Climb.Services.ModelServices
     {
         private readonly ApplicationDbContext dbContext;
         private readonly ICdnService cdnService;
+        private readonly IDateService dateService;
 
-        public GameService(ApplicationDbContext dbContext, ICdnService cdnService)
+        public GameService(ApplicationDbContext dbContext, ICdnService cdnService, IDateService dateService)
         {
             this.dbContext = dbContext;
             this.cdnService = cdnService;
+            this.dateService = dateService;
         }
 
         public async Task<Game> Update(UpdateRequest request)
@@ -49,7 +51,7 @@ namespace Climb.Services.ModelServices
 
                 var logoImageKey = await cdnService.UploadImageAsync(request.LogoImage, ClimbImageRules.GameLogo);
 
-                game = new Game(request.Name, request.CharactersPerMatch, request.MaxMatchPoints, request.HasStages)
+                game = new Game(request.Name, request.CharactersPerMatch, request.MaxMatchPoints, request.HasStages, dateService.Now)
                 {
                     LogoImageKey = logoImageKey
                 };

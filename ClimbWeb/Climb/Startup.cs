@@ -63,6 +63,7 @@ namespace Climb
             services.AddTransient<ITieBreakerFactory, TieBreakerFactory>();
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
+            services.AddTransient<IDateService, DateService>();
 
             if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
             {

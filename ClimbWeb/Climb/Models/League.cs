@@ -39,12 +39,12 @@ namespace Climb.Models
         {
         }
 
-        public League(int gameID, string name, string adminID)
+        public League(int gameID, string name, string adminID, DateTime dateCreated)
         {
             GameID = gameID;
             Name = name;
             AdminID = adminID;
-            DateCreated = DateTime.Today;
+            DateCreated = dateCreated;
         }
 
         public bool IsMemberNew(LeagueUser member) => member.SetCount < SetsTillRank;

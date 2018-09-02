@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Climb.Models;
@@ -45,7 +46,7 @@ namespace Climb.Data
 
         private static League CreateTestLeague(ApplicationDbContext dbContext, Game game, ApplicationUser admin)
         {
-            var league = new League(game.ID, "Fun Smash Friends", admin.Id);
+            var league = new League(game.ID, "Fun Smash Friends", admin.Id, DateTime.Now);
             dbContext.Leagues.Add(league);
             dbContext.SaveChanges();
             return league;
