@@ -34,7 +34,7 @@ namespace Climb.Controllers
             }
 
             var loadedUser = await dbContext.Users
-                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).AsNoTracking()
+                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).ThenInclude(l => l.Game).AsNoTracking()
                 .Include(u => u.Seasons).ThenInclude(slu => slu.Season).ThenInclude(s => s.League).AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == appUser.Id);
 
