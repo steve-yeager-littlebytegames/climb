@@ -61,8 +61,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
-            var viewModel = new HomeViewModel(user, league);
-
+            var viewModel = new MembershipViewModel(user, league);
             return View(viewModel);
         }
 
@@ -76,7 +75,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
-            var viewModel = new HomeViewModel(user, league);
+            var viewModel = new DataViewModel(user, league);
 
             return View(viewModel);
         }
@@ -107,7 +106,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
-            var viewModel = new HomeViewModel(user, league);
+            var viewModel = new ManageViewModel(user, league);
 
             return View(viewModel);
         }
