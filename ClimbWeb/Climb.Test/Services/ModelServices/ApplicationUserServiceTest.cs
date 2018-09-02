@@ -41,8 +41,9 @@ namespace Climb.Test.Services.ModelServices
             var urlUtility = Substitute.For<IUrlUtility>();
             signInManager = Substitute.For<ISignInManager>();
             userManager = Substitute.For<IUserManager>();
+            var dateService = Substitute.For<IDateService>();
 
-            testObj = new ApplicationUserService(dbContext, cdnService, signInManager, emailSender, configuration, tokenHelper, urlUtility, userManager);
+            testObj = new ApplicationUserService(dbContext, cdnService, signInManager, emailSender, configuration, tokenHelper, urlUtility, userManager, dateService);
         }
 
         [Test]

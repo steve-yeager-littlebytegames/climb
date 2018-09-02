@@ -6,7 +6,6 @@ using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
-using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using NSubstitute;
 using NUnit.Framework;
@@ -29,8 +28,9 @@ namespace Climb.Test.Services.ModelServices
             pointService = Substitute.For<IPointService>();
             seasonService = Substitute.For<ISeasonService>();
             setService = Substitute.For<ISetService>();
+            var dateService = Substitute.For<IDateService>();
 
-            testObj = new LeagueService(dbContext, pointService, seasonService, setService);
+            testObj = new LeagueService(dbContext, pointService, seasonService, setService, dateService);
         }
 
         [Test]
@@ -371,6 +371,26 @@ namespace Climb.Test.Services.ModelServices
             Assert.AreEqual(1, members[1].Rank);
             Assert.AreEqual(2, members[2].Rank);
             Assert.AreEqual(3, members[3].Rank);
+        }
+
+        [TestCase(1, 1, 2, 2, RankTrends.Down)]
+        [TestCase(2, 1, 1, 2, RankTrends.None)]
+        [TestCase(2, 2, 1, 1, RankTrends.Up)]
+        public async Task UpdateStandings_Valid_SetRankTrends(int points, int rank, int otherPoints, int otherRank, RankTrends trend)
+        {
+            var league = CreateLeague(2);
+            league.SetsTillRank = 0;
+            var member = league.Members[0];
+            member.Rank = rank;
+            member.Points = points;
+            member.IsNewcomer = false;
+            league.Members[1].Rank = otherRank;
+            league.Members[1].Points = otherPoints;
+            league.Members[1].IsNewcomer = false;
+
+            await testObj.UpdateStandings(league.ID);
+
+            Assert.AreEqual(trend, member.RankTrend);
         }
 
         [Test]

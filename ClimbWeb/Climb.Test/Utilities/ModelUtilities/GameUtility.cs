@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Climb.Data;
 using Climb.Models;
 
@@ -8,7 +9,7 @@ namespace Climb.Test.Utilities
     {
         public static Game Create(ApplicationDbContext dbContext, int characterCount, int stageCount, string logoKey = null, string name = "Test Game")
         {
-            var game = new Game(name, characterCount, stageCount, stageCount > 0)
+            var game = new Game(name, characterCount, stageCount, stageCount > 0, DateTime.Today)
             {
                 Characters = new List<Character>(characterCount),
                 Stages = new List<Stage>(stageCount),

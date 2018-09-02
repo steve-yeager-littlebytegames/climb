@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Climb.Core.TieBreakers.Test
 {
@@ -16,7 +17,7 @@ namespace Climb.Core.TieBreakers.Test
         [Test]
         public void Create_ReturnsTieBreaker()
         {
-            var tieBreaker = testObj.Create();
+            var tieBreaker = testObj.Create(DateTime.Now);
 
             Assert.IsNotNull(tieBreaker);
         }

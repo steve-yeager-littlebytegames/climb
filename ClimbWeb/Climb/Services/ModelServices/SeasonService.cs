@@ -17,19 +17,21 @@ namespace Climb.Services.ModelServices
         private readonly IScheduleFactory scheduleFactory;
         private readonly ISeasonPointCalculator pointCalculator;
         private readonly ITieBreaker tieBreaker;
+        private readonly IDateService dateService;
 
-        public SeasonService(ApplicationDbContext dbContext, IScheduleFactory scheduleFactory, ISeasonPointCalculator pointCalculator, ITieBreakerFactory tieBreakerFactory)
+        public SeasonService(ApplicationDbContext dbContext, IScheduleFactory scheduleFactory, ISeasonPointCalculator pointCalculator, ITieBreakerFactory tieBreakerFactory, IDateService dateService)
         {
             this.dbContext = dbContext;
             this.scheduleFactory = scheduleFactory;
             this.pointCalculator = pointCalculator;
+            this.dateService = dateService;
 
-            tieBreaker = tieBreakerFactory.Create();
+            tieBreaker = tieBreakerFactory.Create(dateService.Now);
         }
 
         public async Task<Season> Create(int leagueID, DateTime start, DateTime end)
         {
-            if(start < DateTime.Now)
+            if(start < dateService.Now)
             {
                 throw new BadRequestException(nameof(start), "Start date can't be in the past.");
             }

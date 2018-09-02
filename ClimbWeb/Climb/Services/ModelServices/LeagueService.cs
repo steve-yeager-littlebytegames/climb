@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
@@ -16,13 +15,15 @@ namespace Climb.Services.ModelServices
         private readonly IPointService pointService;
         private readonly ISeasonService seasonService;
         private readonly ISetService setService;
+        private readonly IDateService dateService;
 
-        public LeagueService(ApplicationDbContext dbContext, IPointService pointService, ISeasonService seasonService, ISetService setService)
+        public LeagueService(ApplicationDbContext dbContext, IPointService pointService, ISeasonService seasonService, ISetService setService, IDateService dateService)
         {
             this.dbContext = dbContext;
             this.pointService = pointService;
             this.seasonService = seasonService;
             this.setService = setService;
+            this.dateService = dateService;
         }
 
         public async Task<League> Create(string name, int gameID, string adminID)
@@ -42,7 +43,7 @@ namespace Climb.Services.ModelServices
                 throw new NotFoundException(typeof(ApplicationUser), adminID);
             }
 
-            var league = new League(gameID, name, adminID);
+            var league = new League(gameID, name, adminID, dateService.Now);
             dbContext.Add(league);
             await dbContext.SaveChangesAsync();
 
@@ -77,7 +78,7 @@ namespace Climb.Services.ModelServices
             {
                 leagueUser = new LeagueUser(leagueID, userID)
                 {
-                    JoinDate = DateTime.UtcNow,
+                    JoinDate = dateService.Now,
                     Points = League.StartingPoints
                 };
                 dbContext.Add(leagueUser);
@@ -183,7 +184,6 @@ namespace Climb.Services.ModelServices
                 {
                     var player1Won = set.WinnerID == set.Player1ID;
                     var (p1Points, p2Points) = pointService.CalculatePointDeltas(set.Player1.Points, set.Player2.Points, player1Won);
-                    // TODO: beginner multiplier
                     if(!pointsPerMember.ContainsKey(set.Player1ID))
                     {
                         pointsPerMember.Add(set.Player1ID, 0);
@@ -216,9 +216,8 @@ namespace Climb.Services.ModelServices
                 var rank = 0;
                 var rankedMembers = 0;
                 var lastPoints = -1;
-                for(var i = 0; i < activeMembers.Count; i++)
+                foreach(var member in activeMembers)
                 {
-                    var member = activeMembers[i];
                     if(league.IsMemberNew(member))
                     {
                         member.Rank = 0;
@@ -232,6 +231,18 @@ namespace Climb.Services.ModelServices
                     }
 
                     ++rankedMembers;
+                    if(member.Rank < rank)
+                    {
+                        member.RankTrend = RankTrends.Down;
+                    }
+                    else if(member.Rank > rank)
+                    {
+                        member.RankTrend = RankTrends.Up;
+                    }
+                    else
+                    {
+                        member.RankTrend = RankTrends.None;
+                    }
                     member.Rank = rank;
                 }
             }
@@ -247,7 +258,7 @@ namespace Climb.Services.ModelServices
                 throw new NotFoundException(typeof(League), leagueID);
             }
 
-            var createdDate = DateTime.Now;
+            var createdDate = dateService.Now;
             var rankSnapshots = new RankSnapshot[league.Members.Count];
             for(var i = 0; i < league.Members.Count; ++i)
             {
