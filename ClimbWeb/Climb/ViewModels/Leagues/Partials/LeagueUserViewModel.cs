@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Models;
@@ -17,6 +18,7 @@ namespace Climb.ViewModels.Leagues
         public IEnumerable<string> Characters { get; }
         public int EmptyCharacterCount { get; }
         public string RankWhiteSpace { get; }
+        public string RankTrendClass { get; }
 
         private LeagueUserViewModel(LeagueUser leagueUser, string title, string titleLink, string picture, IEnumerable<string> characters, int emptyCharacterCount, string rankWhiteSpace)
         {
@@ -27,6 +29,21 @@ namespace Climb.ViewModels.Leagues
             RankWhiteSpace = rankWhiteSpace;
             TitleLink = titleLink;
             Title = title;
+
+            switch(leagueUser.RankTrend)
+            {
+                case RankTrends.Down:
+                    RankTrendClass = "fa-arrow-down";
+                    break;
+                case RankTrends.None:
+                    RankTrendClass = "fa-minus";
+                    break;
+                case RankTrends.Up:
+                    RankTrendClass = "fa-arrow-up";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public static async Task<LeagueUserViewModel> Create(LeagueUser leagueUser, ICdnService cdnService, bool showUser, IUrlHelper urlHelper, ILeagueService leagueService)
@@ -55,7 +72,7 @@ namespace Climb.ViewModels.Leagues
 
             var rank = leagueUser.Rank.ToString();
             var rankWhiteSpace = "";
-            for (int i = 0; i < 3 - rank.Length; i++)
+            for(var i = 0; i < 3 - rank.Length; i++)
             {
                 rankWhiteSpace += "0";
             }

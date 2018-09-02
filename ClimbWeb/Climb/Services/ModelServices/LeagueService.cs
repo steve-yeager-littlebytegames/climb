@@ -183,7 +183,6 @@ namespace Climb.Services.ModelServices
                 {
                     var player1Won = set.WinnerID == set.Player1ID;
                     var (p1Points, p2Points) = pointService.CalculatePointDeltas(set.Player1.Points, set.Player2.Points, player1Won);
-                    // TODO: beginner multiplier
                     if(!pointsPerMember.ContainsKey(set.Player1ID))
                     {
                         pointsPerMember.Add(set.Player1ID, 0);
@@ -216,9 +215,8 @@ namespace Climb.Services.ModelServices
                 var rank = 0;
                 var rankedMembers = 0;
                 var lastPoints = -1;
-                for(var i = 0; i < activeMembers.Count; i++)
+                foreach(var member in activeMembers)
                 {
-                    var member = activeMembers[i];
                     if(league.IsMemberNew(member))
                     {
                         member.Rank = 0;
@@ -232,6 +230,18 @@ namespace Climb.Services.ModelServices
                     }
 
                     ++rankedMembers;
+                    if(member.Rank < rank)
+                    {
+                        member.RankTrend = RankTrends.Down;
+                    }
+                    else if(member.Rank > rank)
+                    {
+                        member.RankTrend = RankTrends.Up;
+                    }
+                    else
+                    {
+                        member.RankTrend = RankTrends.None;
+                    }
                     member.Rank = rank;
                 }
             }
