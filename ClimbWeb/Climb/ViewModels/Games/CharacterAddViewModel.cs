@@ -1,10 +1,11 @@
 ﻿using Climb.Data;
 using Climb.Models;
+using Climb.Requests.Games;
 using Climb.Services;
 
 namespace Climb.ViewModels.Games
 {
-    public class CharacterAddViewModel : BaseViewModel
+    public class CharacterAddViewModel : RequestViewModel<AddCharacterRequest>
     {
         public Game Game { get; }
         public Character Character { get; }
