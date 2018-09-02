@@ -1,0 +1,42 @@
+﻿@using Climb.Services
+@using Climb.Services.ModelServices
+@using Climb.ViewModels.Leagues
+@model Climb.ViewModels.Leagues.PageViewModel
+@inject ICdnService cdnService
+@inject ILeagueService leagueService
+
+@{
+    Layout = "_LayoutWithNavbar";
+}
+
+<div class="container">
+    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
+        <h1>Welcome to @Model.League.Name</h1>
+        @if(!Model.IsMember && Model.User != null)
+        {
+            <form asp-action="Join">
+                <input type="hidden" name="leagueID" value="@Model.League.ID"/>
+                <input type="hidden" name="userID" value="@Model.User.Id"/>
+                <button>Join</button>
+            </form>
+        }
+    </div>
+
+    <div class="home-menu d-flex justify-content-between">
+        <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-leaugeID="@Model.League.ID">Home</a>
+        <a class="@(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-leagueID="@Model.League.ID">Membership</a>
+        <a class="@(Model.IsSubPageActive<DataViewModel>() ? "active" : "")" asp-action="Data" asp-route-leagueID="@Model.League.ID">Data</a>
+        <a class="@(Model.IsSubPageActive<SeasonsViewModel>() ? "active" : "")" asp-action="Seasons" asp-route-leagueID="@Model.League.ID">Seasons</a>
+        @if(Model.IsAdmin)
+        {
+            <a class="@(Model.IsSubPageActive<ManageViewModel>() ? "active" : "")" asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
+        }
+    </div>
+
+    @RenderSection("LeaguesBody")
+</div>
+
+@section scripts
+{
+    @RenderSection("Scripts", false)
+}
