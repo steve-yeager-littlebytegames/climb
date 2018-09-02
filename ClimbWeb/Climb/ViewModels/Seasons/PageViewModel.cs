@@ -28,7 +28,7 @@ namespace Climb.ViewModels.Seasons
                 Member = season.League.Members.FirstOrDefault(lu => lu.UserID == user.Id);
             }
 
-            CanManage = environment.IsSiteAdmin() || Season.League.AdminID == Participant?.UserID;
+            CanManage = true;// environment.IsSiteAdmin() || Season.League.AdminID == Participant?.UserID;
         }
 
         public bool IsSubPageActive<T>() where T : PageViewModel

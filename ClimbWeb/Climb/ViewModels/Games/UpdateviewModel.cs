@@ -1,10 +1,11 @@
 ﻿using Climb.Data;
 using Climb.Models;
+using Climb.Requests.Games;
 using Climb.Services;
 
 namespace Climb.ViewModels.Games
 {
-    public class UpdateViewModel : BaseViewModel
+    public class UpdateViewModel : RequestViewModel<UpdateRequest>
     {
         public Game Game { get; }
         public string Action => Game == null ? "Create" : "Update";

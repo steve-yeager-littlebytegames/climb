@@ -147,6 +147,12 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
 
+            if (TempData.ContainsKey("game"))
+            {
+                var modelErrors = TempData.Get<ModelErrors>("game");
+                modelErrors.AssignErrors(ModelState);
+            }
+
             var viewModel = new UpdateViewModel(user, null, cdnService);
             return View("Update", viewModel);
         }
@@ -170,6 +176,12 @@ namespace Climb.Controllers
         [HttpPost("games/update")]
         public async Task<IActionResult> UpdatePost(UpdateRequest request)
         {
+            if (ModelErrors.HasErrors(ModelState, out var errors))
+            {
+                TempData.Put("game", errors);
+                return RedirectToAction("Create");
+            }
+
             try
             {
                 var game = await gameService.Update(request);

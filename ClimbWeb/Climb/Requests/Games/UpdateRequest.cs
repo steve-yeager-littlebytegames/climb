@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Climb.Attributes.Validation;
 using Microsoft.AspNetCore.Http;
 
 namespace Climb.Requests.Games
@@ -15,6 +16,7 @@ namespace Climb.Requests.Games
         [Required]
         public bool HasStages { get; set; }
         [Required]
+        [FileSize(ClimbImageRules.GameLogoMaxSize, true)]
         public IFormFile LogoImage { get; set; }
 
         public UpdateRequest()
