@@ -2,7 +2,7 @@
 @model Climb.ViewModels.Account.SettingsViewModel
 
 @{
-    ViewBag.Title = "Account-Settings";
+    ViewBag.Title = @Model.User.UserName + " Settings";
 }
 
 <div class="container mt-4">
