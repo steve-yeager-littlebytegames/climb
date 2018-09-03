@@ -108,7 +108,7 @@ export class AccountApi extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
     }
 
-    register(email: string | null, username: string | null, name: string | null | undefined, password: string | null, confirmPassword: string | null | undefined): Promise<ApplicationUser> {
+    register(email: string | null, username: string | null, name: string | null | undefined, password: string | null, confirmPassword: string | null | undefined, rememberMe: boolean): Promise<UserDto> {
         let url_ = this.baseUrl + "/api/v1/account/register?";
         if (email === undefined)
             throw new Error("The parameter 'email' must be defined.");
@@ -126,6 +126,10 @@ export class AccountApi extends BaseClass {
             url_ += "password=" + encodeURIComponent("" + password) + "&"; 
         if (confirmPassword !== undefined)
             url_ += "confirmPassword=" + encodeURIComponent("" + confirmPassword) + "&"; 
+        if (rememberMe === undefined || rememberMe === null)
+            throw new Error("The parameter 'rememberMe' must be defined and cannot be null.");
+        else
+            url_ += "rememberMe=" + encodeURIComponent("" + rememberMe) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -141,14 +145,14 @@ export class AccountApi extends BaseClass {
         });
     }
 
-    protected processRegister(response: Response): Promise<ApplicationUser> {
+    protected processRegister(response: Response): Promise<UserDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 201) {
             return response.text().then((_responseText) => {
             let result201: any = null;
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = resultData201 ? ApplicationUser.fromJS(resultData201) : new ApplicationUser();
+            result201 = resultData201 ? UserDto.fromJS(resultData201) : new UserDto();
             return result201;
             });
         } else if (status === 400) {
@@ -163,7 +167,7 @@ export class AccountApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ApplicationUser>(<any>null);
+        return Promise.resolve<UserDto>(<any>null);
     }
 
     logIn(email: string | null, password: string | null, rememberMe: boolean): Promise<string> {
@@ -1481,24 +1485,13 @@ export class UserApi extends BaseClass {
     }
 }
 
-export class IdentityUserOfString implements IIdentityUserOfString {
-    accessFailedCount!: number;
-    emailConfirmed!: boolean;
-    lockoutEnabled!: boolean;
-    lockoutEnd?: Date | undefined;
-    phoneNumberConfirmed!: boolean;
-    twoFactorEnabled!: boolean;
-    id?: string | undefined;
-    userName?: string | undefined;
-    normalizedUserName?: string | undefined;
-    email?: string | undefined;
-    normalizedEmail?: string | undefined;
-    passwordHash?: string | undefined;
-    securityStamp?: string | undefined;
-    concurrencyStamp?: string | undefined;
-    phoneNumber?: string | undefined;
+export class UserDto implements IUserDto {
+    id!: string;
+    username!: string;
+    email!: string;
+    profilePic!: string;
 
-    constructor(data?: IIdentityUserOfString) {
+    constructor(data?: IUserDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1509,510 +1502,35 @@ export class IdentityUserOfString implements IIdentityUserOfString {
 
     init(data?: any) {
         if (data) {
-            this.accessFailedCount = data["accessFailedCount"];
-            this.emailConfirmed = data["emailConfirmed"];
-            this.lockoutEnabled = data["lockoutEnabled"];
-            this.lockoutEnd = data["lockoutEnd"] ? new Date(data["lockoutEnd"].toString()) : <any>undefined;
-            this.phoneNumberConfirmed = data["phoneNumberConfirmed"];
-            this.twoFactorEnabled = data["twoFactorEnabled"];
             this.id = data["id"];
-            this.userName = data["userName"];
-            this.normalizedUserName = data["normalizedUserName"];
+            this.username = data["username"];
             this.email = data["email"];
-            this.normalizedEmail = data["normalizedEmail"];
-            this.passwordHash = data["passwordHash"];
-            this.securityStamp = data["securityStamp"];
-            this.concurrencyStamp = data["concurrencyStamp"];
-            this.phoneNumber = data["phoneNumber"];
+            this.profilePic = data["profilePic"];
         }
     }
 
-    static fromJS(data: any): IdentityUserOfString {
+    static fromJS(data: any): UserDto {
         data = typeof data === 'object' ? data : {};
-        let result = new IdentityUserOfString();
+        let result = new UserDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["accessFailedCount"] = this.accessFailedCount;
-        data["emailConfirmed"] = this.emailConfirmed;
-        data["lockoutEnabled"] = this.lockoutEnabled;
-        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : <any>undefined;
-        data["phoneNumberConfirmed"] = this.phoneNumberConfirmed;
-        data["twoFactorEnabled"] = this.twoFactorEnabled;
         data["id"] = this.id;
-        data["userName"] = this.userName;
-        data["normalizedUserName"] = this.normalizedUserName;
+        data["username"] = this.username;
         data["email"] = this.email;
-        data["normalizedEmail"] = this.normalizedEmail;
-        data["passwordHash"] = this.passwordHash;
-        data["securityStamp"] = this.securityStamp;
-        data["concurrencyStamp"] = this.concurrencyStamp;
-        data["phoneNumber"] = this.phoneNumber;
+        data["profilePic"] = this.profilePic;
         return data; 
     }
 }
 
-export interface IIdentityUserOfString {
-    accessFailedCount: number;
-    emailConfirmed: boolean;
-    lockoutEnabled: boolean;
-    lockoutEnd?: Date | undefined;
-    phoneNumberConfirmed: boolean;
-    twoFactorEnabled: boolean;
-    id?: string | undefined;
-    userName?: string | undefined;
-    normalizedUserName?: string | undefined;
-    email?: string | undefined;
-    normalizedEmail?: string | undefined;
-    passwordHash?: string | undefined;
-    securityStamp?: string | undefined;
-    concurrencyStamp?: string | undefined;
-    phoneNumber?: string | undefined;
-}
-
-export class IdentityUser extends IdentityUserOfString implements IIdentityUser {
-
-    constructor(data?: IIdentityUser) {
-        super(data);
-    }
-
-    init(data?: any) {
-        super.init(data);
-        if (data) {
-        }
-    }
-
-    static fromJS(data: any): IdentityUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new IdentityUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        super.toJSON(data);
-        return data; 
-    }
-}
-
-export interface IIdentityUser extends IIdentityUserOfString {
-}
-
-export class ApplicationUser extends IdentityUser implements IApplicationUser {
-    profilePicKey?: string | undefined;
-    name?: string | undefined;
-    organizations?: OrganizationUser[] | undefined;
-    leagueUsers?: LeagueUser[] | undefined;
-    seasons?: SeasonLeagueUser[] | undefined;
-
-    constructor(data?: IApplicationUser) {
-        super(data);
-    }
-
-    init(data?: any) {
-        super.init(data);
-        if (data) {
-            this.profilePicKey = data["profilePicKey"];
-            this.name = data["name"];
-            if (data["organizations"] && data["organizations"].constructor === Array) {
-                this.organizations = [];
-                for (let item of data["organizations"])
-                    this.organizations.push(OrganizationUser.fromJS(item));
-            }
-            if (data["leagueUsers"] && data["leagueUsers"].constructor === Array) {
-                this.leagueUsers = [];
-                for (let item of data["leagueUsers"])
-                    this.leagueUsers.push(LeagueUser.fromJS(item));
-            }
-            if (data["seasons"] && data["seasons"].constructor === Array) {
-                this.seasons = [];
-                for (let item of data["seasons"])
-                    this.seasons.push(SeasonLeagueUser.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ApplicationUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new ApplicationUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profilePicKey"] = this.profilePicKey;
-        data["name"] = this.name;
-        if (this.organizations && this.organizations.constructor === Array) {
-            data["organizations"] = [];
-            for (let item of this.organizations)
-                data["organizations"].push(item.toJSON());
-        }
-        if (this.leagueUsers && this.leagueUsers.constructor === Array) {
-            data["leagueUsers"] = [];
-            for (let item of this.leagueUsers)
-                data["leagueUsers"].push(item.toJSON());
-        }
-        if (this.seasons && this.seasons.constructor === Array) {
-            data["seasons"] = [];
-            for (let item of this.seasons)
-                data["seasons"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data; 
-    }
-}
-
-export interface IApplicationUser extends IIdentityUser {
-    profilePicKey?: string | undefined;
-    name?: string | undefined;
-    organizations?: OrganizationUser[] | undefined;
-    leagueUsers?: LeagueUser[] | undefined;
-    seasons?: SeasonLeagueUser[] | undefined;
-}
-
-export class OrganizationUser implements IOrganizationUser {
-    id!: number;
-    organizationID!: number;
-    userID?: string | undefined;
-    hasLeft!: boolean;
-    joinDate!: Date;
-    isOwner!: boolean;
-    organization?: Organization | undefined;
-    user?: ApplicationUser | undefined;
-
-    constructor(data?: IOrganizationUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.organizationID = data["organizationID"];
-            this.userID = data["userID"];
-            this.hasLeft = data["hasLeft"];
-            this.joinDate = data["joinDate"] ? new Date(data["joinDate"].toString()) : <any>undefined;
-            this.isOwner = data["isOwner"];
-            this.organization = data["organization"] ? Organization.fromJS(data["organization"]) : <any>undefined;
-            this.user = data["user"] ? ApplicationUser.fromJS(data["user"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): OrganizationUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new OrganizationUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["organizationID"] = this.organizationID;
-        data["userID"] = this.userID;
-        data["hasLeft"] = this.hasLeft;
-        data["joinDate"] = this.joinDate ? this.joinDate.toISOString() : <any>undefined;
-        data["isOwner"] = this.isOwner;
-        data["organization"] = this.organization ? this.organization.toJSON() : <any>undefined;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IOrganizationUser {
-    id: number;
-    organizationID: number;
-    userID?: string | undefined;
-    hasLeft: boolean;
-    joinDate: Date;
-    isOwner: boolean;
-    organization?: Organization | undefined;
-    user?: ApplicationUser | undefined;
-}
-
-export class Organization implements IOrganization {
-    id!: number;
-    name?: string | undefined;
-    dateCreated!: Date;
-    leagues?: League[] | undefined;
-    members?: OrganizationUser[] | undefined;
-
-    constructor(data?: IOrganization) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.name = data["name"];
-            this.dateCreated = data["dateCreated"] ? new Date(data["dateCreated"].toString()) : <any>undefined;
-            if (data["leagues"] && data["leagues"].constructor === Array) {
-                this.leagues = [];
-                for (let item of data["leagues"])
-                    this.leagues.push(League.fromJS(item));
-            }
-            if (data["members"] && data["members"].constructor === Array) {
-                this.members = [];
-                for (let item of data["members"])
-                    this.members.push(OrganizationUser.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Organization {
-        data = typeof data === 'object' ? data : {};
-        let result = new Organization();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
-        if (this.leagues && this.leagues.constructor === Array) {
-            data["leagues"] = [];
-            for (let item of this.leagues)
-                data["leagues"].push(item.toJSON());
-        }
-        if (this.members && this.members.constructor === Array) {
-            data["members"] = [];
-            for (let item of this.members)
-                data["members"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IOrganization {
-    id: number;
-    name?: string | undefined;
-    dateCreated: Date;
-    leagues?: League[] | undefined;
-    members?: OrganizationUser[] | undefined;
-}
-
-export class League implements ILeague {
-    id!: number;
-    gameID!: number;
-    organizationID?: number | undefined;
-    name!: string;
-    setsTillRank!: number;
-    dateCreated!: Date;
-    adminID?: string | undefined;
-    activeSeasonID?: number | undefined;
-    admin?: ApplicationUser | undefined;
-    organization?: Organization | undefined;
-
-    constructor(data?: ILeague) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.gameID = data["gameID"];
-            this.organizationID = data["organizationID"];
-            this.name = data["name"];
-            this.setsTillRank = data["setsTillRank"];
-            this.dateCreated = data["dateCreated"] ? new Date(data["dateCreated"].toString()) : <any>undefined;
-            this.adminID = data["adminID"];
-            this.activeSeasonID = data["activeSeasonID"];
-            this.admin = data["admin"] ? ApplicationUser.fromJS(data["admin"]) : <any>undefined;
-            this.organization = data["organization"] ? Organization.fromJS(data["organization"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): League {
-        data = typeof data === 'object' ? data : {};
-        let result = new League();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["gameID"] = this.gameID;
-        data["organizationID"] = this.organizationID;
-        data["name"] = this.name;
-        data["setsTillRank"] = this.setsTillRank;
-        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
-        data["adminID"] = this.adminID;
-        data["activeSeasonID"] = this.activeSeasonID;
-        data["admin"] = this.admin ? this.admin.toJSON() : <any>undefined;
-        data["organization"] = this.organization ? this.organization.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface ILeague {
-    id: number;
-    gameID: number;
-    organizationID?: number | undefined;
-    name: string;
-    setsTillRank: number;
-    dateCreated: Date;
-    adminID?: string | undefined;
-    activeSeasonID?: number | undefined;
-    admin?: ApplicationUser | undefined;
-    organization?: Organization | undefined;
-}
-
-export class LeagueUser implements ILeagueUser {
-    id!: number;
-    leagueID!: number;
-    userID!: string;
-    displayName?: string | undefined;
-    hasLeft!: boolean;
-    points!: number;
-    rank!: number;
-    setCount!: number;
-    joinDate!: Date;
-    isNewcomer!: boolean;
-
-    constructor(data?: ILeagueUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.leagueID = data["leagueID"];
-            this.userID = data["userID"];
-            this.displayName = data["displayName"];
-            this.hasLeft = data["hasLeft"];
-            this.points = data["points"];
-            this.rank = data["rank"];
-            this.setCount = data["setCount"];
-            this.joinDate = data["joinDate"] ? new Date(data["joinDate"].toString()) : <any>undefined;
-            this.isNewcomer = data["isNewcomer"];
-        }
-    }
-
-    static fromJS(data: any): LeagueUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new LeagueUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["leagueID"] = this.leagueID;
-        data["userID"] = this.userID;
-        data["displayName"] = this.displayName;
-        data["hasLeft"] = this.hasLeft;
-        data["points"] = this.points;
-        data["rank"] = this.rank;
-        data["setCount"] = this.setCount;
-        data["joinDate"] = this.joinDate ? this.joinDate.toISOString() : <any>undefined;
-        data["isNewcomer"] = this.isNewcomer;
-        return data; 
-    }
-}
-
-export interface ILeagueUser {
-    id: number;
-    leagueID: number;
-    userID: string;
-    displayName?: string | undefined;
-    hasLeft: boolean;
-    points: number;
-    rank: number;
-    setCount: number;
-    joinDate: Date;
-    isNewcomer: boolean;
-}
-
-export class SeasonLeagueUser implements ISeasonLeagueUser {
-    id!: number;
-    seasonID!: number;
-    leagueUserID!: number;
-    userID?: string | undefined;
-    standing!: number;
-    points!: number;
-    tieBreakerPoints!: number;
-    hasLeft!: boolean;
-
-    constructor(data?: ISeasonLeagueUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.seasonID = data["seasonID"];
-            this.leagueUserID = data["leagueUserID"];
-            this.userID = data["userID"];
-            this.standing = data["standing"];
-            this.points = data["points"];
-            this.tieBreakerPoints = data["tieBreakerPoints"];
-            this.hasLeft = data["hasLeft"];
-        }
-    }
-
-    static fromJS(data: any): SeasonLeagueUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new SeasonLeagueUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["seasonID"] = this.seasonID;
-        data["leagueUserID"] = this.leagueUserID;
-        data["userID"] = this.userID;
-        data["standing"] = this.standing;
-        data["points"] = this.points;
-        data["tieBreakerPoints"] = this.tieBreakerPoints;
-        data["hasLeft"] = this.hasLeft;
-        return data; 
-    }
-}
-
-export interface ISeasonLeagueUser {
-    id: number;
-    seasonID: number;
-    leagueUserID: number;
-    userID?: string | undefined;
-    standing: number;
-    points: number;
-    tieBreakerPoints: number;
-    hasLeft: boolean;
+export interface IUserDto {
+    id: string;
+    username: string;
+    email: string;
+    profilePic: string;
 }
 
 export class GameDto implements IGameDto {
@@ -2364,6 +1882,550 @@ export interface IStage {
     id: number;
     name: string;
     gameID: number;
+}
+
+export class League implements ILeague {
+    id!: number;
+    gameID!: number;
+    organizationID?: number | undefined;
+    name!: string;
+    setsTillRank!: number;
+    dateCreated!: Date;
+    adminID?: string | undefined;
+    activeSeasonID?: number | undefined;
+    admin?: ApplicationUser | undefined;
+    organization?: Organization | undefined;
+
+    constructor(data?: ILeague) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.gameID = data["gameID"];
+            this.organizationID = data["organizationID"];
+            this.name = data["name"];
+            this.setsTillRank = data["setsTillRank"];
+            this.dateCreated = data["dateCreated"] ? new Date(data["dateCreated"].toString()) : <any>undefined;
+            this.adminID = data["adminID"];
+            this.activeSeasonID = data["activeSeasonID"];
+            this.admin = data["admin"] ? ApplicationUser.fromJS(data["admin"]) : <any>undefined;
+            this.organization = data["organization"] ? Organization.fromJS(data["organization"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): League {
+        data = typeof data === 'object' ? data : {};
+        let result = new League();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["gameID"] = this.gameID;
+        data["organizationID"] = this.organizationID;
+        data["name"] = this.name;
+        data["setsTillRank"] = this.setsTillRank;
+        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
+        data["adminID"] = this.adminID;
+        data["activeSeasonID"] = this.activeSeasonID;
+        data["admin"] = this.admin ? this.admin.toJSON() : <any>undefined;
+        data["organization"] = this.organization ? this.organization.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ILeague {
+    id: number;
+    gameID: number;
+    organizationID?: number | undefined;
+    name: string;
+    setsTillRank: number;
+    dateCreated: Date;
+    adminID?: string | undefined;
+    activeSeasonID?: number | undefined;
+    admin?: ApplicationUser | undefined;
+    organization?: Organization | undefined;
+}
+
+export class IdentityUserOfString implements IIdentityUserOfString {
+    accessFailedCount!: number;
+    emailConfirmed!: boolean;
+    lockoutEnabled!: boolean;
+    lockoutEnd?: Date | undefined;
+    phoneNumberConfirmed!: boolean;
+    twoFactorEnabled!: boolean;
+    id?: string | undefined;
+    userName?: string | undefined;
+    normalizedUserName?: string | undefined;
+    email?: string | undefined;
+    normalizedEmail?: string | undefined;
+    passwordHash?: string | undefined;
+    securityStamp?: string | undefined;
+    concurrencyStamp?: string | undefined;
+    phoneNumber?: string | undefined;
+
+    constructor(data?: IIdentityUserOfString) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.accessFailedCount = data["accessFailedCount"];
+            this.emailConfirmed = data["emailConfirmed"];
+            this.lockoutEnabled = data["lockoutEnabled"];
+            this.lockoutEnd = data["lockoutEnd"] ? new Date(data["lockoutEnd"].toString()) : <any>undefined;
+            this.phoneNumberConfirmed = data["phoneNumberConfirmed"];
+            this.twoFactorEnabled = data["twoFactorEnabled"];
+            this.id = data["id"];
+            this.userName = data["userName"];
+            this.normalizedUserName = data["normalizedUserName"];
+            this.email = data["email"];
+            this.normalizedEmail = data["normalizedEmail"];
+            this.passwordHash = data["passwordHash"];
+            this.securityStamp = data["securityStamp"];
+            this.concurrencyStamp = data["concurrencyStamp"];
+            this.phoneNumber = data["phoneNumber"];
+        }
+    }
+
+    static fromJS(data: any): IdentityUserOfString {
+        data = typeof data === 'object' ? data : {};
+        let result = new IdentityUserOfString();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["accessFailedCount"] = this.accessFailedCount;
+        data["emailConfirmed"] = this.emailConfirmed;
+        data["lockoutEnabled"] = this.lockoutEnabled;
+        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : <any>undefined;
+        data["phoneNumberConfirmed"] = this.phoneNumberConfirmed;
+        data["twoFactorEnabled"] = this.twoFactorEnabled;
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["normalizedUserName"] = this.normalizedUserName;
+        data["email"] = this.email;
+        data["normalizedEmail"] = this.normalizedEmail;
+        data["passwordHash"] = this.passwordHash;
+        data["securityStamp"] = this.securityStamp;
+        data["concurrencyStamp"] = this.concurrencyStamp;
+        data["phoneNumber"] = this.phoneNumber;
+        return data; 
+    }
+}
+
+export interface IIdentityUserOfString {
+    accessFailedCount: number;
+    emailConfirmed: boolean;
+    lockoutEnabled: boolean;
+    lockoutEnd?: Date | undefined;
+    phoneNumberConfirmed: boolean;
+    twoFactorEnabled: boolean;
+    id?: string | undefined;
+    userName?: string | undefined;
+    normalizedUserName?: string | undefined;
+    email?: string | undefined;
+    normalizedEmail?: string | undefined;
+    passwordHash?: string | undefined;
+    securityStamp?: string | undefined;
+    concurrencyStamp?: string | undefined;
+    phoneNumber?: string | undefined;
+}
+
+export class IdentityUser extends IdentityUserOfString implements IIdentityUser {
+
+    constructor(data?: IIdentityUser) {
+        super(data);
+    }
+
+    init(data?: any) {
+        super.init(data);
+        if (data) {
+        }
+    }
+
+    static fromJS(data: any): IdentityUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new IdentityUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IIdentityUser extends IIdentityUserOfString {
+}
+
+export class ApplicationUser extends IdentityUser implements IApplicationUser {
+    profilePicKey?: string | undefined;
+    name?: string | undefined;
+    organizations?: OrganizationUser[] | undefined;
+    leagueUsers?: LeagueUser[] | undefined;
+    seasons?: SeasonLeagueUser[] | undefined;
+
+    constructor(data?: IApplicationUser) {
+        super(data);
+    }
+
+    init(data?: any) {
+        super.init(data);
+        if (data) {
+            this.profilePicKey = data["profilePicKey"];
+            this.name = data["name"];
+            if (data["organizations"] && data["organizations"].constructor === Array) {
+                this.organizations = [];
+                for (let item of data["organizations"])
+                    this.organizations.push(OrganizationUser.fromJS(item));
+            }
+            if (data["leagueUsers"] && data["leagueUsers"].constructor === Array) {
+                this.leagueUsers = [];
+                for (let item of data["leagueUsers"])
+                    this.leagueUsers.push(LeagueUser.fromJS(item));
+            }
+            if (data["seasons"] && data["seasons"].constructor === Array) {
+                this.seasons = [];
+                for (let item of data["seasons"])
+                    this.seasons.push(SeasonLeagueUser.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ApplicationUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApplicationUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["profilePicKey"] = this.profilePicKey;
+        data["name"] = this.name;
+        if (this.organizations && this.organizations.constructor === Array) {
+            data["organizations"] = [];
+            for (let item of this.organizations)
+                data["organizations"].push(item.toJSON());
+        }
+        if (this.leagueUsers && this.leagueUsers.constructor === Array) {
+            data["leagueUsers"] = [];
+            for (let item of this.leagueUsers)
+                data["leagueUsers"].push(item.toJSON());
+        }
+        if (this.seasons && this.seasons.constructor === Array) {
+            data["seasons"] = [];
+            for (let item of this.seasons)
+                data["seasons"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IApplicationUser extends IIdentityUser {
+    profilePicKey?: string | undefined;
+    name?: string | undefined;
+    organizations?: OrganizationUser[] | undefined;
+    leagueUsers?: LeagueUser[] | undefined;
+    seasons?: SeasonLeagueUser[] | undefined;
+}
+
+export class OrganizationUser implements IOrganizationUser {
+    id!: number;
+    organizationID!: number;
+    userID?: string | undefined;
+    hasLeft!: boolean;
+    joinDate!: Date;
+    isOwner!: boolean;
+    organization?: Organization | undefined;
+    user?: ApplicationUser | undefined;
+
+    constructor(data?: IOrganizationUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.organizationID = data["organizationID"];
+            this.userID = data["userID"];
+            this.hasLeft = data["hasLeft"];
+            this.joinDate = data["joinDate"] ? new Date(data["joinDate"].toString()) : <any>undefined;
+            this.isOwner = data["isOwner"];
+            this.organization = data["organization"] ? Organization.fromJS(data["organization"]) : <any>undefined;
+            this.user = data["user"] ? ApplicationUser.fromJS(data["user"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): OrganizationUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new OrganizationUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["organizationID"] = this.organizationID;
+        data["userID"] = this.userID;
+        data["hasLeft"] = this.hasLeft;
+        data["joinDate"] = this.joinDate ? this.joinDate.toISOString() : <any>undefined;
+        data["isOwner"] = this.isOwner;
+        data["organization"] = this.organization ? this.organization.toJSON() : <any>undefined;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IOrganizationUser {
+    id: number;
+    organizationID: number;
+    userID?: string | undefined;
+    hasLeft: boolean;
+    joinDate: Date;
+    isOwner: boolean;
+    organization?: Organization | undefined;
+    user?: ApplicationUser | undefined;
+}
+
+export class Organization implements IOrganization {
+    id!: number;
+    name?: string | undefined;
+    dateCreated!: Date;
+    leagues?: League[] | undefined;
+    members?: OrganizationUser[] | undefined;
+
+    constructor(data?: IOrganization) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+            this.dateCreated = data["dateCreated"] ? new Date(data["dateCreated"].toString()) : <any>undefined;
+            if (data["leagues"] && data["leagues"].constructor === Array) {
+                this.leagues = [];
+                for (let item of data["leagues"])
+                    this.leagues.push(League.fromJS(item));
+            }
+            if (data["members"] && data["members"].constructor === Array) {
+                this.members = [];
+                for (let item of data["members"])
+                    this.members.push(OrganizationUser.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): Organization {
+        data = typeof data === 'object' ? data : {};
+        let result = new Organization();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
+        if (this.leagues && this.leagues.constructor === Array) {
+            data["leagues"] = [];
+            for (let item of this.leagues)
+                data["leagues"].push(item.toJSON());
+        }
+        if (this.members && this.members.constructor === Array) {
+            data["members"] = [];
+            for (let item of this.members)
+                data["members"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IOrganization {
+    id: number;
+    name?: string | undefined;
+    dateCreated: Date;
+    leagues?: League[] | undefined;
+    members?: OrganizationUser[] | undefined;
+}
+
+export class LeagueUser implements ILeagueUser {
+    id!: number;
+    leagueID!: number;
+    userID!: string;
+    displayName?: string | undefined;
+    hasLeft!: boolean;
+    points!: number;
+    rank!: number;
+    setCount!: number;
+    joinDate!: Date;
+    isNewcomer!: boolean;
+    rankTrend!: RankTrends;
+
+    constructor(data?: ILeagueUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.leagueID = data["leagueID"];
+            this.userID = data["userID"];
+            this.displayName = data["displayName"];
+            this.hasLeft = data["hasLeft"];
+            this.points = data["points"];
+            this.rank = data["rank"];
+            this.setCount = data["setCount"];
+            this.joinDate = data["joinDate"] ? new Date(data["joinDate"].toString()) : <any>undefined;
+            this.isNewcomer = data["isNewcomer"];
+            this.rankTrend = data["rankTrend"];
+        }
+    }
+
+    static fromJS(data: any): LeagueUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new LeagueUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["leagueID"] = this.leagueID;
+        data["userID"] = this.userID;
+        data["displayName"] = this.displayName;
+        data["hasLeft"] = this.hasLeft;
+        data["points"] = this.points;
+        data["rank"] = this.rank;
+        data["setCount"] = this.setCount;
+        data["joinDate"] = this.joinDate ? this.joinDate.toISOString() : <any>undefined;
+        data["isNewcomer"] = this.isNewcomer;
+        data["rankTrend"] = this.rankTrend;
+        return data; 
+    }
+}
+
+export interface ILeagueUser {
+    id: number;
+    leagueID: number;
+    userID: string;
+    displayName?: string | undefined;
+    hasLeft: boolean;
+    points: number;
+    rank: number;
+    setCount: number;
+    joinDate: Date;
+    isNewcomer: boolean;
+    rankTrend: RankTrends;
+}
+
+export enum RankTrends {
+    None = 0, 
+    Up = 1, 
+    Down = -1, 
+}
+
+export class SeasonLeagueUser implements ISeasonLeagueUser {
+    id!: number;
+    seasonID!: number;
+    leagueUserID!: number;
+    userID?: string | undefined;
+    standing!: number;
+    points!: number;
+    tieBreakerPoints!: number;
+    hasLeft!: boolean;
+
+    constructor(data?: ISeasonLeagueUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.seasonID = data["seasonID"];
+            this.leagueUserID = data["leagueUserID"];
+            this.userID = data["userID"];
+            this.standing = data["standing"];
+            this.points = data["points"];
+            this.tieBreakerPoints = data["tieBreakerPoints"];
+            this.hasLeft = data["hasLeft"];
+        }
+    }
+
+    static fromJS(data: any): SeasonLeagueUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new SeasonLeagueUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["seasonID"] = this.seasonID;
+        data["leagueUserID"] = this.leagueUserID;
+        data["userID"] = this.userID;
+        data["standing"] = this.standing;
+        data["points"] = this.points;
+        data["tieBreakerPoints"] = this.tieBreakerPoints;
+        data["hasLeft"] = this.hasLeft;
+        return data; 
+    }
+}
+
+export interface ISeasonLeagueUser {
+    id: number;
+    seasonID: number;
+    leagueUserID: number;
+    userID?: string | undefined;
+    standing: number;
+    points: number;
+    tieBreakerPoints: number;
+    hasLeft: boolean;
 }
 
 export class LeagueUserDto implements ILeagueUserDto {
@@ -3117,54 +3179,6 @@ export interface ISetRequest {
     requester?: LeagueUser | undefined;
     challenged?: LeagueUser | undefined;
     set?: Set | undefined;
-}
-
-export class UserDto implements IUserDto {
-    id!: string;
-    username!: string;
-    email!: string;
-    profilePic!: string;
-
-    constructor(data?: IUserDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.username = data["username"];
-            this.email = data["email"];
-            this.profilePic = data["profilePic"];
-        }
-    }
-
-    static fromJS(data: any): UserDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["username"] = this.username;
-        data["email"] = this.email;
-        data["profilePic"] = this.profilePic;
-        return data; 
-    }
-}
-
-export interface IUserDto {
-    id: string;
-    username: string;
-    email: string;
-    profilePic: string;
 }
 
 export interface FileParameter {
