@@ -357,7 +357,7 @@ export class GameApi extends BaseClass {
         return Promise.resolve<GameDto>(<any>null);
     }
 
-    listAll(): Promise<Game[]> {
+    listAll(): Promise<GameDto[]> {
         let url_ = this.baseUrl + "/api/v1/games";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -374,7 +374,7 @@ export class GameApi extends BaseClass {
         });
     }
 
-    protected processListAll(response: Response): Promise<Game[]> {
+    protected processListAll(response: Response): Promise<GameDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -384,7 +384,7 @@ export class GameApi extends BaseClass {
             if (resultData200 && resultData200.constructor === Array) {
                 result200 = [];
                 for (let item of resultData200)
-                    result200.push(Game.fromJS(item));
+                    result200.push(GameDto.fromJS(item));
             }
             return result200;
             });
@@ -393,7 +393,7 @@ export class GameApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Game[]>(<any>null);
+        return Promise.resolve<GameDto[]>(<any>null);
     }
 }
 
@@ -408,7 +408,7 @@ export class LeagueApi extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
     }
 
-    listAll(): Promise<League[]> {
+    listAll(): Promise<LeagueDto[]> {
         let url_ = this.baseUrl + "/api/v1/leagues";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -425,7 +425,7 @@ export class LeagueApi extends BaseClass {
         });
     }
 
-    protected processListAll(response: Response): Promise<League[]> {
+    protected processListAll(response: Response): Promise<LeagueDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -435,7 +435,7 @@ export class LeagueApi extends BaseClass {
             if (resultData200 && resultData200.constructor === Array) {
                 result200 = [];
                 for (let item of resultData200)
-                    result200.push(League.fromJS(item));
+                    result200.push(LeagueDto.fromJS(item));
             }
             return result200;
             });
@@ -444,10 +444,10 @@ export class LeagueApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<League[]>(<any>null);
+        return Promise.resolve<LeagueDto[]>(<any>null);
     }
 
-    get(leagueID: number): Promise<League> {
+    get(leagueID: number): Promise<LeagueDto> {
         let url_ = this.baseUrl + "/api/v1/leagues/{leagueID}";
         if (leagueID === undefined || leagueID === null)
             throw new Error("The parameter 'leagueID' must be defined.");
@@ -467,14 +467,14 @@ export class LeagueApi extends BaseClass {
         });
     }
 
-    protected processGet(response: Response): Promise<League> {
+    protected processGet(response: Response): Promise<LeagueDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? League.fromJS(resultData200) : new League();
+            result200 = resultData200 ? LeagueDto.fromJS(resultData200) : new LeagueDto();
             return result200;
             });
         } else if (status === 404) {
@@ -489,10 +489,10 @@ export class LeagueApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<League>(<any>null);
+        return Promise.resolve<LeagueDto>(<any>null);
     }
 
-    create(gameID: number, name: string | null, adminID: string | null | undefined): Promise<League> {
+    create(gameID: number, name: string | null, adminID: string | null | undefined): Promise<LeagueDto> {
         let url_ = this.baseUrl + "/api/v1/leagues/create?";
         if (gameID === undefined || gameID === null)
             throw new Error("The parameter 'gameID' must be defined and cannot be null.");
@@ -519,14 +519,14 @@ export class LeagueApi extends BaseClass {
         });
     }
 
-    protected processCreate(response: Response): Promise<League> {
+    protected processCreate(response: Response): Promise<LeagueDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 201) {
             return response.text().then((_responseText) => {
             let result201: any = null;
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = resultData201 ? League.fromJS(resultData201) : new League();
+            result201 = resultData201 ? LeagueDto.fromJS(resultData201) : new LeagueDto();
             return result201;
             });
         } else if (status === 404) {
@@ -548,10 +548,10 @@ export class LeagueApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<League>(<any>null);
+        return Promise.resolve<LeagueDto>(<any>null);
     }
 
-    join(leagueID: number, userID: string | null): Promise<LeagueUser> {
+    join(leagueID: number, userID: string | null): Promise<LeagueUserDto> {
         let url_ = this.baseUrl + "/api/v1/leagues/join?";
         if (leagueID === undefined || leagueID === null)
             throw new Error("The parameter 'leagueID' must be defined and cannot be null.");
@@ -576,14 +576,14 @@ export class LeagueApi extends BaseClass {
         });
     }
 
-    protected processJoin(response: Response): Promise<LeagueUser> {
+    protected processJoin(response: Response): Promise<LeagueUserDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 201) {
             return response.text().then((_responseText) => {
             let result201: any = null;
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = resultData201 ? LeagueUser.fromJS(resultData201) : new LeagueUser();
+            result201 = resultData201 ? LeagueUserDto.fromJS(resultData201) : new LeagueUserDto();
             return result201;
             });
         } else if (status === 404) {
@@ -598,7 +598,7 @@ export class LeagueApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<LeagueUser>(<any>null);
+        return Promise.resolve<LeagueUserDto>(<any>null);
     }
 
     getUser(userID: number): Promise<LeagueUserDto> {
@@ -646,7 +646,7 @@ export class LeagueApi extends BaseClass {
         return Promise.resolve<LeagueUserDto>(<any>null);
     }
 
-    getSeasons(leagueID: number): Promise<Season[]> {
+    getSeasons(leagueID: number): Promise<SeasonDto[]> {
         let url_ = this.baseUrl + "/api/v1/leagues/seasons/{leagueID}";
         if (leagueID === undefined || leagueID === null)
             throw new Error("The parameter 'leagueID' must be defined.");
@@ -666,7 +666,7 @@ export class LeagueApi extends BaseClass {
         });
     }
 
-    protected processGetSeasons(response: Response): Promise<Season[]> {
+    protected processGetSeasons(response: Response): Promise<SeasonDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -676,7 +676,7 @@ export class LeagueApi extends BaseClass {
             if (resultData200 && resultData200.constructor === Array) {
                 result200 = [];
                 for (let item of resultData200)
-                    result200.push(Season.fromJS(item));
+                    result200.push(SeasonDto.fromJS(item));
             }
             return result200;
             });
@@ -692,14 +692,14 @@ export class LeagueApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Season[]>(<any>null);
+        return Promise.resolve<SeasonDto[]>(<any>null);
     }
 
     /**
      * @param key (optional) 
      * @return League power rankings have been updated.
      */
-    updateStandings(leagueID: number, key: string | null | undefined): Promise<League> {
+    updateStandings(leagueID: number, key: string | null | undefined): Promise<LeagueDto> {
         let url_ = this.baseUrl + "/api/v1/leagues/update-standings/{leagueID}";
         if (leagueID === undefined || leagueID === null)
             throw new Error("The parameter 'leagueID' must be defined.");
@@ -720,14 +720,14 @@ export class LeagueApi extends BaseClass {
         });
     }
 
-    protected processUpdateStandings(response: Response): Promise<League> {
+    protected processUpdateStandings(response: Response): Promise<LeagueDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? League.fromJS(resultData200) : new League();
+            result200 = resultData200 ? LeagueDto.fromJS(resultData200) : new LeagueDto();
             return result200;
             });
         } else if (status === 404) {
@@ -742,10 +742,10 @@ export class LeagueApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<League>(<any>null);
+        return Promise.resolve<LeagueDto>(<any>null);
     }
 
-    leave(leagueUserID: number): Promise<LeagueUser> {
+    leave(leagueUserID: number): Promise<LeagueUserDto> {
         let url_ = this.baseUrl + "/api/v1/leagues/leave?";
         if (leagueUserID === undefined || leagueUserID === null)
             throw new Error("The parameter 'leagueUserID' must be defined and cannot be null.");
@@ -766,14 +766,14 @@ export class LeagueApi extends BaseClass {
         });
     }
 
-    protected processLeave(response: Response): Promise<LeagueUser> {
+    protected processLeave(response: Response): Promise<LeagueUserDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? LeagueUser.fromJS(resultData200) : new LeagueUser();
+            result200 = resultData200 ? LeagueUserDto.fromJS(resultData200) : new LeagueUserDto();
             return result200;
             });
         } else if (status === 404) {
@@ -788,7 +788,7 @@ export class LeagueApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<LeagueUser>(<any>null);
+        return Promise.resolve<LeagueUserDto>(<any>null);
     }
 }
 
@@ -803,7 +803,7 @@ export class SeasonApi extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
     }
 
-    get(seasonID: number): Promise<Season> {
+    get(seasonID: number): Promise<SeasonDto> {
         let url_ = this.baseUrl + "/api/v1/seasons/{seasonID}";
         if (seasonID === undefined || seasonID === null)
             throw new Error("The parameter 'seasonID' must be defined.");
@@ -823,14 +823,14 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processGet(response: Response): Promise<Season> {
+    protected processGet(response: Response): Promise<SeasonDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? Season.fromJS(resultData200) : new Season();
+            result200 = resultData200 ? SeasonDto.fromJS(resultData200) : new SeasonDto();
             return result200;
             });
         } else if (status === 404) {
@@ -845,10 +845,10 @@ export class SeasonApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Season>(<any>null);
+        return Promise.resolve<SeasonDto>(<any>null);
     }
 
-    sets(seasonID: number): Promise<Set[]> {
+    sets(seasonID: number): Promise<SetDto[]> {
         let url_ = this.baseUrl + "/api/v1/seasons/sets/{seasonID}";
         if (seasonID === undefined || seasonID === null)
             throw new Error("The parameter 'seasonID' must be defined.");
@@ -868,7 +868,7 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processSets(response: Response): Promise<Set[]> {
+    protected processSets(response: Response): Promise<SetDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -878,7 +878,7 @@ export class SeasonApi extends BaseClass {
             if (resultData200 && resultData200.constructor === Array) {
                 result200 = [];
                 for (let item of resultData200)
-                    result200.push(Set.fromJS(item));
+                    result200.push(SetDto.fromJS(item));
             }
             return result200;
             });
@@ -894,10 +894,10 @@ export class SeasonApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Set[]>(<any>null);
+        return Promise.resolve<SetDto[]>(<any>null);
     }
 
-    participants(seasonID: number): Promise<LeagueUser[]> {
+    participants(seasonID: number): Promise<SeasonLeagueUserDto[]> {
         let url_ = this.baseUrl + "/api/v1/seasons/participants/{seasonID}";
         if (seasonID === undefined || seasonID === null)
             throw new Error("The parameter 'seasonID' must be defined.");
@@ -917,7 +917,7 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processParticipants(response: Response): Promise<LeagueUser[]> {
+    protected processParticipants(response: Response): Promise<SeasonLeagueUserDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -927,7 +927,7 @@ export class SeasonApi extends BaseClass {
             if (resultData200 && resultData200.constructor === Array) {
                 result200 = [];
                 for (let item of resultData200)
-                    result200.push(LeagueUser.fromJS(item));
+                    result200.push(SeasonLeagueUserDto.fromJS(item));
             }
             return result200;
             });
@@ -943,10 +943,10 @@ export class SeasonApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<LeagueUser[]>(<any>null);
+        return Promise.resolve<SeasonLeagueUserDto[]>(<any>null);
     }
 
-    listForLeague(leagueID: number): Promise<Season[]> {
+    listForLeague(leagueID: number): Promise<SeasonDto[]> {
         let url_ = this.baseUrl + "/api/v1/seasons?";
         if (leagueID === undefined || leagueID === null)
             throw new Error("The parameter 'leagueID' must be defined and cannot be null.");
@@ -967,7 +967,7 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processListForLeague(response: Response): Promise<Season[]> {
+    protected processListForLeague(response: Response): Promise<SeasonDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -977,7 +977,7 @@ export class SeasonApi extends BaseClass {
             if (resultData200 && resultData200.constructor === Array) {
                 result200 = [];
                 for (let item of resultData200)
-                    result200.push(Season.fromJS(item));
+                    result200.push(SeasonDto.fromJS(item));
             }
             return result200;
             });
@@ -993,10 +993,10 @@ export class SeasonApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Season[]>(<any>null);
+        return Promise.resolve<SeasonDto[]>(<any>null);
     }
 
-    create(leagueID: number, startDate: Date, endDate: Date): Promise<Season> {
+    create(leagueID: number, startDate: Date, endDate: Date): Promise<SeasonDto> {
         let url_ = this.baseUrl + "/api/v1/seasons/create?";
         if (leagueID === undefined || leagueID === null)
             throw new Error("The parameter 'leagueID' must be defined and cannot be null.");
@@ -1025,14 +1025,14 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processCreate(response: Response): Promise<Season> {
+    protected processCreate(response: Response): Promise<SeasonDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 201) {
             return response.text().then((_responseText) => {
             let result201: any = null;
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = resultData201 ? Season.fromJS(resultData201) : new Season();
+            result201 = resultData201 ? SeasonDto.fromJS(resultData201) : new SeasonDto();
             return result201;
             });
         } else if (status === 400) {
@@ -1054,10 +1054,10 @@ export class SeasonApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Season>(<any>null);
+        return Promise.resolve<SeasonDto>(<any>null);
     }
 
-    start(seasonID: number): Promise<Set[]> {
+    start(seasonID: number): Promise<SetDto[]> {
         let url_ = this.baseUrl + "/api/v1/seasons/start?";
         if (seasonID === undefined || seasonID === null)
             throw new Error("The parameter 'seasonID' must be defined and cannot be null.");
@@ -1078,7 +1078,7 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processStart(response: Response): Promise<Set[]> {
+    protected processStart(response: Response): Promise<SetDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 201) {
@@ -1088,7 +1088,7 @@ export class SeasonApi extends BaseClass {
             if (resultData201 && resultData201.constructor === Array) {
                 result201 = [];
                 for (let item of resultData201)
-                    result201.push(Set.fromJS(item));
+                    result201.push(SetDto.fromJS(item));
             }
             return result201;
             });
@@ -1097,10 +1097,10 @@ export class SeasonApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Set[]>(<any>null);
+        return Promise.resolve<SetDto[]>(<any>null);
     }
 
-    end(seasonID: number): Promise<Season> {
+    end(seasonID: number): Promise<SeasonDto> {
         let url_ = this.baseUrl + "/api/v1/seasons/end?";
         if (seasonID === undefined || seasonID === null)
             throw new Error("The parameter 'seasonID' must be defined and cannot be null.");
@@ -1121,14 +1121,14 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processEnd(response: Response): Promise<Season> {
+    protected processEnd(response: Response): Promise<SeasonDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? Season.fromJS(resultData200) : new Season();
+            result200 = resultData200 ? SeasonDto.fromJS(resultData200) : new SeasonDto();
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -1136,10 +1136,10 @@ export class SeasonApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<Season>(<any>null);
+        return Promise.resolve<SeasonDto>(<any>null);
     }
 
-    leave(participantID: number): Promise<void> {
+    leave(participantID: number): Promise<SeasonDto> {
         let url_ = this.baseUrl + "/api/v1/seasons/leave?";
         if (participantID === undefined || participantID === null)
             throw new Error("The parameter 'participantID' must be defined and cannot be null.");
@@ -1151,6 +1151,7 @@ export class SeasonApi extends BaseClass {
             method: "POST",
             headers: {
                 "Content-Type": "application/json", 
+                "Accept": "application/json"
             }
         };
 
@@ -1159,19 +1160,22 @@ export class SeasonApi extends BaseClass {
         });
     }
 
-    protected processLeave(response: Response): Promise<void> {
+    protected processLeave(response: Response): Promise<SeasonDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? SeasonDto.fromJS(resultData200) : new SeasonDto();
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(<any>null);
+        return Promise.resolve<SeasonDto>(<any>null);
     }
 }
 
@@ -1283,7 +1287,7 @@ export class SetApi extends BaseClass {
         return Promise.resolve<SetDto>(<any>null);
     }
 
-    challengeUser(requesterID: number, challengedID: number, message: string | null): Promise<SetRequest> {
+    challengeUser(requesterID: number, challengedID: number, message: string | null): Promise<SetRequestDto> {
         let url_ = this.baseUrl + "/api/v1/sets/challenge?";
         if (requesterID === undefined || requesterID === null)
             throw new Error("The parameter 'requesterID' must be defined and cannot be null.");
@@ -1312,14 +1316,14 @@ export class SetApi extends BaseClass {
         });
     }
 
-    protected processChallengeUser(response: Response): Promise<SetRequest> {
+    protected processChallengeUser(response: Response): Promise<SetRequestDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 201) {
             return response.text().then((_responseText) => {
             let result201: any = null;
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = resultData201 ? SetRequest.fromJS(resultData201) : new SetRequest();
+            result201 = resultData201 ? SetRequestDto.fromJS(resultData201) : new SetRequestDto();
             return result201;
             });
         } else if (status !== 200 && status !== 204) {
@@ -1327,10 +1331,10 @@ export class SetApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SetRequest>(<any>null);
+        return Promise.resolve<SetRequestDto>(<any>null);
     }
 
-    respondToChallenge(requestID: number, accept: boolean): Promise<SetRequest> {
+    respondToChallenge(requestID: number, accept: boolean): Promise<SetRequestDto> {
         let url_ = this.baseUrl + "/api/v1/sets/respondToChallenge?";
         if (requestID === undefined || requestID === null)
             throw new Error("The parameter 'requestID' must be defined and cannot be null.");
@@ -1355,14 +1359,14 @@ export class SetApi extends BaseClass {
         });
     }
 
-    protected processRespondToChallenge(response: Response): Promise<SetRequest> {
+    protected processRespondToChallenge(response: Response): Promise<SetRequestDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? SetRequest.fromJS(resultData200) : new SetRequest();
+            result200 = resultData200 ? SetRequestDto.fromJS(resultData200) : new SetRequestDto();
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -1370,7 +1374,7 @@ export class SetApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SetRequest>(<any>null);
+        return Promise.resolve<SetRequestDto>(<any>null);
     }
 }
 
@@ -1692,211 +1696,17 @@ export interface IStageDto {
     name: string;
 }
 
-export class Game implements IGame {
-    id!: number;
-    name!: string;
-    dateAdded!: Date;
-    charactersPerMatch!: number;
-    maxMatchPoints!: number;
-    hasStages!: boolean;
-    logoImageKey?: string | undefined;
-    characters!: Character[];
-    stages!: Stage[];
-    leagues?: League[] | undefined;
-
-    constructor(data?: IGame) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.characters = [];
-            this.stages = [];
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.name = data["name"];
-            this.dateAdded = data["dateAdded"] ? new Date(data["dateAdded"].toString()) : <any>undefined;
-            this.charactersPerMatch = data["charactersPerMatch"];
-            this.maxMatchPoints = data["maxMatchPoints"];
-            this.hasStages = data["hasStages"];
-            this.logoImageKey = data["logoImageKey"];
-            if (data["characters"] && data["characters"].constructor === Array) {
-                this.characters = [];
-                for (let item of data["characters"])
-                    this.characters.push(Character.fromJS(item));
-            }
-            if (data["stages"] && data["stages"].constructor === Array) {
-                this.stages = [];
-                for (let item of data["stages"])
-                    this.stages.push(Stage.fromJS(item));
-            }
-            if (data["leagues"] && data["leagues"].constructor === Array) {
-                this.leagues = [];
-                for (let item of data["leagues"])
-                    this.leagues.push(League.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Game {
-        data = typeof data === 'object' ? data : {};
-        let result = new Game();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["dateAdded"] = this.dateAdded ? this.dateAdded.toISOString() : <any>undefined;
-        data["charactersPerMatch"] = this.charactersPerMatch;
-        data["maxMatchPoints"] = this.maxMatchPoints;
-        data["hasStages"] = this.hasStages;
-        data["logoImageKey"] = this.logoImageKey;
-        if (this.characters && this.characters.constructor === Array) {
-            data["characters"] = [];
-            for (let item of this.characters)
-                data["characters"].push(item.toJSON());
-        }
-        if (this.stages && this.stages.constructor === Array) {
-            data["stages"] = [];
-            for (let item of this.stages)
-                data["stages"].push(item.toJSON());
-        }
-        if (this.leagues && this.leagues.constructor === Array) {
-            data["leagues"] = [];
-            for (let item of this.leagues)
-                data["leagues"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IGame {
-    id: number;
-    name: string;
-    dateAdded: Date;
-    charactersPerMatch: number;
-    maxMatchPoints: number;
-    hasStages: boolean;
-    logoImageKey?: string | undefined;
-    characters: Character[];
-    stages: Stage[];
-    leagues?: League[] | undefined;
-}
-
-export class Character implements ICharacter {
-    id!: number;
-    name!: string;
-    gameID!: number;
-    imageKey?: string | undefined;
-
-    constructor(data?: ICharacter) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.name = data["name"];
-            this.gameID = data["gameID"];
-            this.imageKey = data["imageKey"];
-        }
-    }
-
-    static fromJS(data: any): Character {
-        data = typeof data === 'object' ? data : {};
-        let result = new Character();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["gameID"] = this.gameID;
-        data["imageKey"] = this.imageKey;
-        return data; 
-    }
-}
-
-export interface ICharacter {
-    id: number;
-    name: string;
-    gameID: number;
-    imageKey?: string | undefined;
-}
-
-export class Stage implements IStage {
-    id!: number;
-    name!: string;
-    gameID!: number;
-
-    constructor(data?: IStage) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.name = data["name"];
-            this.gameID = data["gameID"];
-        }
-    }
-
-    static fromJS(data: any): Stage {
-        data = typeof data === 'object' ? data : {};
-        let result = new Stage();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["gameID"] = this.gameID;
-        return data; 
-    }
-}
-
-export interface IStage {
-    id: number;
-    name: string;
-    gameID: number;
-}
-
-export class League implements ILeague {
+export class LeagueDto implements ILeagueDto {
     id!: number;
     gameID!: number;
     organizationID?: number | undefined;
-    name!: string;
+    name?: string | undefined;
     setsTillRank!: number;
     dateCreated!: Date;
     adminID?: string | undefined;
     activeSeasonID?: number | undefined;
-    admin?: ApplicationUser | undefined;
-    organization?: Organization | undefined;
 
-    constructor(data?: ILeague) {
+    constructor(data?: ILeagueDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1915,14 +1725,12 @@ export class League implements ILeague {
             this.dateCreated = data["dateCreated"] ? new Date(data["dateCreated"].toString()) : <any>undefined;
             this.adminID = data["adminID"];
             this.activeSeasonID = data["activeSeasonID"];
-            this.admin = data["admin"] ? ApplicationUser.fromJS(data["admin"]) : <any>undefined;
-            this.organization = data["organization"] ? Organization.fromJS(data["organization"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): League {
+    static fromJS(data: any): LeagueDto {
         data = typeof data === 'object' ? data : {};
-        let result = new League();
+        let result = new LeagueDto();
         result.init(data);
         return result;
     }
@@ -1937,495 +1745,19 @@ export class League implements ILeague {
         data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
         data["adminID"] = this.adminID;
         data["activeSeasonID"] = this.activeSeasonID;
-        data["admin"] = this.admin ? this.admin.toJSON() : <any>undefined;
-        data["organization"] = this.organization ? this.organization.toJSON() : <any>undefined;
         return data; 
     }
 }
 
-export interface ILeague {
+export interface ILeagueDto {
     id: number;
     gameID: number;
     organizationID?: number | undefined;
-    name: string;
+    name?: string | undefined;
     setsTillRank: number;
     dateCreated: Date;
     adminID?: string | undefined;
     activeSeasonID?: number | undefined;
-    admin?: ApplicationUser | undefined;
-    organization?: Organization | undefined;
-}
-
-export class IdentityUserOfString implements IIdentityUserOfString {
-    accessFailedCount!: number;
-    emailConfirmed!: boolean;
-    lockoutEnabled!: boolean;
-    lockoutEnd?: Date | undefined;
-    phoneNumberConfirmed!: boolean;
-    twoFactorEnabled!: boolean;
-    id?: string | undefined;
-    userName?: string | undefined;
-    normalizedUserName?: string | undefined;
-    email?: string | undefined;
-    normalizedEmail?: string | undefined;
-    passwordHash?: string | undefined;
-    securityStamp?: string | undefined;
-    concurrencyStamp?: string | undefined;
-    phoneNumber?: string | undefined;
-
-    constructor(data?: IIdentityUserOfString) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.accessFailedCount = data["accessFailedCount"];
-            this.emailConfirmed = data["emailConfirmed"];
-            this.lockoutEnabled = data["lockoutEnabled"];
-            this.lockoutEnd = data["lockoutEnd"] ? new Date(data["lockoutEnd"].toString()) : <any>undefined;
-            this.phoneNumberConfirmed = data["phoneNumberConfirmed"];
-            this.twoFactorEnabled = data["twoFactorEnabled"];
-            this.id = data["id"];
-            this.userName = data["userName"];
-            this.normalizedUserName = data["normalizedUserName"];
-            this.email = data["email"];
-            this.normalizedEmail = data["normalizedEmail"];
-            this.passwordHash = data["passwordHash"];
-            this.securityStamp = data["securityStamp"];
-            this.concurrencyStamp = data["concurrencyStamp"];
-            this.phoneNumber = data["phoneNumber"];
-        }
-    }
-
-    static fromJS(data: any): IdentityUserOfString {
-        data = typeof data === 'object' ? data : {};
-        let result = new IdentityUserOfString();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["accessFailedCount"] = this.accessFailedCount;
-        data["emailConfirmed"] = this.emailConfirmed;
-        data["lockoutEnabled"] = this.lockoutEnabled;
-        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : <any>undefined;
-        data["phoneNumberConfirmed"] = this.phoneNumberConfirmed;
-        data["twoFactorEnabled"] = this.twoFactorEnabled;
-        data["id"] = this.id;
-        data["userName"] = this.userName;
-        data["normalizedUserName"] = this.normalizedUserName;
-        data["email"] = this.email;
-        data["normalizedEmail"] = this.normalizedEmail;
-        data["passwordHash"] = this.passwordHash;
-        data["securityStamp"] = this.securityStamp;
-        data["concurrencyStamp"] = this.concurrencyStamp;
-        data["phoneNumber"] = this.phoneNumber;
-        return data; 
-    }
-}
-
-export interface IIdentityUserOfString {
-    accessFailedCount: number;
-    emailConfirmed: boolean;
-    lockoutEnabled: boolean;
-    lockoutEnd?: Date | undefined;
-    phoneNumberConfirmed: boolean;
-    twoFactorEnabled: boolean;
-    id?: string | undefined;
-    userName?: string | undefined;
-    normalizedUserName?: string | undefined;
-    email?: string | undefined;
-    normalizedEmail?: string | undefined;
-    passwordHash?: string | undefined;
-    securityStamp?: string | undefined;
-    concurrencyStamp?: string | undefined;
-    phoneNumber?: string | undefined;
-}
-
-export class IdentityUser extends IdentityUserOfString implements IIdentityUser {
-
-    constructor(data?: IIdentityUser) {
-        super(data);
-    }
-
-    init(data?: any) {
-        super.init(data);
-        if (data) {
-        }
-    }
-
-    static fromJS(data: any): IdentityUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new IdentityUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        super.toJSON(data);
-        return data; 
-    }
-}
-
-export interface IIdentityUser extends IIdentityUserOfString {
-}
-
-export class ApplicationUser extends IdentityUser implements IApplicationUser {
-    profilePicKey?: string | undefined;
-    name?: string | undefined;
-    organizations?: OrganizationUser[] | undefined;
-    leagueUsers?: LeagueUser[] | undefined;
-    seasons?: SeasonLeagueUser[] | undefined;
-
-    constructor(data?: IApplicationUser) {
-        super(data);
-    }
-
-    init(data?: any) {
-        super.init(data);
-        if (data) {
-            this.profilePicKey = data["profilePicKey"];
-            this.name = data["name"];
-            if (data["organizations"] && data["organizations"].constructor === Array) {
-                this.organizations = [];
-                for (let item of data["organizations"])
-                    this.organizations.push(OrganizationUser.fromJS(item));
-            }
-            if (data["leagueUsers"] && data["leagueUsers"].constructor === Array) {
-                this.leagueUsers = [];
-                for (let item of data["leagueUsers"])
-                    this.leagueUsers.push(LeagueUser.fromJS(item));
-            }
-            if (data["seasons"] && data["seasons"].constructor === Array) {
-                this.seasons = [];
-                for (let item of data["seasons"])
-                    this.seasons.push(SeasonLeagueUser.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ApplicationUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new ApplicationUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profilePicKey"] = this.profilePicKey;
-        data["name"] = this.name;
-        if (this.organizations && this.organizations.constructor === Array) {
-            data["organizations"] = [];
-            for (let item of this.organizations)
-                data["organizations"].push(item.toJSON());
-        }
-        if (this.leagueUsers && this.leagueUsers.constructor === Array) {
-            data["leagueUsers"] = [];
-            for (let item of this.leagueUsers)
-                data["leagueUsers"].push(item.toJSON());
-        }
-        if (this.seasons && this.seasons.constructor === Array) {
-            data["seasons"] = [];
-            for (let item of this.seasons)
-                data["seasons"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data; 
-    }
-}
-
-export interface IApplicationUser extends IIdentityUser {
-    profilePicKey?: string | undefined;
-    name?: string | undefined;
-    organizations?: OrganizationUser[] | undefined;
-    leagueUsers?: LeagueUser[] | undefined;
-    seasons?: SeasonLeagueUser[] | undefined;
-}
-
-export class OrganizationUser implements IOrganizationUser {
-    id!: number;
-    organizationID!: number;
-    userID?: string | undefined;
-    hasLeft!: boolean;
-    joinDate!: Date;
-    isOwner!: boolean;
-    organization?: Organization | undefined;
-    user?: ApplicationUser | undefined;
-
-    constructor(data?: IOrganizationUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.organizationID = data["organizationID"];
-            this.userID = data["userID"];
-            this.hasLeft = data["hasLeft"];
-            this.joinDate = data["joinDate"] ? new Date(data["joinDate"].toString()) : <any>undefined;
-            this.isOwner = data["isOwner"];
-            this.organization = data["organization"] ? Organization.fromJS(data["organization"]) : <any>undefined;
-            this.user = data["user"] ? ApplicationUser.fromJS(data["user"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): OrganizationUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new OrganizationUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["organizationID"] = this.organizationID;
-        data["userID"] = this.userID;
-        data["hasLeft"] = this.hasLeft;
-        data["joinDate"] = this.joinDate ? this.joinDate.toISOString() : <any>undefined;
-        data["isOwner"] = this.isOwner;
-        data["organization"] = this.organization ? this.organization.toJSON() : <any>undefined;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IOrganizationUser {
-    id: number;
-    organizationID: number;
-    userID?: string | undefined;
-    hasLeft: boolean;
-    joinDate: Date;
-    isOwner: boolean;
-    organization?: Organization | undefined;
-    user?: ApplicationUser | undefined;
-}
-
-export class Organization implements IOrganization {
-    id!: number;
-    name?: string | undefined;
-    dateCreated!: Date;
-    leagues?: League[] | undefined;
-    members?: OrganizationUser[] | undefined;
-
-    constructor(data?: IOrganization) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.name = data["name"];
-            this.dateCreated = data["dateCreated"] ? new Date(data["dateCreated"].toString()) : <any>undefined;
-            if (data["leagues"] && data["leagues"].constructor === Array) {
-                this.leagues = [];
-                for (let item of data["leagues"])
-                    this.leagues.push(League.fromJS(item));
-            }
-            if (data["members"] && data["members"].constructor === Array) {
-                this.members = [];
-                for (let item of data["members"])
-                    this.members.push(OrganizationUser.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Organization {
-        data = typeof data === 'object' ? data : {};
-        let result = new Organization();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
-        if (this.leagues && this.leagues.constructor === Array) {
-            data["leagues"] = [];
-            for (let item of this.leagues)
-                data["leagues"].push(item.toJSON());
-        }
-        if (this.members && this.members.constructor === Array) {
-            data["members"] = [];
-            for (let item of this.members)
-                data["members"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IOrganization {
-    id: number;
-    name?: string | undefined;
-    dateCreated: Date;
-    leagues?: League[] | undefined;
-    members?: OrganizationUser[] | undefined;
-}
-
-export class LeagueUser implements ILeagueUser {
-    id!: number;
-    leagueID!: number;
-    userID!: string;
-    displayName?: string | undefined;
-    hasLeft!: boolean;
-    points!: number;
-    rank!: number;
-    setCount!: number;
-    joinDate!: Date;
-    isNewcomer!: boolean;
-    rankTrend!: RankTrends;
-
-    constructor(data?: ILeagueUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.leagueID = data["leagueID"];
-            this.userID = data["userID"];
-            this.displayName = data["displayName"];
-            this.hasLeft = data["hasLeft"];
-            this.points = data["points"];
-            this.rank = data["rank"];
-            this.setCount = data["setCount"];
-            this.joinDate = data["joinDate"] ? new Date(data["joinDate"].toString()) : <any>undefined;
-            this.isNewcomer = data["isNewcomer"];
-            this.rankTrend = data["rankTrend"];
-        }
-    }
-
-    static fromJS(data: any): LeagueUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new LeagueUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["leagueID"] = this.leagueID;
-        data["userID"] = this.userID;
-        data["displayName"] = this.displayName;
-        data["hasLeft"] = this.hasLeft;
-        data["points"] = this.points;
-        data["rank"] = this.rank;
-        data["setCount"] = this.setCount;
-        data["joinDate"] = this.joinDate ? this.joinDate.toISOString() : <any>undefined;
-        data["isNewcomer"] = this.isNewcomer;
-        data["rankTrend"] = this.rankTrend;
-        return data; 
-    }
-}
-
-export interface ILeagueUser {
-    id: number;
-    leagueID: number;
-    userID: string;
-    displayName?: string | undefined;
-    hasLeft: boolean;
-    points: number;
-    rank: number;
-    setCount: number;
-    joinDate: Date;
-    isNewcomer: boolean;
-    rankTrend: RankTrends;
-}
-
-export enum RankTrends {
-    None = 0, 
-    Up = 1, 
-    Down = -1, 
-}
-
-export class SeasonLeagueUser implements ISeasonLeagueUser {
-    id!: number;
-    seasonID!: number;
-    leagueUserID!: number;
-    userID?: string | undefined;
-    standing!: number;
-    points!: number;
-    tieBreakerPoints!: number;
-    hasLeft!: boolean;
-
-    constructor(data?: ISeasonLeagueUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.seasonID = data["seasonID"];
-            this.leagueUserID = data["leagueUserID"];
-            this.userID = data["userID"];
-            this.standing = data["standing"];
-            this.points = data["points"];
-            this.tieBreakerPoints = data["tieBreakerPoints"];
-            this.hasLeft = data["hasLeft"];
-        }
-    }
-
-    static fromJS(data: any): SeasonLeagueUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new SeasonLeagueUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["seasonID"] = this.seasonID;
-        data["leagueUserID"] = this.leagueUserID;
-        data["userID"] = this.userID;
-        data["standing"] = this.standing;
-        data["points"] = this.points;
-        data["tieBreakerPoints"] = this.tieBreakerPoints;
-        data["hasLeft"] = this.hasLeft;
-        return data; 
-    }
-}
-
-export interface ISeasonLeagueUser {
-    id: number;
-    seasonID: number;
-    leagueUserID: number;
-    userID?: string | undefined;
-    standing: number;
-    points: number;
-    tieBreakerPoints: number;
-    hasLeft: boolean;
 }
 
 export class LeagueUserDto implements ILeagueUserDto {
@@ -2492,7 +1824,7 @@ export interface ILeagueUserDto {
     profilePicture?: string | undefined;
 }
 
-export class Season implements ISeason {
+export class SeasonDto implements ISeasonDto {
     id!: number;
     leagueID!: number;
     index!: number;
@@ -2501,7 +1833,7 @@ export class Season implements ISeason {
     isActive!: boolean;
     isComplete!: boolean;
 
-    constructor(data?: ISeason) {
+    constructor(data?: ISeasonDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2522,9 +1854,9 @@ export class Season implements ISeason {
         }
     }
 
-    static fromJS(data: any): Season {
+    static fromJS(data: any): SeasonDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Season();
+        let result = new SeasonDto();
         result.init(data);
         return result;
     }
@@ -2542,7 +1874,7 @@ export class Season implements ISeason {
     }
 }
 
-export interface ISeason {
+export interface ISeasonDto {
     id: number;
     leagueID: number;
     index: number;
@@ -2550,367 +1882,6 @@ export interface ISeason {
     endDate: Date;
     isActive: boolean;
     isComplete: boolean;
-}
-
-export class Set implements ISet {
-    id!: number;
-    leagueID!: number;
-    seasonID?: number | undefined;
-    player1ID!: number;
-    player2ID!: number;
-    seasonPlayer1ID?: number | undefined;
-    seasonPlayer2ID?: number | undefined;
-    player1Score?: number | undefined;
-    player2Score?: number | undefined;
-    dueDate!: Date;
-    updatedDate?: Date | undefined;
-    isLocked!: boolean;
-    isComplete!: boolean;
-    isForfeit!: boolean;
-    player1SeasonPoints!: number;
-    player2SeasonPoints!: number;
-    matches!: Match[];
-    seasonWinnerID?: number | undefined;
-    seasonLoserID?: number | undefined;
-
-    constructor(data?: ISet) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.matches = [];
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.leagueID = data["leagueID"];
-            this.seasonID = data["seasonID"];
-            this.player1ID = data["player1ID"];
-            this.player2ID = data["player2ID"];
-            this.seasonPlayer1ID = data["seasonPlayer1ID"];
-            this.seasonPlayer2ID = data["seasonPlayer2ID"];
-            this.player1Score = data["player1Score"];
-            this.player2Score = data["player2Score"];
-            this.dueDate = data["dueDate"] ? new Date(data["dueDate"].toString()) : <any>undefined;
-            this.updatedDate = data["updatedDate"] ? new Date(data["updatedDate"].toString()) : <any>undefined;
-            this.isLocked = data["isLocked"];
-            this.isComplete = data["isComplete"];
-            this.isForfeit = data["isForfeit"];
-            this.player1SeasonPoints = data["player1SeasonPoints"];
-            this.player2SeasonPoints = data["player2SeasonPoints"];
-            if (data["matches"] && data["matches"].constructor === Array) {
-                this.matches = [];
-                for (let item of data["matches"])
-                    this.matches.push(Match.fromJS(item));
-            }
-            this.seasonWinnerID = data["seasonWinnerID"];
-            this.seasonLoserID = data["seasonLoserID"];
-        }
-    }
-
-    static fromJS(data: any): Set {
-        data = typeof data === 'object' ? data : {};
-        let result = new Set();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["leagueID"] = this.leagueID;
-        data["seasonID"] = this.seasonID;
-        data["player1ID"] = this.player1ID;
-        data["player2ID"] = this.player2ID;
-        data["seasonPlayer1ID"] = this.seasonPlayer1ID;
-        data["seasonPlayer2ID"] = this.seasonPlayer2ID;
-        data["player1Score"] = this.player1Score;
-        data["player2Score"] = this.player2Score;
-        data["dueDate"] = this.dueDate ? this.dueDate.toISOString() : <any>undefined;
-        data["updatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : <any>undefined;
-        data["isLocked"] = this.isLocked;
-        data["isComplete"] = this.isComplete;
-        data["isForfeit"] = this.isForfeit;
-        data["player1SeasonPoints"] = this.player1SeasonPoints;
-        data["player2SeasonPoints"] = this.player2SeasonPoints;
-        if (this.matches && this.matches.constructor === Array) {
-            data["matches"] = [];
-            for (let item of this.matches)
-                data["matches"].push(item.toJSON());
-        }
-        data["seasonWinnerID"] = this.seasonWinnerID;
-        data["seasonLoserID"] = this.seasonLoserID;
-        return data; 
-    }
-}
-
-export interface ISet {
-    id: number;
-    leagueID: number;
-    seasonID?: number | undefined;
-    player1ID: number;
-    player2ID: number;
-    seasonPlayer1ID?: number | undefined;
-    seasonPlayer2ID?: number | undefined;
-    player1Score?: number | undefined;
-    player2Score?: number | undefined;
-    dueDate: Date;
-    updatedDate?: Date | undefined;
-    isLocked: boolean;
-    isComplete: boolean;
-    isForfeit: boolean;
-    player1SeasonPoints: number;
-    player2SeasonPoints: number;
-    matches: Match[];
-    seasonWinnerID?: number | undefined;
-    seasonLoserID?: number | undefined;
-}
-
-export class Match implements IMatch {
-    id!: number;
-    setID!: number;
-    index!: number;
-    player1Score!: number;
-    player2Score!: number;
-    stageID?: number | undefined;
-    matchCharacters!: MatchCharacter[];
-
-    constructor(data?: IMatch) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.matchCharacters = [];
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.setID = data["setID"];
-            this.index = data["index"];
-            this.player1Score = data["player1Score"];
-            this.player2Score = data["player2Score"];
-            this.stageID = data["stageID"];
-            if (data["matchCharacters"] && data["matchCharacters"].constructor === Array) {
-                this.matchCharacters = [];
-                for (let item of data["matchCharacters"])
-                    this.matchCharacters.push(MatchCharacter.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Match {
-        data = typeof data === 'object' ? data : {};
-        let result = new Match();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["setID"] = this.setID;
-        data["index"] = this.index;
-        data["player1Score"] = this.player1Score;
-        data["player2Score"] = this.player2Score;
-        data["stageID"] = this.stageID;
-        if (this.matchCharacters && this.matchCharacters.constructor === Array) {
-            data["matchCharacters"] = [];
-            for (let item of this.matchCharacters)
-                data["matchCharacters"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IMatch {
-    id: number;
-    setID: number;
-    index: number;
-    player1Score: number;
-    player2Score: number;
-    stageID?: number | undefined;
-    matchCharacters: MatchCharacter[];
-}
-
-export class MatchCharacter implements IMatchCharacter {
-    matchID!: number;
-    characterID!: number;
-    leagueUserID!: number;
-    createdDate!: Date;
-
-    constructor(data?: IMatchCharacter) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.matchID = data["matchID"];
-            this.characterID = data["characterID"];
-            this.leagueUserID = data["leagueUserID"];
-            this.createdDate = data["createdDate"] ? new Date(data["createdDate"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): MatchCharacter {
-        data = typeof data === 'object' ? data : {};
-        let result = new MatchCharacter();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["matchID"] = this.matchID;
-        data["characterID"] = this.characterID;
-        data["leagueUserID"] = this.leagueUserID;
-        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IMatchCharacter {
-    matchID: number;
-    characterID: number;
-    leagueUserID: number;
-    createdDate: Date;
-}
-
-export class SubmitRequest implements ISubmitRequest {
-    setID!: number;
-    matches!: MatchForm[];
-
-    constructor(data?: ISubmitRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.matches = [];
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.setID = data["setID"];
-            if (data["matches"] && data["matches"].constructor === Array) {
-                this.matches = [];
-                for (let item of data["matches"])
-                    this.matches.push(MatchForm.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): SubmitRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new SubmitRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["setID"] = this.setID;
-        if (this.matches && this.matches.constructor === Array) {
-            data["matches"] = [];
-            for (let item of this.matches)
-                data["matches"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface ISubmitRequest {
-    setID: number;
-    matches: MatchForm[];
-}
-
-export class MatchForm implements IMatchForm {
-    player1Score!: number;
-    player2Score!: number;
-    player1Characters!: number[];
-    player2Characters!: number[];
-    stageID?: number | undefined;
-
-    constructor(data?: IMatchForm) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.player1Characters = [];
-            this.player2Characters = [];
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.player1Score = data["player1Score"];
-            this.player2Score = data["player2Score"];
-            if (data["player1Characters"] && data["player1Characters"].constructor === Array) {
-                this.player1Characters = [];
-                for (let item of data["player1Characters"])
-                    this.player1Characters.push(item);
-            }
-            if (data["player2Characters"] && data["player2Characters"].constructor === Array) {
-                this.player2Characters = [];
-                for (let item of data["player2Characters"])
-                    this.player2Characters.push(item);
-            }
-            this.stageID = data["stageID"];
-        }
-    }
-
-    static fromJS(data: any): MatchForm {
-        data = typeof data === 'object' ? data : {};
-        let result = new MatchForm();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["player1Score"] = this.player1Score;
-        data["player2Score"] = this.player2Score;
-        if (this.player1Characters && this.player1Characters.constructor === Array) {
-            data["player1Characters"] = [];
-            for (let item of this.player1Characters)
-                data["player1Characters"].push(item);
-        }
-        if (this.player2Characters && this.player2Characters.constructor === Array) {
-            data["player2Characters"] = [];
-            for (let item of this.player2Characters)
-                data["player2Characters"].push(item);
-        }
-        data["stageID"] = this.stageID;
-        return data; 
-    }
-}
-
-export interface IMatchForm {
-    player1Score: number;
-    player2Score: number;
-    player1Characters: number[];
-    player2Characters: number[];
-    stageID?: number | undefined;
 }
 
 export class SetDto implements ISetDto {
@@ -3101,7 +2072,198 @@ export enum SetTypes {
     Season = 1, 
 }
 
-export class SetRequest implements ISetRequest {
+export class SeasonLeagueUserDto implements ISeasonLeagueUserDto {
+    id!: number;
+    seasonID!: number;
+    leagueUserID!: number;
+    userID?: string | undefined;
+    standing!: number;
+    points!: number;
+    tieBreakerPoints!: number;
+    hasLeft!: boolean;
+    profilePic?: string | undefined;
+
+    constructor(data?: ISeasonLeagueUserDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.seasonID = data["seasonID"];
+            this.leagueUserID = data["leagueUserID"];
+            this.userID = data["userID"];
+            this.standing = data["standing"];
+            this.points = data["points"];
+            this.tieBreakerPoints = data["tieBreakerPoints"];
+            this.hasLeft = data["hasLeft"];
+            this.profilePic = data["profilePic"];
+        }
+    }
+
+    static fromJS(data: any): SeasonLeagueUserDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SeasonLeagueUserDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["seasonID"] = this.seasonID;
+        data["leagueUserID"] = this.leagueUserID;
+        data["userID"] = this.userID;
+        data["standing"] = this.standing;
+        data["points"] = this.points;
+        data["tieBreakerPoints"] = this.tieBreakerPoints;
+        data["hasLeft"] = this.hasLeft;
+        data["profilePic"] = this.profilePic;
+        return data; 
+    }
+}
+
+export interface ISeasonLeagueUserDto {
+    id: number;
+    seasonID: number;
+    leagueUserID: number;
+    userID?: string | undefined;
+    standing: number;
+    points: number;
+    tieBreakerPoints: number;
+    hasLeft: boolean;
+    profilePic?: string | undefined;
+}
+
+export class SubmitRequest implements ISubmitRequest {
+    setID!: number;
+    matches!: MatchForm[];
+
+    constructor(data?: ISubmitRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.matches = [];
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.setID = data["setID"];
+            if (data["matches"] && data["matches"].constructor === Array) {
+                this.matches = [];
+                for (let item of data["matches"])
+                    this.matches.push(MatchForm.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SubmitRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["setID"] = this.setID;
+        if (this.matches && this.matches.constructor === Array) {
+            data["matches"] = [];
+            for (let item of this.matches)
+                data["matches"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface ISubmitRequest {
+    setID: number;
+    matches: MatchForm[];
+}
+
+export class MatchForm implements IMatchForm {
+    player1Score!: number;
+    player2Score!: number;
+    player1Characters!: number[];
+    player2Characters!: number[];
+    stageID?: number | undefined;
+
+    constructor(data?: IMatchForm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.player1Characters = [];
+            this.player2Characters = [];
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.player1Score = data["player1Score"];
+            this.player2Score = data["player2Score"];
+            if (data["player1Characters"] && data["player1Characters"].constructor === Array) {
+                this.player1Characters = [];
+                for (let item of data["player1Characters"])
+                    this.player1Characters.push(item);
+            }
+            if (data["player2Characters"] && data["player2Characters"].constructor === Array) {
+                this.player2Characters = [];
+                for (let item of data["player2Characters"])
+                    this.player2Characters.push(item);
+            }
+            this.stageID = data["stageID"];
+        }
+    }
+
+    static fromJS(data: any): MatchForm {
+        data = typeof data === 'object' ? data : {};
+        let result = new MatchForm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["player1Score"] = this.player1Score;
+        data["player2Score"] = this.player2Score;
+        if (this.player1Characters && this.player1Characters.constructor === Array) {
+            data["player1Characters"] = [];
+            for (let item of this.player1Characters)
+                data["player1Characters"].push(item);
+        }
+        if (this.player2Characters && this.player2Characters.constructor === Array) {
+            data["player2Characters"] = [];
+            for (let item of this.player2Characters)
+                data["player2Characters"].push(item);
+        }
+        data["stageID"] = this.stageID;
+        return data; 
+    }
+}
+
+export interface IMatchForm {
+    player1Score: number;
+    player2Score: number;
+    player1Characters: number[];
+    player2Characters: number[];
+    stageID?: number | undefined;
+}
+
+export class SetRequestDto implements ISetRequestDto {
     id!: number;
     leagueID!: number;
     requesterID!: number;
@@ -3110,12 +2272,8 @@ export class SetRequest implements ISetRequest {
     setID?: number | undefined;
     isOpen!: boolean;
     message?: string | undefined;
-    league?: League | undefined;
-    requester?: LeagueUser | undefined;
-    challenged?: LeagueUser | undefined;
-    set?: Set | undefined;
 
-    constructor(data?: ISetRequest) {
+    constructor(data?: ISetRequestDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3134,16 +2292,12 @@ export class SetRequest implements ISetRequest {
             this.setID = data["setID"];
             this.isOpen = data["isOpen"];
             this.message = data["message"];
-            this.league = data["league"] ? League.fromJS(data["league"]) : <any>undefined;
-            this.requester = data["requester"] ? LeagueUser.fromJS(data["requester"]) : <any>undefined;
-            this.challenged = data["challenged"] ? LeagueUser.fromJS(data["challenged"]) : <any>undefined;
-            this.set = data["set"] ? Set.fromJS(data["set"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): SetRequest {
+    static fromJS(data: any): SetRequestDto {
         data = typeof data === 'object' ? data : {};
-        let result = new SetRequest();
+        let result = new SetRequestDto();
         result.init(data);
         return result;
     }
@@ -3158,15 +2312,11 @@ export class SetRequest implements ISetRequest {
         data["setID"] = this.setID;
         data["isOpen"] = this.isOpen;
         data["message"] = this.message;
-        data["league"] = this.league ? this.league.toJSON() : <any>undefined;
-        data["requester"] = this.requester ? this.requester.toJSON() : <any>undefined;
-        data["challenged"] = this.challenged ? this.challenged.toJSON() : <any>undefined;
-        data["set"] = this.set ? this.set.toJSON() : <any>undefined;
         return data; 
     }
 }
 
-export interface ISetRequest {
+export interface ISetRequestDto {
     id: number;
     leagueID: number;
     requesterID: number;
@@ -3175,10 +2325,6 @@ export interface ISetRequest {
     setID?: number | undefined;
     isOpen: boolean;
     message?: string | undefined;
-    league?: League | undefined;
-    requester?: LeagueUser | undefined;
-    challenged?: LeagueUser | undefined;
-    set?: Set | undefined;
 }
 
 export interface FileParameter {
