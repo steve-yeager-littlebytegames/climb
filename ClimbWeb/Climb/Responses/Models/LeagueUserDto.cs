@@ -23,11 +23,11 @@ namespace Climb.Responses.Models
             LeagueID = leagueUser.ID;
             UserID = leagueUser.UserID;
             HasLeft = leagueUser.HasLeft;
-            Username = leagueUser.User.UserName;
+            Username = leagueUser.DisplayName;
             Points = leagueUser.Points;
             Rank = leagueUser.Rank;
 
-            ProfilePicture = cdnService.GetUserProfilePicUrl(leagueUser.UserID, leagueUser.User.ProfilePicKey, ClimbImageRules.ProfilePic);
+            ProfilePicture = cdnService.GetUserProfilePicUrl(leagueUser.UserID, leagueUser.User?.ProfilePicKey, ClimbImageRules.ProfilePic);
         }
     }
 }
