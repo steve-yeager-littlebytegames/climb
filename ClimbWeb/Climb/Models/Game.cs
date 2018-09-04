@@ -25,13 +25,13 @@ namespace Climb.Models
         {
         }
 
-        public Game(string name, int charactersPerMatch, int maxMatchPoints, bool hasStages)
+        public Game(string name, int charactersPerMatch, int maxMatchPoints, bool hasStages, DateTime dateAdded)
         {
             Name = name;
-            DateAdded = DateTime.Today;
             CharactersPerMatch = charactersPerMatch;
             MaxMatchPoints = maxMatchPoints;
             HasStages = hasStages;
+            DateAdded = dateAdded;
         }
     }
 }

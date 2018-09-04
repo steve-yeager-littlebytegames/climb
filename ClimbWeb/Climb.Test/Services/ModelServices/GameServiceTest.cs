@@ -24,8 +24,9 @@ namespace Climb.Test.Services.ModelServices
         {
             dbContext = DbContextUtility.CreateMockDb();
             cdnService = Substitute.For<ICdnService>();
+            var dateService = Substitute.For<IDateService>();
 
-            testObj = new GameService(dbContext, cdnService);
+            testObj = new GameService(dbContext, cdnService, dateService);
         }
 
         [Test]

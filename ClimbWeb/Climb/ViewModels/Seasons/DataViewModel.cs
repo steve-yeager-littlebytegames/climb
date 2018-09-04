@@ -1,6 +1,7 @@
-﻿using System;
-using Climb.Data;
+﻿using Climb.Data;
 using Climb.Models;
+using Climb.Services;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -12,15 +13,15 @@ namespace Climb.ViewModels.Seasons
         public decimal CompletePercent { get; }
         public decimal TargetPercent { get; }
 
-        public DataViewModel(ApplicationUser user, Season season)
-            : base(user, season)
+        public DataViewModel(ApplicationUser user, Season season, IHostingEnvironment environment, IDateService dateService)
+            : base(user, season, environment)
         {
             if(!season.IsActive)
             {
                 return;
             }
 
-            var today = DateTime.Today;
+            var today = dateService.Now;
 
             var targetSetsCompleted = 0;
             foreach (var set in season.Sets)

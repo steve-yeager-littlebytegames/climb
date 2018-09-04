@@ -9,12 +9,7 @@
 <div>
     <h1>All Games</h1>
     
-    <form asp-action="UpdatePost">
-        <input type="text" name="name" placeholder="Name" />
-        <input type="number" name="charactersPerMatch" placeholder="Characters per Match" />
-        <input type="number" name="maxMatchPoints" placeholder="Max Match Points" />
-        <button>Create Game</button>
-    </form>
+    <a asp-action="Create">Add New Game</a>
 
     <table class="table">
         <thead>
@@ -26,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-        @foreach(var game in Model.Games)
+        @foreach(var game in Model.AllGames)
         {
             <tr>
                 <td>

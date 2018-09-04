@@ -31,13 +31,13 @@ namespace Climb
             ConfigureDB(services);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric  = false;
-                    options.Password.RequireUppercase  = false;
-                    options.Password.RequireLowercase  = false;
-                })
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -47,18 +47,7 @@ namespace Climb
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddCookieTempDataProvider();
 
-            var cdnType = Configuration["CDN"];
-            switch(cdnType)
-            {
-                case "S3":
-                    services.AddSingleton<ICdnService, S3Cdn>();
-                    break;
-                case "Local":
-                    services.AddSingleton<ICdnService, FileStorageCdn>();
-                    break;
-                default:
-                    throw new NotSupportedException("Need to set a CDN type.");
-            }
+            ConfigureCdn(services);
 
             services.AddTransient<IApplicationUserService, ApplicationUserService>();
             services.AddTransient<IGameService, GameService>();
@@ -75,13 +64,38 @@ namespace Climb
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
 
-            if(string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
+            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            {
+                services.AddTransient<IDateService, DateService>();
+            }
+            else
+            {
+                services.AddTransient<IDateService, ControlledDateService>();
+            }
+
+            if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
             {
                 services.AddTransient<IEmailSender, NullEmailService>();
             }
             else
             {
                 services.AddTransient<IEmailSender, SendGridService>();
+            }
+        }
+
+        private void ConfigureCdn(IServiceCollection services)
+        {
+            var cdnType = Configuration["CDN"];
+            switch (cdnType)
+            {
+                case "S3":
+                    services.AddSingleton<ICdnService, S3Cdn>();
+                    break;
+                case "Local":
+                    services.AddSingleton<ICdnService, FileStorageCdn>();
+                    break;
+                default:
+                    throw new NotSupportedException("Need to set a CDN type.");
             }
         }
 

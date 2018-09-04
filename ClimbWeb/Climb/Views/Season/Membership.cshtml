@@ -3,38 +3,16 @@
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Leagues-Home";
+    ViewBag.Page = "Membership";
+    Layout = "_SeasonsLayout";
 }
 
-@section scripts
+@section SeasonsBody
 {
-    <script type="module" src="~/dist/scripts/Seasons-Home.js"></script>
-}
-
-<div class="container">
-    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
-    </div>
-
-    <div class="home-menu d-flex justify-content-between">
-        <a asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
-        <a asp-action="Membership" asp-route-leagueID="@Model.Season.ID">Membership</a>
-        <a asp-action="Data" asp-route-leagueID="@Model.Season.ID">Data</a>
-        <a asp-action="Sets" asp-route-leagueID="@Model.Season.ID">Sets</a>
-        <a asp-action="Manage" asp-route-leagueID="">Manage</a>
-    </div>
-
     <div class="d-flex justify-content-center align-items-center body-temp">
         @if(Model.CanLeave)
         {
             <button id="leave-season-button" class="btn btn-danger" data-participantID="@Model.Participant.ID">Leave</button>
         }
-
-        @if(Model.CanJoin)
-        {
-            <form asp-action="JoinPost" asp-route-userid="@Model.User.Id" asp-route-seasonid="@Model.Season.ID">
-                <button class="btn btn-danger">Join</button>
-            </form>
-        }
     </div>
-</div>
+}

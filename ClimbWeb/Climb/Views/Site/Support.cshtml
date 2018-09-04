@@ -1,25 +1,25 @@
 ﻿@model Climb.ViewModels.BaseViewModel
 
 @{
-    ViewBag.Title = "Support-Climb";
+    ViewBag.Title = "Contact the Developer";
 }
 
-<div>
-    <h2>Climb Feedback</h2>
-    <h5>send bugs, ideas, or general feedback</h5>
-    
-    <form asp-action="SendSupportTicket">
-        <div class="input-group">
-            <label>Summary</label>
-            <input type="text" name="summary" />
+<div class="container mt-4">
+    <form class="form" asp-action="SendSupportTicket">
+        <img class="mb-4" src="~/images/logo/logo-128x128.png" width="128" height="128">
+        <h1 class="h3 mb-3 font-weight-normal">Climb Feedback</h1>
+        <h5 class="mb-3">Send bugs, ideas, or general feedback</h5>
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label text-left">Summary</label>
+            <input class="form-control col-md-9" type="text" name="summary" />
         </div>
-        <div class="input-group">
-            <label>Description</label>
-            <textarea name="description"></textarea>
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label text-left">Description</label>
+            <textarea  class="form-control col-md-9" name="description"></textarea>
         </div>
-        <button>Send</button>
+        <button class="btn btn-set btn-lg btn-edit btn-block my-4 mx-auto" type="submit">Send</button>
     </form>
-    
+
     @if(ViewData.ContainsKey("Success"))
     {
         if((bool)ViewData["Success"])

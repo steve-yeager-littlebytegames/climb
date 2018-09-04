@@ -2,36 +2,48 @@
 @model Climb.ViewModels.Games.UpdateViewModel
 
 @{
-    ViewBag.Title = "Games";
+    ViewBag.Title = Model.Game.Name + " " + Model.Action;
 }
 
 <div class="container mt-4">
-    <h1>@Model.Action Game</h1>
-    <form asp-action="UpdatePost" enctype="multipart/form-data">
-        <input type="hidden" name="gameID" value="@Model.Game?.ID"/>
+    <form class="form" asp-action="UpdatePost" enctype="multipart/form-data">
+        <h1>@Model.Action Game</h1>
+        <!--ID-->
+        <input type="hidden" name="gameID" value="@Model.Game?.ID" />
+        <!--Name-->
         <div class="form-group row">
-            <label class="col-5 col-form-label text-left">Name</label>
-            <input class="form-control col-7" type="text" name="name" value="@Model.Game?.Name"/>
+            <label class="col-md-4 col-form-label text-left">Name</label>
+            <input class="form-control col-md-8" asp-for="Request.Name" value="@Model.Game?.Name" />
+            <span asp-validation-for="Request.Name" class="text-danger"></span>
         </div>
-        <div class="form-group row">
-            <label class="col-5 col-form-label text-left">Logo</label>
-            <div class="col-7">
-                <img src="@Model.LogoImage" width="100" height="100"/>
-                <input class="form-control-file" type="file" name="@nameof(UpdateRequest.LogoImage)" accept="image/*"/>
+        <!--Game Logo-->
+        <div class="form-group row mb-4">
+            <label class="col-md-4 col-form-label text-left">Logo</label>
+            <div class="col-md-8 d-flex flex-column p-0">
+                <img class="mb-2" src="@Model.LogoImage" width="100" height="100" />
+                <input class="form-control-file" asp-for="Request.LogoImage" accept="image/*" />
+                <span asp-validation-for="Request.LogoImage" class="text-danger"></span>
             </div>
         </div>
+        <!--# Characters-->
         <div class="form-group row">
-            <label class="col-5 col-form-label text-left">Characters per Match</label>
-            <input class="form-control col-7" type="number" name="charactersPerMatch" min="1" value="@(Model.Game?.CharactersPerMatch ?? 1)"/>
+            <label class="col-md-4 col-form-label text-left">Characters per Match</label>
+            <input class="form-control col-md-2" asp-for="Request.CharactersPerMatch" min="1" value="@(Model.Game?.CharactersPerMatch ?? 1)" />
+            <span asp-validation-for="Request.CharactersPerMatch" class="text-danger"></span>
         </div>
+        <!--Max Points-->
         <div class="form-group row">
-            <label class="col-5 col-form-label text-left">Max Match Points</label>
-            <input class="form-control col-7" type="number" name="maxMatchPoints" min="1" value="@(Model.Game?.MaxMatchPoints ?? 1)"/>
+            <label class="col-md-4 col-form-label text-left">Max Match Points</label>
+            <input class="form-control col-md-2" asp-for="Request.MaxMatchPoints" min="1" value="@(Model.Game?.MaxMatchPoints ?? 1)" />
+            <span asp-validation-for="Request.MaxMatchPoints" class="text-danger"></span>
         </div>
+        <!--Stages?-->
         <div class="form-group row">
-            <label class="col-5 col-form-label text-left">Has Stages</label>
-            <input class="form-control col-7" type="checkbox" name="hasStages" value="@(Model.Game?.HasStages ?? false)"/>
+            <div class="col-md-12 text-left">
+                <label class="col-form-label text-left">Has Stages</label>
+                <input class="ml-2" asp-for="Request.HasStages" value="Model.Game?.HasStages" />
+            </div>
         </div>
-        <button class="btn btn-primary">@Model.Action</button>
+        <button class="btn btn-set btn-lg btn-edit btn-block mt-3 mx-auto" type="submit">@Model.Action</button>
     </form>
 </div>

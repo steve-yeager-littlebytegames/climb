@@ -172,6 +172,8 @@ namespace Climb.Migrations
 
                     b.Property<int>("Rank");
 
+                    b.Property<int>("RankTrend");
+
                     b.Property<int>("SetCount");
 
                     b.Property<string>("UserID")

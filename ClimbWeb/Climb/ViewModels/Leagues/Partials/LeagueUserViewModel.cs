@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Models;
@@ -15,14 +16,34 @@ namespace Climb.ViewModels.Leagues
         public string TitleLink { get; }
         public string Picture { get; }
         public IEnumerable<string> Characters { get; }
+        public int EmptyCharacterCount { get; }
+        public string RankWhiteSpace { get; }
+        public string RankTrendClass { get; }
 
-        private LeagueUserViewModel(LeagueUser leagueUser, string title, string titleLink, string picture, IEnumerable<string> characters)
+        private LeagueUserViewModel(LeagueUser leagueUser, string title, string titleLink, string picture, IEnumerable<string> characters, int emptyCharacterCount, string rankWhiteSpace)
         {
             LeagueUser = leagueUser;
             Picture = picture;
             Characters = characters;
+            EmptyCharacterCount = emptyCharacterCount;
+            RankWhiteSpace = rankWhiteSpace;
             TitleLink = titleLink;
             Title = title;
+
+            switch(leagueUser.RankTrend)
+            {
+                case RankTrends.Down:
+                    RankTrendClass = "fa-arrow-down";
+                    break;
+                case RankTrends.None:
+                    RankTrendClass = "fa-minus";
+                    break;
+                case RankTrends.Up:
+                    RankTrendClass = "fa-arrow-up";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public static async Task<LeagueUserViewModel> Create(LeagueUser leagueUser, ICdnService cdnService, bool showUser, IUrlHelper urlHelper, ILeagueService leagueService)
@@ -44,10 +65,19 @@ namespace Climb.ViewModels.Leagues
                 picture = cdnService.GetImageUrl(leagueUser.League.Game.LogoImageKey, ClimbImageRules.GameLogo);
             }
 
-            var characters = await leagueService.GetUsersRecentCharactersAsync(leagueUser.ID, 3);
+            const int maxCharacterCount = 3;
+            var characters = await leagueService.GetUsersRecentCharactersAsync(leagueUser.ID, maxCharacterCount);
             var characterUrls = characters.Select(c => cdnService.GetImageUrl(c.ImageKey, ClimbImageRules.CharacterPic));
+            var emptyCharacterCount = maxCharacterCount - characters.Count;
 
-            return new LeagueUserViewModel(leagueUser, title, titleLink, picture, characterUrls);
+            var rank = leagueUser.Rank.ToString();
+            var rankWhiteSpace = "";
+            for(var i = 0; i < 3 - rank.Length; i++)
+            {
+                rankWhiteSpace += "0";
+            }
+
+            return new LeagueUserViewModel(leagueUser, title, titleLink, picture, characterUrls, emptyCharacterCount, rankWhiteSpace);
         }
     }
 }

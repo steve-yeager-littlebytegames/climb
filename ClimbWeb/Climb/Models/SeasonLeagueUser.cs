@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Climb.Core.TieBreakers;
 using Climb.Data;
-using Newtonsoft.Json;
 
 namespace Climb.Models
 {
@@ -17,15 +16,10 @@ namespace Climb.Models
         public int TieBreakerPoints { get; set; }
         public bool HasLeft { get; set; }
 
-        [JsonIgnore]
         public Season Season { get; set; }
-        [JsonIgnore]
         public LeagueUser LeagueUser { get; set; }
-        [JsonIgnore]
         public ApplicationUser User { get; set; }
-        [JsonIgnore]
         public List<Set> P1Sets { get; set; }
-        [JsonIgnore]
         public List<Set> P2Sets { get; set; }
 
         public SeasonLeagueUser()

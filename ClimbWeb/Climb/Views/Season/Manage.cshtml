@@ -3,22 +3,12 @@
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Seasons-Manage";
+    ViewBag.Page = "Manage";
+    Layout = "_SeasonsLayout";
 }
 
-<div class="container">
-    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
-    </div>
-
-    <div class="home-menu d-flex justify-content-between">
-        <a asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
-        <a asp-action="Membership" asp-route-leagueID="@Model.Season.ID">Membership</a>
-        <a asp-action="Data" asp-route-leagueID="@Model.Season.ID">Data</a>
-        <a asp-action="Sets" asp-route-leagueID="@Model.Season.ID">Sets</a>
-        <a asp-action="Manage" asp-route-leagueID="">Manage</a>
-    </div>
-
+@section SeasonsBody
+{
     @if(Model.CanStartSeason)
     {
         <form asp-controller="Season" asp-action="Start">
@@ -26,8 +16,4 @@
             <button class="btn btn-primary">Start Season</button>
         </form>
     }
-
-    <div class="d-flex justify-content-center align-items-center body-temp">
-        <p>Manage</p>
-    </div>
-</div>
+}

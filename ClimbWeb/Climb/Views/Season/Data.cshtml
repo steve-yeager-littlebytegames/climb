@@ -3,22 +3,12 @@
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Leagues-Home";
+    ViewBag.Page = "Data";
+    Layout = "_SeasonsLayout";
 }
 
-<div class="container">
-    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
-    </div>
-
-    <div class="home-menu d-flex justify-content-between">
-        <a asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
-        <a asp-action="Membership" asp-route-leagueID="@Model.Season.ID">Membership</a>
-        <a asp-action="Data" asp-route-leagueID="@Model.Season.ID">Data</a>
-        <a asp-action="Sets" asp-route-leagueID="@Model.Season.ID">Sets</a>
-        <a asp-action="Manage" asp-route-leagueID="">Manage</a>
-    </div>
-
+@section SeasonsBody
+{
     <div class="d-flex flex-column justify-content-center align-items-center body-temp">
         <div>
             <span>Completed Sets</span>
@@ -41,4 +31,4 @@
             <span>@Model.TargetPercent.ToString("P0")</span>
         </div>
     </div>
-</div>
+}

@@ -1,38 +1,16 @@
 ﻿@using Climb.Services
 @using Climb.ViewModels.Seasons
 @using Climb.ViewModels.Sets
-@model HomeViewModel
+@model Climb.ViewModels.Seasons.HomeViewModel
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Season-Home";
+    ViewBag.Page = "Home";
+    Layout = "_SeasonsLayout";
 }
 
-<div class="container">
-    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
-        @*@if (!Model.IsMember)
-            {
-                <form asp-action="Join">
-                    <input type="hidden" name="leagueID" value="@Model.League.ID" />
-                    <input type="hidden" name="userID" value="@Model.User.Id" />
-                    <button>Join</button>
-                </form>
-            }*@
-    </div>
-
-    <div class="home-menu d-flex justify-content-between">
-        <a asp-action="Home" asp-route-leaugeID="">Home</a>
-        <a asp-action="Membership" asp-route-leagueID="">Membership</a>
-        <a asp-action="Data" asp-route-leagueID="">Data</a>
-        <a asp-action="Sets" asp-route-leagueID="">Sets</a>
-        @*@foreach (var season in Model.League.Seasons)
-            {
-                <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
-            }*@
-        <a asp-action="Manage" asp-route-leagueID="">Manage</a>
-    </div>
-
+@section SeasonsBody
+{
     <!-- Columns -->
     <div class="row">
         <!-- Participants -->
@@ -40,12 +18,12 @@
             <h3>Participants</h3>
             <div class="page-section-child">
                 <div class="page-section-content">
-                    @if (Model.Participants.Any())
+                    @if(Model.Participants.Any())
                     {
-                        foreach (var participant in Model.Participants)
+                        foreach(var participant in Model.Participants)
                         {
                             //To Do: style Season Participant partial like league member partial
-                            <partial name="./Partials/SeasonParticipant" model="@SeasonParticipantViewModel.Create(participant, cdnService)" />
+                            <partial name="./Partials/SeasonParticipant" model="@SeasonParticipantViewModel.Create(participant, cdnService)"/>
                         }
                     }
                     else
@@ -64,16 +42,15 @@
             <h3>Sets</h3>
             <div class="page-section-child">
                 <div class="page-section-content">
-                    @if (Model.Season.Sets.Count > 0)
+                    @if(Model.Season.Sets.Count > 0)
                     {
-                        foreach (var set in Model.AvailableSets)
+                        foreach(var set in Model.AvailableSets)
                         {
                             //To Do Style set details
-                            <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)" />
+                            <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
                         }
                     }
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </div>}

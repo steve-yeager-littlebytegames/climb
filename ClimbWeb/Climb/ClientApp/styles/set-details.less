@@ -2,17 +2,11 @@
 // Move all common detail styles to site.less
 
 .set-container {
-    display: flex;
-    flex-direction: column;
-    border-bottom: 1px solid @color-darker;
-}
-
-.set-container:first-of-type  {
-    border-top: 1px solid @color-darker;
+    padding-bottom: 4px;
 }
 
 .set-container:last-of-type {
-    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .set-details {
@@ -32,6 +26,11 @@
     justify-content: space-between;
 }
 
+.btn-set {
+    color: white;
+    margin-top: -1.5rem;
+}
+
 .btn-fight {
     color: #ffb;
     background-color: @color-accent;
@@ -39,11 +38,43 @@
 
 .btn-fight:hover {
     color: white;
+    background-color: #ff9628;
 }
 
 .btn-fight:active {
-    color: black;
+    color: #772100;
+    background-color: #d73c00;
 }
+
+.btn-edit {
+    background-color: royalblue;
+}
+
+.btn-edit:hover {
+    color: white;
+    background-color: #4e7afc;
+}
+
+.btn-edit:active {
+    color: #0d2260;
+    background-color: #1841b9;
+}
+
+.btn-neutral {
+    background-color: @color-darker;
+}
+
+.btn-neutral:hover {
+    color: white;
+    background-color: @color-dark;
+}
+
+.btn-neutral:active {
+    color: black;
+    background-color: @color-darkest;
+}
+
+
 
 .background-dark {
     background-color: @color-light;

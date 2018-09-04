@@ -13,6 +13,7 @@ namespace Climb.ViewModels.Sets
         public string OpponentProfilePic { get; }
         public string SetType { get; }
         public string ActionName { get; }
+        public string ActionButtonClass { get; }
 
         private DetailsViewModel(Set set, string p1ProfilePic, string p2ProfilePic, bool userIsPlaying, string opponentProfilePic)
         {
@@ -26,14 +27,17 @@ namespace Climb.ViewModels.Sets
             if(set.IsLocked)
             {
                 ActionName = "Details";
+                ActionButtonClass = "btn-neutral";
             }
             else if(set.IsComplete)
             {
                 ActionName = "Edit";
+                ActionButtonClass = "btn-edit";
             }
             else
             {
                 ActionName = "Fight";
+                ActionButtonClass = "btn-fight";
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
@@ -43,12 +44,13 @@ namespace Climb.API
         }
 
         [HttpGet("/api/v1/games")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(List<Game>))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<GameDto>))]
         public async Task<IActionResult> ListAll()
         {
             var games = await dbContext.Games.ToListAsync();
 
-            return CodeResult(HttpStatusCode.OK, games);
+            var dtos = games.Select(g => GameDto.Create(g, cdnService));
+            return CodeResult(HttpStatusCode.OK, dtos);
         }
     }
 }

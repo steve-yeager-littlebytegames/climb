@@ -1,8 +1,9 @@
 ﻿{
   "runtime": "NetCore21",
+  "defaultVariables": null,
   "swaggerGenerator": {
     "fromSwagger": {
-      "url": "https://localhost:44349/swagger/v1/swagger.json",
+      "url": "https://localhost:44321/swagger/v1/swagger.json",
       "output": null
     }
   },
@@ -26,8 +27,11 @@
       "wrapDtoExceptions": false,
       "clientBaseClass": "BaseClass",
       "wrapResponses": false,
+      "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
+      "protectedMethods": [],
+      "configurationClass": null,
       "useTransformOptionsMethod": false,
       "useTransformResultMethod": false,
       "generateDtoTypes": true,
@@ -35,6 +39,8 @@
       "markOptionalProperties": true,
       "generateCloneMethod": false,
       "typeStyle": "Class",
+      "classTypes": [],
+      "extendedClasses": [],
       "extensionCode": "../Climb/ClientApp/components/BaseClass.ts",
       "generateDefaultValues": true,
       "excludedTypeNames": [],
@@ -45,6 +51,12 @@
       "useGetBaseUrlMethod": true,
       "baseUrlTokenName": "API_BASE_URL",
       "queryNullValue": "",
+      "templateDirectory": null,
+      "typeNameGeneratorType": null,
+      "propertyNameGeneratorType": null,
+      "enumNameGeneratorType": null,
+      "serviceHost": null,
+      "serviceSchemes": null,
       "output": "../Climb/ClientApp/gen/climbClient.ts"
     }
   }

@@ -1,57 +1,33 @@
 ﻿@using Climb.Services
-@model Climb.ViewModels.Leagues.HomeViewModel
+@model Climb.ViewModels.Leagues.ManageViewModel
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Leagues-Home";
+    ViewBag.Page = "Manage";
+    Layout = "_LeaguesLayout";
 }
 
-<div class="container">
-    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>Welcome to @Model.League.Name</h1>
-        @if(!Model.IsMember)
-        {
-            <form asp-action="Join">
-                <input type="hidden" name="leagueID" value="@Model.League.ID"/>
-                <input type="hidden" name="userID" value="@Model.User.Id"/>
-                <button>Join</button>
-            </form>
-        }
-    </div>
+@section Scripts
+{
+    <script type="module" src="~/dist/scripts/Leagues-Manage.js"></script>
+}
 
-    <div class="home-menu d-flex justify-content-between">
-        <a asp-action="Home" asp-route-leaugeID="@Model.League.ID">Home</a>
-        <a asp-action="Membership" asp-route-leagueID="@Model.League.ID">Membership</a>
-        <a asp-action="Data" asp-route-leagueID="@Model.League.ID">Data</a>
-        <a asp-action="Seasons" asp-route-leagueID="@Model.League.ID">Seasons</a>
-        @*@foreach (var season in Model.League.Seasons)
-            {
-                <a asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">Season @(season.Index + 1)</a>
-            }*@
-        <a asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
-    </div>
-
+@section LeaguesBody
+{
     <div class="d-flex flex-column justify-content-center align-items-center body-temp">
-        @if (Model.CanStartSeason)
+        @if(Model.CanStartSeason)
         {
-            if (Model.League.ActiveSeasonID != null)
+            if(Model.League.ActiveSeasonID != null)
             {
                 <button id="end-season-button" class="btn btn-danger mb-5" data-seasonID="@Model.League.ActiveSeasonID">End Current Season</button>
             }
 
             <form asp-controller="Season" asp-action="Create">
-                <input type="hidden" name="LeagueID" value="@Model.League.ID" />
-                <input type="date" name="StartDate" />
-                <input type="date" name="EndDate" />
+                <input type="hidden" name="LeagueID" value="@Model.League.ID"/>
+                <input type="date" name="StartDate"/>
+                <input type="date" name="EndDate"/>
                 <button>Create Season</button>
             </form>
         }
     </div>
-
-</div>
-
-@section scripts
-{
-    <script type="module" src="~/dist/scripts/Leagues-Manage.js">
-    </script>
 }

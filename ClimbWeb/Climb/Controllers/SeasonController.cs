@@ -17,12 +17,14 @@ namespace Climb.Controllers
     {
         private readonly ISeasonService seasonService;
         private readonly IHostingEnvironment environment;
+        private readonly IDateService dateService;
 
-        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager, IHostingEnvironment environment)
+        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager, IHostingEnvironment environment, IDateService dateService)
             : base(logger, userManager, dbContext)
         {
             this.seasonService = seasonService;
             this.environment = environment;
+            this.dateService = dateService;
         }
 
         [HttpGet("seasons/home/{seasonID:int}")]
@@ -42,7 +44,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new HomeViewModel(user, season);
+            var viewModel = new HomeViewModel(user, season, environment);
             return View(viewModel);
         }
 
@@ -64,7 +66,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new MembershipViewModel(user, season);
+            var viewModel = new MembershipViewModel(user, season, environment);
             return View(viewModel);
         }
 
@@ -85,7 +87,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new DataViewModel(user, season);
+            var viewModel = new DataViewModel(user, season, environment, dateService);
             return View(viewModel);
         }
 
@@ -106,7 +108,7 @@ namespace Climb.Controllers
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new SetsViewModel(user, season);
+            var viewModel = new SetsViewModel(user, season, environment);
             return View(viewModel);
         }
 

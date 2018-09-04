@@ -1,29 +1,31 @@
 ﻿@model Climb.ViewModels.Sets.DetailsViewModel
 
-<div class="set-container pb-2">
-    <small class="set-details">@Model.Set.League.Name - @Model.SetType - @Model.Set.DueDate.ToShortDateString()</small>
-    <div class="d-flex justify-content-between align-items-center p-2 background-dark">
-        <div class="d-flex flex-column align-items-start w-40">
-            <img src="@Model.P1ProfilePic" width="64" height="64"/>
-            <span>
-                <small>
-                    <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player1"/>
-                </small>
-            </span>
+<div class="set-container d-flex flex-column">
+    <span class="set-details">@Model.Set.League.Name - @Model.SetType - @Model.Set.DueDate.ToShortDateString()</span>
+    <div class="background-dark">
+        <div class="d-flex justify-content-between align-items-center px-2 py-1">
+            <div class="d-flex flex-column align-items-start w-40">
+                <img src="@Model.P1ProfilePic" width="64" height="64"/>
+                <span>
+                    <small>
+                        <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player1"/>
+                    </small>
+                </span>
+            </div>
+            <strong class="set-vs">
+                <em>vs</em>
+            </strong>
+            <div class="d-flex flex-column align-items-end w-40">
+                <img src="@Model.P2ProfilePic" width="64" height="64"/>
+                <span>
+                    <small>
+                        <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player2"/>
+                    </small>
+                </span>
+            </div>
         </div>
-        <strong class="set-vs">
-            <em>vs</em>
-        </strong>
-        <div class="d-flex flex-column align-items-end w-40">
-            <img src="@Model.P2ProfilePic" width="64" height="64"/>
-            <span>
-                <small>
-                    <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player2"/>
-                </small>
-            </span>
-        </div>
+        <a class="btn btn-set @Model.ActionButtonClass btn-sm w-25 mx-auto mb-1" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
+            <strong>@Model.ActionName</strong>
+        </a>
     </div>
-    <a class="btn btn-fight btn-sm w-25 mx-auto mt-1 mb-2" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
-        <strong>@Model.ActionName</strong>
-    </a>
 </div>

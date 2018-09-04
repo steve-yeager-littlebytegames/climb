@@ -8,7 +8,7 @@ namespace Climb.Core.TieBreakers.Test
         private readonly Dictionary<IParticipant, ParticipantRecord> participants = new Dictionary<IParticipant, ParticipantRecord>();
         private ParticipantRecord lastRecord;
 
-        public ParticipantsBuilder Add(int id = 0, int points = 0, int leaguePoints = 0, DateTime joinDate = default(DateTime))
+        public ParticipantsBuilder Add(int id = 0, int points = 0, int leaguePoints = 0, DateTime joinDate = default)
         {
             lastRecord = new ParticipantRecord(leaguePoints, joinDate);
             participants.Add(new FakeParticipant(id, points), lastRecord);

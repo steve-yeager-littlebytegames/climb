@@ -17,10 +17,10 @@ namespace Climb.Test.Services
         [Test]
         public void CalculatePoints_Valid_WinnerGets2LoserGets1()
         {
-            var points = testObj.CalculatePointDeltas(null, null);
+            var (winnerDelta, loserDelta) = testObj.CalculatePointDeltas(null, null);
 
-            Assert.AreEqual(2, points.winnerPointDelta);
-            Assert.AreEqual(1, points.loserPointDelta);
+            Assert.AreEqual(2, winnerDelta);
+            Assert.AreEqual(1, loserDelta);
         }
     }
 }

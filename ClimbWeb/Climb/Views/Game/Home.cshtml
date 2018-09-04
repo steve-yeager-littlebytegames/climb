@@ -3,7 +3,7 @@
 @inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Games-Home";
+    ViewBag.Title = @Model.Game.Name;
 }
 
 <div>
@@ -24,7 +24,7 @@
     <div class="container">
         <div>
             <h3>Characters</h3>
-            <a class="btn btn-danger mb-4" asp-action="CharacterAdd">Add</a>
+            <a class="btn btn-danger mb-4" asp-action="CharacterAdd" asp-route-gameid="@Model.Game.ID">Add</a>
         </div>
         <div class="card-group">
             @foreach(var character in Model.Game.Characters)

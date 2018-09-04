@@ -9,7 +9,7 @@ namespace Climb.ViewModels.Seasons
         public bool CanStartSeason { get; }
 
         public ManageViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
-            : base(user, season)
+            : base(user, season, environment)
         {
             if(!season.IsActive && !season.IsComplete)
             {
