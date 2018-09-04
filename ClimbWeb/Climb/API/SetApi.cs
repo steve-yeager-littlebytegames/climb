@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
 using Climb.Data;
-using Climb.Models;
 using Climb.Requests.Sets;
 using Climb.Responses.Sets;
 using Climb.Services.ModelServices;
@@ -64,13 +63,14 @@ namespace Climb.API
         }
         
         [HttpPost("api/v1/sets/challenge")]
-        [SwaggerResponse(HttpStatusCode.Created, typeof(SetRequest))]
+        [SwaggerResponse(HttpStatusCode.Created, typeof(SetRequestDto))]
         public async Task<IActionResult> ChallengeUser(int requesterID, int challengedID, string message)
         {
             try
             {
                 var request = await setService.RequestSetAsync(requesterID, challengedID, message);
-                return CodeResultAndLog(HttpStatusCode.Created, request, $"Member {requesterID} challenged {challengedID}.");
+                var dto = new SetRequestDto(request);
+                return CodeResultAndLog(HttpStatusCode.Created, dto, $"Member {requesterID} challenged {challengedID}.");
             }
             catch(Exception exception)
             {
@@ -79,13 +79,14 @@ namespace Climb.API
         }
 
         [HttpPost("api/v1/sets/respondToChallenge")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(SetRequest))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(SetRequestDto))]
         public async Task<IActionResult> RespondToChallenge(int requestID, bool accept)
         {
             try
             {
                 var request = await setService.RespondToSetRequestAsync(requestID, accept);
-                return Ok(request);
+                var dto = new SetRequestDto(request);
+                return Ok(dto);
             }
             catch(Exception exception)
             {

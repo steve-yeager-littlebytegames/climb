@@ -1,7 +1,8 @@
-﻿@model Climb.ViewModels.BaseViewModel
+﻿@model Climb.ViewModels.Sets.FightViewModel
 
 @{
-    ViewBag.Title = "Set-Fight";
+    //Todo: Replace second Username with opponent instead of self
+    ViewBag.Title = $"{Model.Set.Player1.DisplayName} vs {Model.Set.Player2.DisplayName}";
 }
 
 <div id="react-app" class="mx-4 mt-4"></div>

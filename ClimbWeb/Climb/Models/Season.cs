@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace Climb.Models
 {
@@ -14,11 +13,8 @@ namespace Climb.Models
         public bool IsActive { get; set; }
         public bool IsComplete { get; set; }
 
-        [JsonIgnore]
         public League League { get; set; }
-        [JsonIgnore]
         public List<SeasonLeagueUser> Participants { get; set; }
-        [JsonIgnore]
         public List<Set> Sets { get; set; }
 
         public Season()

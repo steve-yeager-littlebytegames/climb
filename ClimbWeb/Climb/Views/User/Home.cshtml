@@ -7,7 +7,8 @@
 @inject ILeagueService leagueService
 
 @{
-    ViewBag.Title = "Users-Home";
+    //ToDo Make this the user you are looking at, no the user who is logged in
+    ViewBag.Title = $"{Model.HomeUser.UserName}";
 }
 
 <!-- Challanges/Fight Modal -->
