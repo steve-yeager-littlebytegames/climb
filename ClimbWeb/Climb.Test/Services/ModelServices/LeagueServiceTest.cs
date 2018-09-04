@@ -96,7 +96,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var league = LeagueUtility.CreateLeague(dbContext);
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
-            LeagueUser oldLeagueUser = CreateOldLeagueUser(league, user);
+            var oldLeagueUser = CreateOldLeagueUser(league, user);
 
             var leagueUser = await testObj.Join(league.ID, user.Id);
 
@@ -155,7 +155,7 @@ namespace Climb.Test.Services.ModelServices
 
             Assert.AreEqual(League.StartingPoints, leagueUser.Points);
         }
-        
+
         [Test]
         public async Task Join_OldUser_KeepsPoints()
         {
@@ -209,7 +209,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var league = LeagueUtility.CreateLeague(dbContext, 1);
             var member = league.Members[0];
-            
+
             var season = SeasonUtility.CreateSeason(dbContext, 0).season;
             var participant = SeasonUtility.AddParticipants(dbContext, season, member)[0];
 
@@ -340,7 +340,7 @@ namespace Climb.Test.Services.ModelServices
 
             var set = SetUtility.Create(dbContext, player1.ID, league.Members[1].ID, league.ID);
             DbContextUtility.UpdateAndSave(dbContext, set, () => { set.IsComplete = true; });
-            
+
             pointService.CalculatePointDeltas(0, 0, false).ReturnsForAnyArgs((1, -1));
 
             await testObj.UpdateStandings(league.ID);
@@ -354,12 +354,13 @@ namespace Climb.Test.Services.ModelServices
             var league = CreateLeague(4);
 
             dbContext.UpdateRange(league.Members);
-            for(int i = 0; i < league.Members.Count; i++)
+            for(var i = 0; i < league.Members.Count; i++)
             {
                 league.Members[i].Points = i;
                 league.Members[i].SetCount = 10;
                 league.Members[i].IsNewcomer = false;
             }
+
             league.Members[1].SetCount = 0;
             league.Members[1].IsNewcomer = true;
             dbContext.SaveChanges();
@@ -391,6 +392,22 @@ namespace Climb.Test.Services.ModelServices
             await testObj.UpdateStandings(league.ID);
 
             Assert.AreEqual(trend, member.RankTrend);
+        }
+
+        [Test]
+        public async Task UpdateStandings_WasNewcomer_RankIsAlwaysUp()
+        {
+            var league = CreateLeague(1);
+            league.SetsTillRank = 1;
+            var member = league.Members[0];
+            member.Rank = 0;
+            member.Points = 10;
+            member.IsNewcomer = true;
+            member.SetCount = 1;
+
+            await testObj.UpdateStandings(league.ID);
+
+            Assert.AreEqual(RankTrends.Up, member.RankTrend);
         }
 
         [Test]
@@ -474,7 +491,6 @@ namespace Climb.Test.Services.ModelServices
             var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.GetUsersRecentCharactersAsync(leagueUser.ID, characterCount));
-
         }
 
         [TestCase(1)]
@@ -490,7 +506,7 @@ namespace Climb.Test.Services.ModelServices
             var set = SetUtility.Create(dbContext, leagueUser.ID, members[1].ID, league.ID);
             var matches = SetUtility.AddMatches(dbContext, set, 2);
 
-            DbContextUtility.AddNewRange<MatchCharacter>(dbContext, characterCount+1, (mc, i) =>
+            DbContextUtility.AddNewRange<MatchCharacter>(dbContext, characterCount + 1, (mc, i) =>
             {
                 mc.LeagueUserID = leagueUser.ID;
                 mc.CharacterID = characters[i].ID;
@@ -507,7 +523,7 @@ namespace Climb.Test.Services.ModelServices
             var result = await testObj.GetUsersRecentCharactersAsync(leagueUser.ID, characterCount);
 
             Assert.AreEqual(characterCount, result.Count);
-            for(int i = 0; i < result.Count; i++)
+            for(var i = 0; i < result.Count; i++)
             {
                 Assert.AreEqual(characters[i + 1].ID, result[i].ID);
             }
@@ -518,7 +534,7 @@ namespace Climb.Test.Services.ModelServices
         {
             const int requestCount = 5;
             const int matchCharacterCount = 3;
-            
+
             var league = LeagueUtility.CreateLeague(dbContext);
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
@@ -544,7 +560,7 @@ namespace Climb.Test.Services.ModelServices
         {
             const int requestCount = 5;
             const int matchCharacterCount = 3;
-            
+
             var league = LeagueUtility.CreateLeague(dbContext);
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
@@ -590,7 +606,7 @@ namespace Climb.Test.Services.ModelServices
         private void CreateSets(League league, Season season)
         {
             var firstMember = league.Members[0];
-            for (var i = 1; i < league.Members.Count; i++)
+            for(var i = 1; i < league.Members.Count; i++)
             {
                 var nextMember = league.Members[i].ID;
                 var set = SetUtility.Create(dbContext, firstMember.ID, nextMember, league.ID, season);
@@ -602,11 +618,11 @@ namespace Climb.Test.Services.ModelServices
 
         private LeagueUser CreateOldLeagueUser(League league, ApplicationUser user)
         {
-            var oldLeagueUser = new LeagueUser(league.ID, user.Id) { HasLeft = true };
+            var oldLeagueUser = new LeagueUser(league.ID, user.Id) {HasLeft = true};
             dbContext.LeagueUsers.Add(oldLeagueUser);
             dbContext.SaveChanges();
             return oldLeagueUser;
-        } 
+        }
         #endregion
     }
 }

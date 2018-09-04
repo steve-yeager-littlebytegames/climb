@@ -231,7 +231,11 @@ namespace Climb.Services.ModelServices
                     }
 
                     ++rankedMembers;
-                    if(member.Rank < rank)
+                    if(member.Rank == 0)
+                    {
+                        member.RankTrend = RankTrends.Up;
+                    }
+                    else if(member.Rank < rank)
                     {
                         member.RankTrend = RankTrends.Down;
                     }
