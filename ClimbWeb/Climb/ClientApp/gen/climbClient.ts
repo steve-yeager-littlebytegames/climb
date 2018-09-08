@@ -25,7 +25,7 @@ export class Admin extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
     }
 
     migrate(key: string | null | undefined): Promise<FileResponse | null> {
@@ -105,7 +105,7 @@ export class AccountApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
     }
 
     register(email: string | null, username: string | null, name: string | null | undefined, password: string | null, confirmPassword: string | null | undefined, rememberMe: boolean): Promise<UserDto> {
@@ -309,7 +309,7 @@ export class GameApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
     }
 
     get(gameID: number): Promise<GameDto> {
@@ -405,7 +405,7 @@ export class LeagueApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
     }
 
     listAll(): Promise<LeagueDto[]> {
@@ -800,7 +800,7 @@ export class SeasonApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
     }
 
     get(seasonID: number): Promise<SeasonDto> {
@@ -1187,7 +1187,7 @@ export class SetApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
     }
 
     submit(request: SubmitRequest | null): Promise<SetDto> {
@@ -1386,7 +1386,7 @@ export class UserApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44354");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
     }
 
     get(userID: string): Promise<UserDto> {
