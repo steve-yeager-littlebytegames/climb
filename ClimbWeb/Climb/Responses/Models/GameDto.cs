@@ -2,25 +2,27 @@
 using System.Linq;
 using Climb.Models;
 using Climb.Services;
+using JetBrains.Annotations;
 
 namespace Climb.Responses.Models
 {
     public class GameDto
     {
         public int ID { get; }
+        [Required, UsedImplicitly]
         public string Name { get; }
-        [Required]
+        [Required, UsedImplicitly]
         public CharacterDto[] Characters { get; }
+        [Required, UsedImplicitly]
         public StageDto[] Stages { get; }
+        [UsedImplicitly]
         public int CharactersPerMatch { get; }
-        public bool HasStages { get; }
 
         private GameDto(Game game, CharacterDto[] characters, StageDto[] stages)
         {
             ID = game.ID;
             Name = game.Name;
             CharactersPerMatch = game.CharactersPerMatch;
-            HasStages = game.HasStages;
             Characters = characters;
             Stages = stages;
         }
