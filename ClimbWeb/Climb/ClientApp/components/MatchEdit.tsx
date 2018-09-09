@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 
 import { ClimbClient } from "../gen/climbClient";
+import { Submit } from "./Submit";
 
 interface IMatchEditProps {
     game: ClimbClient.GameDto;
@@ -44,7 +45,7 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
 
         const characters = game.characters.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>);
         const canOk = match.player1Score !== match.player2Score;
-        const stageInput = this.renderStageInput(game.hasStages, game.stages, match.stageID);
+        const stageInput = this.renderStageInput(game.stages, match.stageID);
 
         return (
             <div className="container">
@@ -70,7 +71,7 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         const match = this.state.match;
         const score = playerNumber === 1 ? match.player1Score : match.player2Score;
         
-        let characterInputs:JSX.Element[] = [];
+        const characterInputs:JSX.Element[] = [];
         for (let i = 0; i < characterCount; i++) {
             characterInputs.push(
                 <select className="form-control" key={i} value={characterValues[i]} onChange={(e: any) => this.updateCharacter(playerNumber, i, parseInt(e.currentTarget.value))}>{characters}</select>
@@ -106,12 +107,13 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         );
     }
 
-    private renderStageInput(hasStages: boolean, stageValues: ClimbClient.StageDto[], currentStage: number | undefined) {
-        if (!hasStages) {
+    private renderStageInput(stageValues: ClimbClient.StageDto[], currentStage: number | undefined) {
+        if (stageValues.length === 0) {
             return null;
         }
 
         const stageOptions = stageValues.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>);
+        stageOptions.splice(0, 0, <option key={0} value={undefined}>{Submit.missingStageName}</option>);
 
         const elements = (
             <div>

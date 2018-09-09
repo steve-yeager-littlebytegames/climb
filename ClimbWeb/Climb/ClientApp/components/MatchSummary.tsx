@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 
 import { ClimbClient } from "../gen/climbClient";
+import { Submit } from "./Submit";
 
 interface IMatchSummaryProps {
     game: ClimbClient.GameDto;
@@ -49,15 +50,14 @@ export class MatchSummary extends React.Component<IMatchSummaryProps> {
     }
 
     private renderStage(match: ClimbClient.MatchDto, game: ClimbClient.GameDto) {
-        if (match.stageID == null) {
-            return <div></div>;
-        }
-
         if (!game.stages) throw new Error("Stages are not loaded.");
 
         const stage = game.stages.find((s: any) => s.id === match.stageID);
-        if (!stage) throw new Error(`Could not find stage with ID '${match.stageID}'.`);
-        const stageName = stage.name;
+
+        let stageName = Submit.missingStageName;
+        if (stage != null) {
+            stageName = stage.name;
+        }
 
         return <div className="match-summary-stage">{stageName}</div>;
     }

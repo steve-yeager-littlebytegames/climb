@@ -114,7 +114,6 @@ namespace Climb.Data
                     CharactersPerMatch = v1Game.CharactersPerMatch,
                     MaxMatchPoints = v1Game.MaxMatchPoints,
                     DateAdded = DateTime.Today,
-                    HasStages = v1Game.RequireStage,
                 };
             }
 

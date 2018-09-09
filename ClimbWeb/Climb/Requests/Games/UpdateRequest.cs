@@ -14,8 +14,6 @@ namespace Climb.Requests.Games
         [Required]
         public int MaxMatchPoints { get; set; }
         [Required]
-        public bool HasStages { get; set; }
-        [Required]
         [FileSize(ClimbImageRules.GameLogoMaxSize, true)]
         public IFormFile LogoImage { get; set; }
 
@@ -23,12 +21,11 @@ namespace Climb.Requests.Games
         {
         }
 
-        public UpdateRequest(string name, int characterCount, int maxPoints, bool hasStages, IFormFile logo)
+        public UpdateRequest(string name, int characterCount, int maxPoints, IFormFile logo)
         {
             Name = name;
             CharactersPerMatch = characterCount;
             MaxMatchPoints = maxPoints;
-            HasStages = hasStages;
             LogoImage = logo;
         }
     }
