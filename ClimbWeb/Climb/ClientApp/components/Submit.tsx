@@ -18,6 +18,8 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
     client: ClimbClient.SetApi;
     setId: number;
 
+    static readonly missingStageName = "-----";
+
     constructor(props: RouteComponentProps<any>) {
         super(props);
 

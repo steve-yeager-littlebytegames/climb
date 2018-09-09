@@ -51,7 +51,7 @@ namespace Climb.Services.ModelServices
 
                 var logoImageKey = await cdnService.UploadImageAsync(request.LogoImage, ClimbImageRules.GameLogo);
 
-                game = new Game(request.Name, request.CharactersPerMatch, request.MaxMatchPoints, request.HasStages, dateService.Now)
+                game = new Game(request.Name, request.CharactersPerMatch, request.MaxMatchPoints, dateService.Now)
                 {
                     LogoImageKey = logoImageKey
                 };
@@ -62,7 +62,6 @@ namespace Climb.Services.ModelServices
                 game.Name = request.Name;
                 game.CharactersPerMatch = request.CharactersPerMatch;
                 game.MaxMatchPoints = request.MaxMatchPoints;
-                game.HasStages = request.HasStages;
 
                 if(request.LogoImage != null)
                 {

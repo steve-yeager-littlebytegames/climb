@@ -45,28 +45,25 @@
     </div>
 
     <!--Stages-->
-    @if(Model.Game.HasStages)
-    {
-        <div class="container">
-            <div>
-                <h3>Stages</h3>
-                <a class="btn btn-danger mb-4" asp-action="StageAdd">Add</a>
-            </div>
-            <div class="card-group">
-                @foreach(var stage in Model.Game.Stages)
-                {
-                    <div class="col-sm-3 pb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title">@stage.Name</h6>
-                            </div>
-                            <div class="card-footer">
-                                <a asp-action="StageAdd" asp-route-gameid="@Model.Game.ID" asp-route-stageid="@stage.ID">edit</a>
-                            </div>
+    <div class="container">
+        <div>
+            <h3>Stages</h3>
+            <a class="btn btn-danger mb-4" asp-action="StageAdd">Add</a>
+        </div>
+        <div class="card-group">
+            @foreach(var stage in Model.Game.Stages)
+            {
+                <div class="col-sm-3 pb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">@stage.Name</h6>
+                        </div>
+                        <div class="card-footer">
+                            <a asp-action="StageAdd" asp-route-gameid="@Model.Game.ID" asp-route-stageid="@stage.ID">edit</a>
                         </div>
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
-    }
+    </div>
 </div>
