@@ -296,11 +296,6 @@ namespace Climb.Services.ModelServices
                 throw new NotFoundException(typeof(Season), seasonID);
             }
 
-            if(season.IsActive)
-            {
-                throw new BadRequestException($"Can't join season '{seasonID}' because it's already started.");
-            }
-
             if(!await dbContext.Users.AnyAsync(u => u.Id == userID))
             {
                 throw new NotFoundException(typeof(ApplicationUser), userID);
@@ -328,6 +323,17 @@ namespace Climb.Services.ModelServices
                 dbContext.Add(participant);
             }
 
+            if(season.IsActive)
+            {
+                var completedSets = season.Sets.Where(s => s.IsComplete).ToArray();
+                
+                var newSets = scheduleFactory.GenerateSchedule(season.StartDate, season.EndDate, season.Participants)
+                    .Where(s => !completedSets.Any(cs => cs.IsRematch(s))).ToArray();
+
+                scheduleFactory.Reschedule(DateTime.Today, season.EndDate, newSets, season.Participants.Where(slu => !slu.HasLeft).ToArray());
+
+                dbContext.Sets.AddRange(newSets);
+            }
 
             await dbContext.SaveChangesAsync();
 

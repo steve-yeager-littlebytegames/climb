@@ -283,11 +283,12 @@ namespace Climb.Test.Services.ModelServices
         public async Task End_Valid_RemoveLeagueActiveSeason()
         {
             var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
-            DbContextUtility.UpdateAndSave(dbContext, season.League, l => l.ActiveSeasonID = season.ID);
+            int seasonID = season.ID;
+            DbContextUtility.UpdateAndSave(dbContext, season.League, l => l.ActiveSeasonID = seasonID);
 
             Assert.IsNotNull(season.League.ActiveSeasonID);
 
-            season = await testObj.End(season.ID);
+            season = await testObj.End(seasonID);
 
             Assert.IsNull(season.League.ActiveSeasonID);
         }
@@ -437,13 +438,32 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public void Join_SeasonStarted_BadResultException()
+        public async Task Join_SeasonStartedNewJoin_CreateSets()
         {
+            scheduler.GenerateSchedule(default, default, default).ReturnsForAnyArgs(new List<Set>());
             var season = CreateSeason();
             DbContextUtility.UpdateAndSave(dbContext, season, s => s.IsActive = true);
             var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
 
-            Assert.ThrowsAsync<BadRequestException>(() => testObj.JoinAsync(season.ID, leagueUser.UserID));
+            await testObj.JoinAsync(season.ID, leagueUser.UserID);
+
+            scheduler.Received(1).GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
+            scheduler.Received(1).Reschedule(DateTime.Today, season.EndDate, Arg.Any<IReadOnlyList<Set>>(), Arg.Any<IReadOnlyList<SeasonLeagueUser>>());
+        }
+
+        [Test]
+        public async Task Join_SeasonStartedRejoin_CreateSets()
+        {
+            scheduler.GenerateSchedule(default, default, default).ReturnsForAnyArgs(new List<Set>());
+            var season = CreateSeason((0, 0, 0));
+            DbContextUtility.UpdateAndSave(dbContext, season, s => s.IsActive = true);
+            var participant = season.Participants[0];
+            DbContextUtility.UpdateAndSave(dbContext, participant, p => p.HasLeft = true);
+
+            await testObj.JoinAsync(season.ID, participant.UserID);
+
+            scheduler.Received(1).GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
+            scheduler.Received(1).Reschedule(DateTime.Today, season.EndDate, Arg.Any<IReadOnlyList<Set>>(), Arg.Any<IReadOnlyList<SeasonLeagueUser>>());
         }
 
         #region Helpers
