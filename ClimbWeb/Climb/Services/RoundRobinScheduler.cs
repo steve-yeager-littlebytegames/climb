@@ -36,7 +36,7 @@ namespace Climb.Services
             var daysInRound = (endDate - startDate).Days / (participants.Count - 1);
             var dueDate = startDate;
 
-            var scheduledSets = new List<Set>(sets.Count);
+            var scheduledSets = new HashSet<Set>(sets.Count);
             var playersInRound = new HashSet<int>();
 
             while(scheduledSets.Count != sets.Count)
@@ -45,7 +45,7 @@ namespace Climb.Services
                 playersInRound.Clear();
                 foreach(var set in sets)
                 {
-                    if(!playersInRound.Contains(set.Player1ID) && !playersInRound.Contains(set.Player2ID))
+                    if(!scheduledSets.Contains(set) && !playersInRound.Contains(set.Player1ID) && !playersInRound.Contains(set.Player2ID))
                     {
                         set.DueDate = dueDate;
 
