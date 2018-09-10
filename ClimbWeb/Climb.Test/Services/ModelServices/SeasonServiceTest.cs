@@ -448,7 +448,7 @@ namespace Climb.Test.Services.ModelServices
             await testObj.JoinAsync(season.ID, leagueUser.UserID);
 
             scheduler.Received(1).GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
-            scheduler.Received(1).Reschedule(DateTime.Today, season.EndDate, Arg.Any<IReadOnlyList<Set>>(), Arg.Any<IReadOnlyList<SeasonLeagueUser>>());
+            scheduler.Received(1).Reschedule(default, season.EndDate, Arg.Any<IReadOnlyList<Set>>(), Arg.Any<IReadOnlyList<SeasonLeagueUser>>());
         }
 
         [Test]
@@ -463,7 +463,7 @@ namespace Climb.Test.Services.ModelServices
             await testObj.JoinAsync(season.ID, participant.UserID);
 
             scheduler.Received(1).GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
-            scheduler.Received(1).Reschedule(DateTime.Today, season.EndDate, Arg.Any<IReadOnlyList<Set>>(), Arg.Any<IReadOnlyList<SeasonLeagueUser>>());
+            scheduler.Received(1).Reschedule(default, season.EndDate, Arg.Any<IReadOnlyList<Set>>(), Arg.Any<IReadOnlyList<SeasonLeagueUser>>());
         }
 
         #region Helpers

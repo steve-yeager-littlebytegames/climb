@@ -330,7 +330,7 @@ namespace Climb.Services.ModelServices
                 var newSets = scheduleFactory.GenerateSchedule(season.StartDate, season.EndDate, season.Participants)
                     .Where(s => !completedSets.Any(cs => cs.IsRematch(s))).ToArray();
 
-                scheduleFactory.Reschedule(DateTime.Today, season.EndDate, newSets, season.Participants.Where(slu => !slu.HasLeft).ToArray());
+                scheduleFactory.Reschedule(dateService.Now, season.EndDate, newSets, season.Participants.Where(slu => !slu.HasLeft).ToArray());
 
                 dbContext.Sets.AddRange(newSets);
             }
