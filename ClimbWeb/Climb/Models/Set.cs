@@ -101,5 +101,10 @@ namespace Climb.Models
             IsForfeit = true;
             IsComplete = true;
         }
+
+        public bool IsRematch(Set otherSet)
+        {
+            return IsPlaying(otherSet.Player1ID) && IsPlaying(otherSet.Player2ID);
+        }
     }
 }

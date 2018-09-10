@@ -31,6 +31,32 @@ namespace Climb.Services
             return sets;
         }
 
+        public void Reschedule(DateTime startDate, DateTime endDate, IReadOnlyList<Set> sets, IReadOnlyList<SeasonLeagueUser> participants)
+        {
+            var daysInRound = (endDate - startDate).Days / (participants.Count - 1);
+            var dueDate = startDate;
+
+            var scheduledSets = new List<Set>(sets.Count);
+            var playersInRound = new HashSet<int>();
+
+            while(scheduledSets.Count != sets.Count)
+            {
+                dueDate = dueDate.AddDays(daysInRound);
+                playersInRound.Clear();
+                foreach(var set in sets)
+                {
+                    if(!playersInRound.Contains(set.Player1ID) && !playersInRound.Contains(set.Player2ID))
+                    {
+                        set.DueDate = dueDate;
+
+                        scheduledSets.Add(set);
+                        playersInRound.Add(set.Player1ID);
+                        playersInRound.Add(set.Player2ID);
+                    }
+                }
+            }
+        }
+
         private static IEnumerable<Set> GenerateSets(List<SeasonLeagueUser> participants, in DateTime dueDate)
         {
             var sets = new List<Set>(participants.Count / 2);
