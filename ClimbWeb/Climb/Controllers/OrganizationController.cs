@@ -15,11 +15,13 @@ namespace Climb.Controllers
     public class OrganizationController : BaseController<OrganizationController>
     {
         private readonly IOrganizationService organizationService;
+        private readonly IDateService dateService;
 
-        public OrganizationController(ILogger<OrganizationController> logger, IUserManager userManager, ApplicationDbContext dbContext, IOrganizationService organizationService)
+        public OrganizationController(ILogger<OrganizationController> logger, IUserManager userManager, ApplicationDbContext dbContext, IOrganizationService organizationService, IDateService dateService)
             : base(logger, userManager, dbContext)
         {
             this.organizationService = organizationService;
+            this.dateService = dateService;
         }
 
         [HttpGet("organizations")]
@@ -59,7 +61,7 @@ namespace Climb.Controllers
             var organization = new Organization
             {
                 Name = name,
-                DateCreated = DateTime.Now,
+                DateCreated = dateService.Now,
             };
             dbContext.Organizations.Add(organization);
 
