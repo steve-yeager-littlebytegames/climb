@@ -1,7 +1,7 @@
 ﻿@using Climb.Extensions
 @model Climb.ViewModels.Sets.DetailsViewModel
 
-<div class="set-container d-flex flex-column filterable" data-filter-keys="@Html.CreateFilterKeys(Model.Set.Player1.DisplayName, Model.Set.Player2.DisplayName)">
+<div class="set-container d-flex flex-column filterable" data-filter-keys="@Html.CreateFilterKeys(Model.Set.Player1.DisplayName, Model.Set.Player2.DisplayName, Model.Set.League.Name)">
     <span class="set-details">@Model.Set.League.Name - @Model.SetType - @Model.Set.DueDate.ToShortDateString()</span>
     <div class="background-dark">
         <div class="d-flex justify-content-between align-items-center px-2 py-1">
