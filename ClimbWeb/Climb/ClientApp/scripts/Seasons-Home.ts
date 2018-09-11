@@ -31,7 +31,6 @@ function registerFilter() {
 
     filterInput.onkeyup = e => {
         const filter = filterInput.value.toLowerCase();
-        console.log(filter);
-        filterables.forEach(x => x.tryFilter(filter));
+        filterables.filter(filter);
     }
 }

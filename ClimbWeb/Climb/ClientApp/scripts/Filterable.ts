@@ -49,4 +49,8 @@ export class FilterCollection {
         const filterableElements = Array.from(document.getElementsByClassName(Filterable.className));
         return filterableElements.map(e => new Filterable(e, normalize));
     }
+
+    filter(filter: string): void {
+        this.filterables.forEach(x => x.tryFilter(filter));
+    }
 }
