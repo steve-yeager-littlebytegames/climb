@@ -104,6 +104,9 @@
     <Content Update="Views\Season\Partials\SeasonParticipant.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Shared\FilterBar.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Shared\Navbar.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

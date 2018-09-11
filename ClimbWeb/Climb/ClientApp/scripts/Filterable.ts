@@ -41,8 +41,20 @@ export class FilterCollection {
         this.filterables = filterables;
     }
 
-    static create(normalize: boolean): FilterCollection {
-        return new FilterCollection(this.collectFilterables(normalize));
+    static create(filterBarId: string ="filter-bar", normalize: boolean = true): FilterCollection {
+        const filterCollection = new FilterCollection(this.collectFilterables(normalize));
+        filterCollection.registerFilter(filterBarId);
+        return filterCollection;
+    }
+
+    private registerFilter(filterBarId: string): void {
+        const filterInput = document.getElementById(filterBarId) as HTMLInputElement;
+        if (!filterInput) throw new Error(`Could not find filter-bar`);
+
+        filterInput.onkeyup = e => {
+            const filter = filterInput.value.toLowerCase();
+            this.filter(filter);
+        }
     }
 
     private static collectFilterables(normalize: boolean): Filterable[] {

@@ -2,8 +2,7 @@
 import * as Filter from "./Filterable.js";
 
 registerButtons();
-const filterables = Filter.FilterCollection.create(true);
-registerFilter();
+Filter.FilterCollection.create();
 
 function registerButtons() {
     const leaveSeasonButton = document.getElementById("leave-season-button");
@@ -23,14 +22,4 @@ function leaveSeason(participantId: number) {
             window.location.reload();
         })
         .catch((reason: any) => alert(`Could not leave season.\n${reason}`));
-}
-
-function registerFilter() {
-    const filterInput = document.getElementById("filter-bar") as HTMLInputElement;
-    if (!filterInput) throw new Error(`Could not find filter-bar`);
-
-    filterInput.onkeyup = e => {
-        const filter = filterInput.value.toLowerCase();
-        filterables.filter(filter);
-    }
 }
