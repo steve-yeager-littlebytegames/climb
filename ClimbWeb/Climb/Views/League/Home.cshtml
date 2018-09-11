@@ -1,4 +1,4 @@
-﻿@using Climb.Services
+@using Climb.Services
 @using Climb.Services.ModelServices
 @using Climb.ViewModels.Leagues
 @model HomeViewModel
@@ -11,7 +11,10 @@
 }
 
 @section LeaguesBody
-    {
+{
+    <!--Filter-->
+    <partial name="FilterBar"/>
+
     <!-- Columns -->
     <div class="row">
         <!-- Members -->

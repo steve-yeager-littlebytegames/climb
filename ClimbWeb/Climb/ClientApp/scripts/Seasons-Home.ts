@@ -1,11 +1,17 @@
 ﻿import { ClimbClient } from "../gen/climbClient.js";
+import * as Filter from "./Filterable.js";
 
-var leaveSeasonButton = document.getElementById("leave-season-button");
-if (leaveSeasonButton) {
-    const participantIdString = leaveSeasonButton.getAttribute("data-participantID");
-    if (participantIdString) {
-        const participantId = parseInt(participantIdString);
-        leaveSeasonButton.onclick = () => leaveSeason(participantId);
+registerButtons();
+Filter.FilterCollection.create();
+
+function registerButtons() {
+    const leaveSeasonButton = document.getElementById("leave-season-button");
+    if (leaveSeasonButton) {
+        const participantIdString = leaveSeasonButton.getAttribute("data-participantID");
+        if (participantIdString) {
+            const participantId = parseInt(participantIdString);
+            leaveSeasonButton.onclick = () => leaveSeason(participantId);
+        }
     }
 }
 
