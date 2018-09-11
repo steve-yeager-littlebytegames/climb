@@ -51,11 +51,10 @@ namespace Climb.ViewModels.Leagues
 
                 ++totalSets;
 
-                var winnerID = set.WinnerID;
-
                 foreach(var match in set.Matches)
                 {
-                    
+                    var winnerID = match.Player1Score > match.Player2Score ? set.Player1ID : set.Player2ID;
+
                     foreach(var matchCharacter in match.MatchCharacters)
                     {
                         var characterData = data[matchCharacter.Character];
