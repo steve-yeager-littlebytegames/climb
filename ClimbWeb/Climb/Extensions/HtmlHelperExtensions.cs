@@ -4,6 +4,6 @@ namespace Climb.Extensions
 {
     public static class HtmlHelperExtensions
     {
-        public static string CreateFilterKeys(this IHtmlHelper helper, params string[] keys) => string.Join("|", keys);
+        public static string FilterKeys(this IHtmlHelper helper, params string[] keys) => string.Join("|", keys);
     }
 }
