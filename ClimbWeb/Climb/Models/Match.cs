@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace Climb.Models
 {
@@ -13,11 +11,8 @@ namespace Climb.Models
         public int Player2Score { get; set; }
         public int? StageID { get; set; }
 
-        [JsonIgnore]
         public Set Set { get; set; }
-        [JsonIgnore]
         public Stage Stage { get; set; }
-        [Required]
         public HashSet<MatchCharacter> MatchCharacters { get; set; }
 
         public Match()

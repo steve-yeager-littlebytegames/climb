@@ -1,4 +1,7 @@
 ﻿import { ClimbClient } from "../gen/climbClient.js";
+import { FilterCollection } from "./Filterable.js";
+
+FilterCollection.create();
 
 var openButton = document.getElementById("challenge-button");
 if (openButton != null) {
