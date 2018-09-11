@@ -1,4 +1,5 @@
 ﻿@using Climb.Services
+@using Climb.ViewModels.Leagues
 @model Climb.ViewModels.Leagues.DataViewModel
 @inject ICdnService cdnService
 
@@ -9,7 +10,43 @@
 
 @section LeaguesBody
 {
-    <div class="d-flex justify-content-center align-items-center body-temp">
-        <p>Data</p>
+    <div class="mt-4">
+        <div class="container">
+            <div>
+                <h3>Characters</h3>
+            </div>
+            <div class="card-group">
+                @foreach (var data in Model.AllCharacterData)
+                {
+                    <div class="col-sm-4 pb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">@data.Key.Name</h6>
+                                <img src="@cdnService.GetImageUrl(data.Key.ImageKey, ClimbImageRules.CharacterPic)" width="64" height="64" />
+                                <!--Uses-->
+                                <div>
+                                    <small>Matches = @data.Value.matches</small><br />
+                                    <small>Total Percent = @data.Value.UsagePercent.ToString("P1")</small>
+                                    <hr />
+                                </div>
+                                <!--Wins-->
+                                <div>
+                                    <small>Wins = @data.Value.wins</small><br />
+                                    <small>Percent = @data.Value.WinPercent.ToString("P1")</small><br />
+                                    <small>Total Percent = @data.Value.WinTotalPercent.ToString("P1")</small>
+                                    <hr />
+                                </div>
+                                <!--Losses-->
+                                <div>
+                                    <small>Losses = @data.Value.losses</small><br />
+                                    <small>Percent = @data.Value.LossPercent.ToString("P1")</small><br />
+                                    <small>Total Percent = @data.Value.LossTotalPercent.ToString("P1")</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 }
