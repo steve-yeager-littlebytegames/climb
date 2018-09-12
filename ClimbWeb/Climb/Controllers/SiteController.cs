@@ -104,9 +104,16 @@ namespace Climb.Controllers
 
             var normalizedSearch = search.ToUpperInvariant();
 
-            var gameResults = await dbContext.Games.Where(g => g.Name.ToUpperInvariant().Contains(normalizedSearch)).ToArrayAsync();
-            var leagueResults = await dbContext.Leagues.Where(l => l.Name.ToUpperInvariant().Contains(normalizedSearch)).ToArrayAsync();
-            var userResults = await dbContext.Users.Where(u => u.NormalizedUserName.Contains(normalizedSearch)).ToArrayAsync();
+            var gameResults = await dbContext.Games
+                .Where(g => g.Name.ToUpperInvariant().Contains(normalizedSearch))
+                .ToArrayAsync();
+            var leagueResults = await dbContext.Leagues
+                .Where(l => l.Name.ToUpperInvariant().Contains(normalizedSearch))
+                .ToArrayAsync();
+            var userResults = await dbContext.Users
+                .Where(u => u.NormalizedUserName.Contains(normalizedSearch)
+                            || (!string.IsNullOrWhiteSpace(u.Name) && u.Name.ToUpperInvariant().Contains(normalizedSearch)))
+                .ToArrayAsync();
 
             var viewModel = new SearchViewModel(user, search, gameResults, leagueResults, userResults);
             return View(viewModel);
