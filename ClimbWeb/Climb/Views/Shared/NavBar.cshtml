@@ -15,6 +15,14 @@
         <ul class="navbar-nav ml-auto">
             @if (Model.IsLoggedIn)
             {
+                <!--Search-->
+                <li class="justify-content-center">
+                    <form class="form-inline my-2 mr-sm-4 mx-auto" asp-controller="Site" asp-action="Search" method="get">
+                        <input class="form-control-sm mr-2" name="search" type="search" placeholder="Game/League/User" aria-label="Search">
+                        <button class="btn btn-sm btn-outline-light" type="submit">Search</button>
+                    </form>
+                </li>
+
                 <!-- Games -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
