@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Services;
 using Climb.ViewModels;
 using Climb.ViewModels.Site;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -87,6 +90,26 @@ namespace Climb.Controllers
             }
 
             return RedirectToAction("Support");
+        }
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search([CanBeNull] [FromQuery] string search)
+        {
+            var user = await GetViewUserAsync();
+
+            if(string.IsNullOrWhiteSpace(search))
+            {
+                return View(new SearchViewModel(user));
+            }
+
+            var normalizedSearch = search.ToUpperInvariant();
+
+            var gameResults = await dbContext.Games.Where(g => g.Name.ToUpperInvariant().Contains(normalizedSearch)).ToArrayAsync();
+            var leagueResults = await dbContext.Leagues.Where(l => l.Name.ToUpperInvariant().Contains(normalizedSearch)).ToArrayAsync();
+            var userResults = await dbContext.Users.Where(u => u.NormalizedUserName.Contains(normalizedSearch)).ToArrayAsync();
+
+            var viewModel = new SearchViewModel(user, search, gameResults, leagueResults, userResults);
+            return View(viewModel);
         }
     }
 }
