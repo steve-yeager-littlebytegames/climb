@@ -1,0 +1,66 @@
+﻿@model Climb.ViewModels.Site.SearchViewModel
+
+@{
+    ViewBag.Title = "Search";
+}
+
+<div class="py-4 text-center">
+    <div class="py-4">
+        <form class="form-inline justify-content-center" asp-action="Search" method="get">
+            <input class="form-control mr-sm-2" name="search" type="search" placeholder="Game/League/User" aria-label="Search" value="@Model.Search">
+            <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+
+    @if(Model.EmptySearch)
+    {
+        <div>
+            Use the search bar above to look for Games, Leagues, and Users
+        </div>
+    }
+    else if(Model.NoResults)
+    {
+        <div>
+            No results found
+        </div>
+    }
+    else
+    {
+        <div>
+            @Model.ResultCount @("Result" + (Model.ResultCount > 1 ? "s" : ""))
+        </div>
+
+        if(Model.GameResults.Count > 0)
+        {
+            <h3 class="pt-2">Games</h3>
+            foreach(var game in Model.GameResults)
+            {
+                <div>
+                    <a asp-controller="Game" asp-action="Home" asp-route-gameid="@game.ID">@game.Name</a>
+                </div>
+            }
+        }
+
+        if(Model.LeagueResults.Count > 0)
+        {
+            <h3 class="pt-2">Leagues</h3>
+            foreach(var league in Model.LeagueResults)
+            {
+                <div>
+                    <a asp-controller="League" asp-action="Home" asp-route-leagueid="@league.ID">@league.Name</a>
+                </div>
+            }
+        }
+
+        if(Model.UserResults.Count > 0)
+        {
+            <h3 class="pt-2">Users</h3>
+            foreach(var user in Model.UserResults)
+            {
+                <div>
+                    <a asp-controller="User" asp-action="Home" asp-route-userid="@user.Id">@user.UserName</a>
+                </div>
+            }
+        }
+    }
+</div>
