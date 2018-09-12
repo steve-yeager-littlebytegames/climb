@@ -108,7 +108,9 @@ namespace Climb.Controllers
                 .Where(g => g.Name.ToUpperInvariant().Contains(normalizedSearch))
                 .ToArrayAsync();
             var leagueResults = await dbContext.Leagues
-                .Where(l => l.Name.ToUpperInvariant().Contains(normalizedSearch))
+                .Include(l => l.Game)
+                .Where(l => l.Name.ToUpperInvariant().Contains(normalizedSearch)
+                            || l.Game.Name.ToUpperInvariant().Contains(normalizedSearch))
                 .ToArrayAsync();
             var userResults = await dbContext.Users
                 .Where(u => u.NormalizedUserName.Contains(normalizedSearch)
