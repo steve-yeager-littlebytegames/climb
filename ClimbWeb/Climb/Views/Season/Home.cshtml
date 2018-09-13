@@ -1,8 +1,10 @@
 ﻿@using Climb.Services
+@using Climb.Services.ModelServices
 @using Climb.ViewModels.Seasons
 @using Climb.ViewModels.Sets
 @model Climb.ViewModels.Seasons.HomeViewModel
 @inject ICdnService cdnService
+@inject ILeagueService leagueService
 
 @{
     ViewBag.Page = "Home";
@@ -26,7 +28,7 @@
                         foreach(var participant in Model.Participants)
                         {
                             //To Do: style Season Participant partial like league member partial
-                            <partial name="./Partials/SeasonParticipant" model="@SeasonParticipantViewModel.Create(participant, cdnService)"/>
+                            <partial name="./Partials/SeasonParticipant" model="@await SeasonParticipantViewModel.Create(participant, cdnService, leagueService)"/>
                         }
                     }
                     else
