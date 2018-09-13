@@ -137,6 +137,9 @@ namespace Climb.Services.ModelServices
 
         private void UpdatePoints(Set set)
         {
+            set.SeasonPlayer1.Points -= set.Player1SeasonPoints;
+            set.SeasonPlayer2.Points -= set.Player2SeasonPoints;
+
             var winner = set.WinnerID == set.Player1ID ? set.SeasonPlayer1 : set.SeasonPlayer2;
             dbContext.Update(winner);
             var loser = set.LoserID == set.Player1ID ? set.SeasonPlayer1 : set.SeasonPlayer2;
