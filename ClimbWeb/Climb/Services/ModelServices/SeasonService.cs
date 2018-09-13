@@ -132,6 +132,8 @@ namespace Climb.Services.ModelServices
                 ++rank;
             }
 
+            await dbContext.SaveChangesAsync();
+
             return season;
         }
 
