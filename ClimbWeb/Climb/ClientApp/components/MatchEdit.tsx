@@ -1,4 +1,4 @@
-import * as React from "react";
+﻿import * as React from "react";
 
 import { ClimbClient } from "../gen/climbClient";
 import { Submit } from "./Submit";
@@ -92,7 +92,7 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
                 <div className="form-group row">
                     <label className="col-form-label col-4 text-right">{game.scoreName}</label>
                     <div className="col-8">
-                        <input className="form-control" type="number" value={score} min="0" max="2" onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value))}/>
+                        <input className="form-control" type="number" value={score} min="0" max={game.maxMatchPoints} onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value))}/>
                     </div>
                 </div>
 

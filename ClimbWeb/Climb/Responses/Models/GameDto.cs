@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Climb.Models;
 using Climb.Services;
@@ -19,6 +19,8 @@ namespace Climb.Responses.Models
         public int CharactersPerMatch { get; }
         [Required, UsedImplicitly]
         public string ScoreName { get; }
+        [UsedImplicitly]
+        public int MaxMatchPoints { get; }
 
         private GameDto(Game game, CharacterDto[] characters, StageDto[] stages)
         {
@@ -26,6 +28,7 @@ namespace Climb.Responses.Models
             Name = game.Name;
             ScoreName = game.ScoreName;
             CharactersPerMatch = game.CharactersPerMatch;
+            MaxMatchPoints = game.MaxMatchPoints;
             Characters = characters;
             Stages = stages;
         }
