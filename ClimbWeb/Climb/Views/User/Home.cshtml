@@ -98,7 +98,7 @@
             </div>
         </div>
     </div>
-    
+
     <!--Filter-->
     <partial name="FilterBar"/>
 
@@ -115,8 +115,19 @@
             </div>
         </div>
 
+        <!-- Sets -->
+        <div class="col-xl-4 order-xl-2 page-section pb-2 mt-4">
+            <h3>Sets</h3>
+            <div class="page-section-child">
+                @foreach(var set in Model.AvailableSets)
+                {
+                    <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
+                }
+            </div>
+        </div>
+
         <!-- Activity -->
-        <div class="col-xl-4 page-section pb-2 mt-4">
+        <div class="col-xl-4 order-xl-1 page-section pb-2 mt-4">
             <h3>Activity</h3>
             <div class="page-section-child">
                 @if(Model.RecentSets.Count == 0)
@@ -131,17 +142,6 @@
                     {
                         <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
                     }
-                }
-            </div>
-        </div>
-
-        <!-- Sets -->
-        <div class="col-xl-4 page-section pb-2 mt-4">
-            <h3>Sets</h3>
-            <div class="page-section-child">
-                @foreach(var set in Model.AvailableSets)
-                {
-                    <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
                 }
             </div>
         </div>
