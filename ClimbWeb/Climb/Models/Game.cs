@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Climb.Models
 {
     public class Game
     {
+        public const string DefaultScoreName = "Rounds Taken";
+
         public int ID { get; set; }
-        [Required]
         public string Name { get; set; } = "";
         public DateTime DateAdded { get; set; }
         public int CharactersPerMatch { get; set; }
         public int MaxMatchPoints { get; set; }
         public string LogoImageKey { get; set; }
+        public string ScoreName { get; set; }
 
-        [Required]
         public List<Character> Characters { get; set; }
-        [Required]
         public List<Stage> Stages { get; set; }
         public List<League> Leagues { get; set; }
 

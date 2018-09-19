@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Climb.Models;
 using Climb.Services;
@@ -17,11 +17,14 @@ namespace Climb.Responses.Models
         public StageDto[] Stages { get; }
         [UsedImplicitly]
         public int CharactersPerMatch { get; }
+        [Required, UsedImplicitly]
+        public string ScoreName { get; }
 
         private GameDto(Game game, CharacterDto[] characters, StageDto[] stages)
         {
             ID = game.ID;
             Name = game.Name;
+            ScoreName = game.ScoreName;
             CharactersPerMatch = game.CharactersPerMatch;
             Characters = characters;
             Stages = stages;

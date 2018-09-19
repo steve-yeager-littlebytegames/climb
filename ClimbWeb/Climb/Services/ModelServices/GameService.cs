@@ -71,7 +71,9 @@ namespace Climb.Services.ModelServices
 
                 dbContext.Update(game);
             }
-            
+
+            game.ScoreName = string.IsNullOrWhiteSpace(request.ScoreName) ? Game.DefaultScoreName : request.ScoreName;
+
             await dbContext.SaveChangesAsync();
 
             return game;

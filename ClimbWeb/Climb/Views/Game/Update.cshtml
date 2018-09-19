@@ -1,4 +1,4 @@
-﻿@model Climb.ViewModels.Games.UpdateViewModel
+@model Climb.ViewModels.Games.UpdateViewModel
 
 @{
     ViewBag.Title = Model.Game.Name + " " + Model.Action;
@@ -35,6 +35,12 @@
             <label class="col-md-4 col-form-label text-left">Max Match Points</label>
             <input class="form-control col-md-2" asp-for="Request.MaxMatchPoints" min="1" value="@(Model.Game?.MaxMatchPoints ?? 1)" />
             <span asp-validation-for="Request.MaxMatchPoints" class="text-danger"></span>
+        </div>
+        <!--Score Name-->
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label text-left">Score Name</label>
+            <input class="form-control col-md-2" asp-for="Request.ScoreName" value="@(Model.Game?.ScoreName ?? Game.DefaultScoreName)" />
+            <span asp-validation-for="Request.ScoreName" class="text-danger"></span>
         </div>
         <button class="btn btn-set btn-lg btn-edit btn-block mt-3 mx-auto" type="submit">@Model.Action</button>
     </form>
