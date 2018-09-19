@@ -25,7 +25,7 @@ export class Admin extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
     migrate(key: string | null | undefined): Promise<FileResponse | null> {
@@ -105,7 +105,7 @@ export class AccountApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
     register(email: string | null, username: string | null, name: string | null | undefined, password: string | null, confirmPassword: string | null | undefined, rememberMe: boolean): Promise<UserDto> {
@@ -309,7 +309,7 @@ export class GameApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
     get(gameID: number): Promise<GameDto> {
@@ -405,7 +405,7 @@ export class LeagueApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
     listAll(): Promise<LeagueDto[]> {
@@ -800,7 +800,7 @@ export class SeasonApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
     get(seasonID: number): Promise<SeasonDto> {
@@ -1187,7 +1187,7 @@ export class SetApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
     submit(request: SubmitRequest | null): Promise<SetDto> {
@@ -1386,7 +1386,7 @@ export class UserApi extends BaseClass {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("https://localhost:44321");
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
     get(userID: string): Promise<UserDto> {
@@ -1543,6 +1543,9 @@ export class GameDto implements IGameDto {
     characters!: CharacterDto[];
     stages!: StageDto[];
     charactersPerMatch!: number;
+    scoreName!: string;
+    matchName!: string;
+    maxMatchPoints!: number;
 
     constructor(data?: IGameDto) {
         if (data) {
@@ -1572,6 +1575,9 @@ export class GameDto implements IGameDto {
                     this.stages.push(StageDto.fromJS(item));
             }
             this.charactersPerMatch = data["charactersPerMatch"];
+            this.scoreName = data["scoreName"];
+            this.matchName = data["matchName"];
+            this.maxMatchPoints = data["maxMatchPoints"];
         }
     }
 
@@ -1597,6 +1603,9 @@ export class GameDto implements IGameDto {
                 data["stages"].push(item.toJSON());
         }
         data["charactersPerMatch"] = this.charactersPerMatch;
+        data["scoreName"] = this.scoreName;
+        data["matchName"] = this.matchName;
+        data["maxMatchPoints"] = this.maxMatchPoints;
         return data; 
     }
 }
@@ -1607,6 +1616,9 @@ export interface IGameDto {
     characters: CharacterDto[];
     stages: StageDto[];
     charactersPerMatch: number;
+    scoreName: string;
+    matchName: string;
+    maxMatchPoints: number;
 }
 
 export class CharacterDto implements ICharacterDto {

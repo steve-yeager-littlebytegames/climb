@@ -53,10 +53,10 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
                     <button className="btn btn-sm btn-danger" onClick={this.props.onDelete}>Delete</button>
                 </div>
 
-                <h3>Match {match.index + 1}</h3>
-                {this.renderPlayerInputs(1, this.props.player1Name, characters, match.player1Characters, game.charactersPerMatch)}
+                <h3>{game.matchName} {match.index + 1}</h3>
+                {this.renderPlayerInputs(1, this.props.player1Name, characters, match.player1Characters, game)}
                 <hr/>
-                {this.renderPlayerInputs(2, this.props.player2Name, characters, match.player2Characters, game.charactersPerMatch)}
+                {this.renderPlayerInputs(2, this.props.player2Name, characters, match.player2Characters, game)}
                 {stageInput}
 
                 <div className="d-flex justify-content-between">
@@ -67,12 +67,12 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         );
     }
 
-    private renderPlayerInputs(playerNumber: number, playerName: string, characters: JSX.Element[], characterValues: number[], characterCount: number) {
+    private renderPlayerInputs(playerNumber: number, playerName: string, characters: JSX.Element[], characterValues: number[], game: ClimbClient.GameDto) {
         const match = this.state.match;
         const score = playerNumber === 1 ? match.player1Score : match.player2Score;
         
         const characterInputs:JSX.Element[] = [];
-        for (let i = 0; i < characterCount; i++) {
+        for (let i = 0; i < game.charactersPerMatch; i++) {
             characterInputs.push(
                 <select className="form-control" key={i} value={characterValues[i]} onChange={(e: any) => this.updateCharacter(playerNumber, i, parseInt(e.currentTarget.value))}>{characters}</select>
             );
@@ -90,15 +90,15 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
 
                 {/*Score*/}
                 <div className="form-group row">
-                    <label className="col-form-label col-4 text-right">Score</label>
+                    <label className="col-form-label col-4 text-right">{game.scoreName}</label>
                     <div className="col-8">
-                        <input className="form-control" type="number" value={score} min="0" max="2" onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value))}/>
+                        <input className="form-control" type="number" value={score} min="0" max={game.maxMatchPoints} onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value))}/>
                     </div>
                 </div>
 
                 {/*Characters*/}
                 <div className="form-group row">
-                    <label className="col-form-label col-4 text-right">{`Character${characterCount > 1 ? "s" : ""}`}</label>
+                    <label className="col-form-label col-4 text-right">{`Character${game.charactersPerMatch > 1 ? "s" : ""}`}</label>
                     <div className="col-8">
                         {characterInputs}
                     </div>

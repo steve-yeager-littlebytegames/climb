@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "swaggerGenerator": {
     "fromSwagger": {
-      "url": "https://localhost:44321/swagger/v1/swagger.json",
+      "url": "http://localhost:44320/swagger/v1/swagger.json",
       "output": null
     }
   },
@@ -24,6 +24,7 @@
       "generateClientClasses": true,
       "generateClientInterfaces": false,
       "generateOptionalParameters": false,
+      "exportTypes": true,
       "wrapDtoExceptions": false,
       "clientBaseClass": "BaseClass",
       "wrapResponses": false,
