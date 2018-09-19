@@ -14,6 +14,7 @@ namespace Climb.Requests.Games
         [Required]
         public int MaxMatchPoints { get; set; }
         public string ScoreName { get; set; }
+        public string MatchName { get; set; }
         [Required]
         [FileSize(ClimbImageRules.GameLogoMaxSize, true)]
         public IFormFile LogoImage { get; set; }

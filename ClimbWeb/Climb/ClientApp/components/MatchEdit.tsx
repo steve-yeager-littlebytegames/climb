@@ -53,7 +53,7 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
                     <button className="btn btn-sm btn-danger" onClick={this.props.onDelete}>Delete</button>
                 </div>
 
-                <h3>Match {match.index + 1}</h3>
+                <h3>{game.matchName} {match.index + 1}</h3>
                 {this.renderPlayerInputs(1, this.props.player1Name, characters, match.player1Characters, game)}
                 <hr/>
                 {this.renderPlayerInputs(2, this.props.player2Name, characters, match.player2Characters, game)}

@@ -19,6 +19,8 @@ namespace Climb.Responses.Models
         public int CharactersPerMatch { get; }
         [Required, UsedImplicitly]
         public string ScoreName { get; }
+        [Required, UsedImplicitly]
+        public string MatchName { get; }
         [UsedImplicitly]
         public int MaxMatchPoints { get; }
 
@@ -27,6 +29,7 @@ namespace Climb.Responses.Models
             ID = game.ID;
             Name = game.Name;
             ScoreName = game.ScoreName;
+            MatchName = game.MatchName;
             CharactersPerMatch = game.CharactersPerMatch;
             MaxMatchPoints = game.MaxMatchPoints;
             Characters = characters;

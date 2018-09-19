@@ -1544,6 +1544,7 @@ export class GameDto implements IGameDto {
     stages!: StageDto[];
     charactersPerMatch!: number;
     scoreName!: string;
+    matchName!: string;
     maxMatchPoints!: number;
 
     constructor(data?: IGameDto) {
@@ -1575,6 +1576,7 @@ export class GameDto implements IGameDto {
             }
             this.charactersPerMatch = data["charactersPerMatch"];
             this.scoreName = data["scoreName"];
+            this.matchName = data["matchName"];
             this.maxMatchPoints = data["maxMatchPoints"];
         }
     }
@@ -1602,6 +1604,7 @@ export class GameDto implements IGameDto {
         }
         data["charactersPerMatch"] = this.charactersPerMatch;
         data["scoreName"] = this.scoreName;
+        data["matchName"] = this.matchName;
         data["maxMatchPoints"] = this.maxMatchPoints;
         return data; 
     }
@@ -1614,6 +1617,7 @@ export interface IGameDto {
     stages: StageDto[];
     charactersPerMatch: number;
     scoreName: string;
+    matchName: string;
     maxMatchPoints: number;
 }
 

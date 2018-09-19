@@ -6,6 +6,7 @@ namespace Climb.Models
     public class Game
     {
         public const string DefaultScoreName = "Rounds Taken";
+        public const string DefaultMatchName = "Match";
 
         public int ID { get; set; }
         public string Name { get; set; } = "";
@@ -14,6 +15,7 @@ namespace Climb.Models
         public int MaxMatchPoints { get; set; }
         public string LogoImageKey { get; set; }
         public string ScoreName { get; set; }
+        public string MatchName { get; set; }
 
         public List<Character> Characters { get; set; }
         public List<Stage> Stages { get; set; }
