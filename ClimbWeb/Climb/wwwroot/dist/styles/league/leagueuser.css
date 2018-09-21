@@ -1,0 +1,42 @@
+.leagueuser-container,
+.seasonparticipant-container {
+  background-color: #e7e7f3;
+}
+.leagueuser-details {
+  border-bottom: 1px solid #c2c3cd;
+}
+.name {
+  background-color: #d6d7e1;
+}
+.profile-pic {
+  border-left: 1px solid #c2c3cd;
+}
+.points-text,
+.rank-text,
+.points-text-small,
+.rank-text-small {
+  font-family: 'Roboto Mono';
+}
+.rank-text {
+  font-size: 1.75rem;
+}
+.points-text,
+.rank-text-small {
+  font-size: 1.25rem;
+}
+.points-text,
+.points-text-small {
+  color: #AAA;
+}
+.seasonparticipant-container {
+  margin-top: 5px;
+}
+.seasonparticipant-container:first-of-type {
+  margin-top: 0;
+}
+.fa-arrow-down.rank-trend {
+  color: red;
+}
+.fa-arrow-up.rank-trend {
+  color: green;
+}
