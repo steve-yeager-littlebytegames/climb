@@ -330,8 +330,22 @@ namespace Climb.Services.ModelServices
 
             if(season.IsActive)
             {
-                var completedSets = season.Sets.Where(s => s.IsComplete).ToArray();
-                
+                var completedSets = new List<Set>();
+                var notCompletedSets = new List<Set>();
+                foreach(var set in season.Sets)
+                {
+                    if(set.IsComplete)
+                    {
+                        completedSets.Add(set);
+                    }
+                    else
+                    {
+                        notCompletedSets.Add(set);
+                    }
+                }
+
+                dbContext.RemoveRange(notCompletedSets);
+
                 var newSets = scheduleFactory.GenerateSchedule(season.StartDate, season.EndDate, season.Participants)
                     .Where(s => !completedSets.Any(cs => cs.IsRematch(s))).ToArray();
 
