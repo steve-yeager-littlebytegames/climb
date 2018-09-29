@@ -14,6 +14,7 @@ namespace Climb.ViewModels.Sets
         public string SetType { get; }
         public string ActionName { get; }
         public string ActionButtonClass { get; }
+        public string VersusLabel => Set.IsComplete ? "-" : "vs";
 
         private DetailsViewModel(Set set, string p1ProfilePic, string p2ProfilePic, bool userIsPlaying, string opponentProfilePic)
         {

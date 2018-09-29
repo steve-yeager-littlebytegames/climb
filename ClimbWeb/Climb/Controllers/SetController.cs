@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Climb.Data;
+using Climb.Extensions;
 using Climb.Services;
 using Climb.ViewModels.Sets;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace Climb.Controllers
         [HttpGet("sets/fight/{setID:int}")]
         public async Task<IActionResult> Fight(int setID)
         {
+            var referer = Request.GetReferer();
             var user = await GetViewUserAsync();
 
             var set = await dbContext.Sets
@@ -25,7 +27,7 @@ namespace Climb.Controllers
                 .Include(s => s.Player2).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == setID);
 
-            var viewModel = new FightViewModel(user, set);
+            var viewModel = new FightViewModel(user, set, referer);
             return View(viewModel);
         }
     }

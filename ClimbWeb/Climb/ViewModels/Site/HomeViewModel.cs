@@ -9,12 +9,12 @@ namespace Climb.ViewModels.Site
 {
     public class HomeViewModel : BaseViewModel
     {
-        public IReadOnlyList<Game> Games { get; }
+        public IReadOnlyList<Game> TopGames { get; }
 
-        private HomeViewModel(ApplicationUser user, IReadOnlyList<Game> games)
+        private HomeViewModel(ApplicationUser user, IReadOnlyList<Game> topGames)
             : base(user)
         {
-            Games = games;
+            TopGames = topGames;
         }
 
         public static async Task<HomeViewModel> Create(ApplicationUser user, ApplicationDbContext dbContext)

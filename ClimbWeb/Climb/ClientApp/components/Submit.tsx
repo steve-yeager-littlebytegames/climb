@@ -84,7 +84,7 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
                 {!set.isLocked &&
                     <div className="mt-4">
                         <div>
-                            <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add Match</button>
+                        <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add {game.matchName}</button>
                         </div>
                 
                         <div className="d-flex justify-content-end">
@@ -190,7 +190,12 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         this.client.submit(setRequest)
             .then(() => {
                 console.log("Set submitted!");
-                window.location.reload();
+                const referer = $("#referer").attr("data-referer");
+                if (referer !== undefined && referer !== "") {
+                    window.location.assign(referer);
+                } else {
+                    window.location.reload();
+                }
             })
             .catch(reason => alert(`Could not submit set\n${reason}`));
     }
