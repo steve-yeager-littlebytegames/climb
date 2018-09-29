@@ -13,9 +13,15 @@
                     </small>
                 </span>
             </div>
-            <strong class="set-vs">
-                <em>vs</em>
+            <div class="set-score">
+                @Model.Set.Player1Score
+            </div>
+            <strong class="set-vs mx-4">
+                <em>@Model.VersusLabel</em>
             </strong>
+            <div class="set-score">
+                @Model.Set.Player2Score
+            </div>
             <div class="d-flex flex-column align-items-end w-40">
                 <img src="@Model.P2ProfilePic" width="64" height="64"/>
                 <span>

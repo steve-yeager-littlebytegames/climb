@@ -30,7 +30,7 @@ export class MatchSummary extends React.Component<IMatchSummaryProps> {
 
         return (
             <div className="card" onClick={() => this.props.onSelect(match)}>
-                <h6 className="card-header mb-1">Match {match.index + 1}</h6>
+                <h6 className="card-header mb-1">{game.matchName} {match.index + 1}</h6>
                 <div className="d-flex justify-content-around card-text align-items-center px-2">
                     <div>{p1Characters}</div>
                     <h4 className="match-score">{match.player1Score} - {match.player2Score}</h4>
