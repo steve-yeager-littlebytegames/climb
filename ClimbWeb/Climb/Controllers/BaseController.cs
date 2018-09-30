@@ -18,6 +18,8 @@ namespace Climb.Controllers
         protected readonly IUserManager userManager;
         protected readonly ApplicationDbContext dbContext;
 
+        public string BaseUrl => $"{Request.Scheme}://{Request.Host}";
+
         protected BaseController(ILogger<T> logger, IUserManager userManager, ApplicationDbContext dbContext)
         {
             this.logger = logger;

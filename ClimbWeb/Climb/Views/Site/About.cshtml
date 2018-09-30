@@ -1,0 +1,21 @@
+﻿@model Climb.ViewModels.Site.AboutViewModel
+
+@{
+    ViewBag.Title = "About";
+}
+
+<div class="py-4 text-center">
+    <h1>About</h1>
+
+    <div>
+        <div>
+            <a asp-action="Support">Support Link</a>
+        </div>
+        <div>
+            <a href="@Model.SwaggerPath">Open API Spec</a>
+        </div>
+        <div>
+            Version = @Model.BuildVersion
+        </div>
+    </div>
+</div>

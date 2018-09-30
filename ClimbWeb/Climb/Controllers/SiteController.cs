@@ -120,5 +120,13 @@ namespace Climb.Controllers
             var viewModel = new SearchViewModel(user, search, gameResults, leagueResults, userResults);
             return View(viewModel);
         }
+
+        [HttpGet("About")]
+        public async Task<IActionResult> About()
+        {
+            var user = await GetViewUserAsync();
+            var viewModel = new AboutViewModel(user, configuration, BaseUrl);
+            return View(viewModel);
+        }
     }
 }

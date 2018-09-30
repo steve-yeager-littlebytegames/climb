@@ -119,6 +119,9 @@
     <Content Update="Views\Shared\_LayoutWithNavbar.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Site\About.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\User\Partials\LeagueUserLink.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
