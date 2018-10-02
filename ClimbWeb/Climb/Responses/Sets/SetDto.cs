@@ -19,6 +19,8 @@ namespace Climb.Responses.Sets
         public int GameID { get; }
         public int Player1ID { get; }
         public int Player2ID { get; }
+        public string Player1Name { get; }
+        public string Player2Name { get; }
         public int Player1Score { get; }
         public int Player2Score { get; }
         public DateTime DueDate { get; }
@@ -37,6 +39,8 @@ namespace Climb.Responses.Sets
             SeasonID = set.SeasonID;
             Player1ID = set.Player1ID;
             Player2ID = set.Player2ID;
+            Player1Name = set.Player1?.DisplayName;
+            Player2Name = set.Player2?.DisplayName;
             Player1Score = set.Player1Score ?? 0;
             Player2Score = set.Player2Score ?? 0;
             DueDate = set.DueDate;
@@ -50,10 +54,10 @@ namespace Climb.Responses.Sets
 
         public static SetDto Create(Set set, int gameID)
         {
-            var matches = new MatchDto[set.Matches.Count];
+            var matches = new MatchDto[set.Matches?.Count ?? 0];
             for(var i = 0; i < matches.Length; i++)
             {
-                matches[i] = new MatchDto(set.Matches[i], set.Player1ID);
+                matches[i] = new MatchDto(set.Matches?[i], set.Player1ID);
             }
 
             return new SetDto(set, matches, gameID);

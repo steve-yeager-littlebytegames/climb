@@ -7,6 +7,7 @@ using Climb.Attributes;
 using Climb.Data;
 using Climb.Requests.Leagues;
 using Climb.Responses.Models;
+using Climb.Responses.Sets;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Microsoft.AspNetCore.Mvc;
@@ -159,6 +160,28 @@ namespace Climb.API
             {
                 return GetExceptionResult(exception, new {leagueUserID});
             }
+        }
+
+        [HttpGet("/api/v1/leagues/sets")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(SetDto[]))]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Can't find league.")]
+        public async Task<IActionResult> Sets(int leagueID, DateTime dueDate)
+        {
+            var league = await dbContext.Leagues.FirstOrDefaultAsync(l => l.ID == leagueID);
+            if(league == null)
+            {
+                return NotFound(new {leagueID});
+            }
+
+            var sets = await dbContext.Sets
+                .Include(s => s.Player1).AsNoTracking()
+                .Include(s => s.Player2).AsNoTracking()
+                .Include(s => s.League).AsNoTracking()
+                .Where(s => s.LeagueID == leagueID && !s.IsComplete && s.DueDate <= dueDate)
+                .Select(s => SetDto.Create(s, league.GameID))
+                .ToArrayAsync();
+
+            return Ok(sets);
         }
     }
 }
