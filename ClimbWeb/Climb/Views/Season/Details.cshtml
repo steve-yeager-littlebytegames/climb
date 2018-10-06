@@ -1,0 +1,23 @@
+﻿@using Climb.Services
+@model Climb.ViewModels.Seasons.DetailsViewModel
+@inject ICdnService cdnService
+
+@{
+    ViewBag.Page = "Details";
+    Layout = "_SeasonsLayout";
+}
+
+@section SeasonsBody
+{
+    <h1>@Model.DetailsPariticpant.LeagueUser.DisplayName Details</h1>
+    <ul class="list-group">
+        @foreach(var set in Model.Sets)
+        {
+        <li class="list-group-item">
+            <div><a asp-action="Details" asp-route-participantID="@set.OpponentID">@set.OpponentName</a> Rank @set.OpponentRank</div>
+            <div><b>+@set.Points Points</b></div>
+            <div>@set.Date.ToShortDateString()</div>
+        </li>
+        }
+    </ul>
+}

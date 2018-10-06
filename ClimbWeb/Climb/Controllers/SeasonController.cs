@@ -200,5 +200,25 @@ namespace Climb.Controllers
                 return GetExceptionResult(exception, new {userID, seasonID});
             }
         }
+
+        [HttpGet("season/details/{participantID:int}")]
+        public async Task<IActionResult> Details(int participantID)
+        {
+            var user = await GetViewUserAsync();
+
+            var participant = await dbContext.SeasonLeagueUsers
+                .Include(slu => slu.Season).ThenInclude(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
+                .Include(slu => slu.LeagueUser).AsNoTracking()
+                .Include(slu => slu.P1Sets).ThenInclude(s => s.SeasonPlayer2).ThenInclude(slu => slu.LeagueUser).AsNoTracking()
+                .Include(slu => slu.P2Sets).ThenInclude(s => s.SeasonPlayer1).ThenInclude(slu => slu.LeagueUser).AsNoTracking()
+                .FirstOrDefaultAsync(slu => slu.ID == participantID);
+            if(participant == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new DetailsViewModel(user, participant, participant.Season, environment);
+            return View(viewModel);
+        }
     }
 }
