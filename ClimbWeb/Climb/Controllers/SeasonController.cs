@@ -18,13 +18,15 @@ namespace Climb.Controllers
         private readonly ISeasonService seasonService;
         private readonly IHostingEnvironment environment;
         private readonly IDateService dateService;
+        private readonly ICdnService cdnService;
 
-        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager, IHostingEnvironment environment, IDateService dateService)
+        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager, IHostingEnvironment environment, IDateService dateService, ICdnService cdnService)
             : base(logger, userManager, dbContext)
         {
             this.seasonService = seasonService;
             this.environment = environment;
             this.dateService = dateService;
+            this.cdnService = cdnService;
         }
 
         [HttpGet("seasons/home/{seasonID:int}")]
@@ -207,6 +209,7 @@ namespace Climb.Controllers
             var user = await GetViewUserAsync();
 
             var participant = await dbContext.SeasonLeagueUsers
+                .Include(slu => slu.User).AsNoTracking()
                 .Include(slu => slu.Season).ThenInclude(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .Include(slu => slu.LeagueUser).AsNoTracking()
                 .Include(slu => slu.P1Sets).ThenInclude(s => s.SeasonPlayer2).ThenInclude(slu => slu.LeagueUser).AsNoTracking()
@@ -217,7 +220,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = new DetailsViewModel(user, participant, participant.Season, environment);
+            var viewModel = new DetailsViewModel(user, participant, participant.Season, environment, cdnService);
             return View(viewModel);
         }
     }

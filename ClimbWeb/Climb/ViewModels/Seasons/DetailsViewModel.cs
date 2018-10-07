@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
+using Climb.Services;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Climb.ViewModels.Seasons
@@ -30,8 +31,9 @@ namespace Climb.ViewModels.Seasons
 
         public SeasonLeagueUser DetailsParticipant { get; }
         public IEnumerable<SetDetails> Sets { get; }
+        public string ProfilePic { get; }
 
-        public DetailsViewModel(ApplicationUser user, SeasonLeagueUser participant, Season season, IHostingEnvironment environment)
+        public DetailsViewModel(ApplicationUser user, SeasonLeagueUser participant, Season season, IHostingEnvironment environment, ICdnService cdnService)
             : base(user, season, environment)
         {
             DetailsParticipant = participant;
@@ -49,6 +51,8 @@ namespace Climb.ViewModels.Seasons
                     ? new SetDetails(s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2)
                     : new SetDetails(s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1);
             });
+
+            ProfilePic = cdnService.GetUserProfilePicUrl(participant.UserID, participant.User.ProfilePicKey, ClimbImageRules.ProfilePic);
         }
     }
 }

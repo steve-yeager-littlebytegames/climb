@@ -11,7 +11,8 @@
 @section SeasonsBody
 {
     <h2 class="my-4">Season @Model.Season.Index.ToRoman() History</h2>
-    <h4 class="my-4">@Model.DetailsParticipant.LeagueUser.DisplayName</h4>
+    <img src="@Model.ProfilePic" height="100" width="100"/>
+    <h5 class="mb-4">@Model.DetailsParticipant.LeagueUser.DisplayName</h5>
 
     <table class="table">
         <tr>
