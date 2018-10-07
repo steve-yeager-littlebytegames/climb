@@ -32,8 +32,9 @@ namespace Climb.ViewModels.Seasons
         }
 
         public SeasonLeagueUser DetailsParticipant { get; }
-        public IEnumerable<SetDetails> Sets { get; }
+        public IReadOnlyList<SetDetails> Sets { get; }
         public string ProfilePic { get; }
+        public int RemainingSets { get; }
 
         public DetailsViewModel(ApplicationUser user, SeasonLeagueUser participant, Season season, IHostingEnvironment environment, ICdnService cdnService)
             : base(user, season, environment)
@@ -42,17 +43,20 @@ namespace Climb.ViewModels.Seasons
 
             var sets = participant.P1Sets
                 .Concat(participant.P2Sets)
-                .Where(s => s.IsComplete)
-                .OrderByDescending(s => s.UpdatedDate);
+                .OrderByDescending(s => s.UpdatedDate)
+                .ToArray();
 
-            Sets = sets.Select(s =>
-            {
-                Debug.Assert(s.UpdatedDate != null, "s.UpdatedDate != null");
+            Sets = sets.Where(s => s.IsComplete).Select(s =>
+                {
+                    Debug.Assert(s.UpdatedDate != null, "s.UpdatedDate != null");
 
-                return s.SeasonPlayer1ID == participant.ID
-                    ? new SetDetails(s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2, s.SeasonWinnerID == participant.ID)
-                    : new SetDetails(s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1, s.SeasonWinnerID == participant.ID);
-            });
+                    return s.SeasonPlayer1ID == participant.ID
+                        ? new SetDetails(s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2, s.SeasonWinnerID == participant.ID)
+                        : new SetDetails(s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1, s.SeasonWinnerID == participant.ID);
+                })
+                .ToArray();
+
+            RemainingSets = sets.Count(s => !s.IsComplete);
 
             ProfilePic = cdnService.GetUserProfilePicUrl(participant.UserID, participant.User.ProfilePicKey, ClimbImageRules.ProfilePic);
         }

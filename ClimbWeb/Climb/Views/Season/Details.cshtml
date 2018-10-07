@@ -30,8 +30,15 @@
                 <b class="w-25 text-left">Tie Breaker</b>
                 <div class="text-right">@Model.DetailsParticipant.TieBreakerPoints</div>
             </div>
+            <div class="d-flex w-100">
+                <b class="w-25 text-left">Sets Played</b>
+                <div class="text-right">@Model.Sets.Count</div>
+            </div>
+            <div class="d-flex w-100">
+                <b class="w-25 text-left">Sets Remaining</b>
+                <div class="text-right">@Model.RemainingSets</div>
+            </div>
         </div>
-
     </div>
 
     <table class="table">
