@@ -15,7 +15,7 @@
     <div class="d-flex w-100">
         <div class="d-flex flex-column w-50 align-items-end">
             <img src="@Model.ProfilePic" height="100" width="100"/>
-            <h5 class="mb-4">@Model.DetailsParticipant.LeagueUser.DisplayName</h5>
+            <h5 class="mb-4"><partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.DetailsParticipant.LeagueUser"/></h5>
         </div>
         <div class="d-flex flex-column w-50 align-items-start">
             <div class="d-flex w-100">
