@@ -1,14 +1,15 @@
-﻿@using Climb.ViewModels.Seasons
+﻿@using Climb.Extensions
+@using Climb.ViewModels.Seasons
 @model Climb.ViewModels.Seasons.PageViewModel
 
 @{
     Layout = "_LayoutWithNavbar";
-    ViewBag.Title = $"{Model.Season.League.Name} Season {Model.SeasonNumber} {ViewBag.Page}";
+    ViewBag.Title = $"{Model.Season.League.Name} Season {Model.SeasonNumber.ToRoman()} {ViewBag.Page}";
 }
 
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
-        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
+        <h1>@Model.Season.League.Name Season @Model.SeasonNumber.ToRoman()</h1>
         @if (Model.CanJoin)
         {
             <form asp-action="JoinPost" asp-route-userid="@Model.User.Id" asp-route-seasonID="@Model.Season.ID">
