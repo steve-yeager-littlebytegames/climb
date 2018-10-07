@@ -11,23 +11,28 @@
 @section SeasonsBody
 {
     <h2 class="my-4">Season @Model.Season.Index.ToRoman() History</h2>
-    <img src="@Model.ProfilePic" height="100" width="100"/>
-    <h5 class="mb-4">@Model.DetailsParticipant.LeagueUser.DisplayName</h5>
 
-    <table class="table">
-        <tr>
-            <th>Standing</th>
-            <td>@Model.DetailsParticipant.Standing</td>
-        </tr>
-        <tr>
-            <th>Points</th>
-            <td>@Model.DetailsParticipant.Points</td>
-        </tr>
-        <tr>
-            <th>Tie Breaker Points</th>
-            <td>@Model.DetailsParticipant.Standing</td>
-        </tr>
-    </table>
+    <div class="d-flex w-100">
+        <div class="d-flex flex-column w-50 align-items-end">
+            <img src="@Model.ProfilePic" height="100" width="100"/>
+            <h5 class="mb-4">@Model.DetailsParticipant.LeagueUser.DisplayName</h5>
+        </div>
+        <div class="d-flex flex-column w-50 align-items-start">
+            <div class="d-flex w-100">
+                <b class="w-25 text-left">Standing</b>
+                <div class="text-right">@Model.DetailsParticipant.Standing</div>
+            </div>
+            <div class="d-flex w-100">
+                <b class="w-25 text-left">Points</b>
+                <div class="text-right">@Model.DetailsParticipant.Points</div>
+            </div>
+            <div class="d-flex w-100">
+                <b class="w-25 text-left">Tie Breaker</b>
+                <div class="text-right">@Model.DetailsParticipant.TieBreakerPoints</div>
+            </div>
+        </div>
+
+    </div>
 
     <table class="table">
         <thead>
@@ -35,6 +40,7 @@
             <th scope="col">Date</th>
             <th scope="col">Opponent</th>
             <th scope="col">Rank</th>
+            <th scope="col">Outcome</th>
             <th scope="col">Points</th>
         </tr>
         </thead>
@@ -47,6 +53,7 @@
                     <a asp-action="Details" asp-route-participantID="@set.OpponentID">@set.OpponentName</a>
                 </td>
                 <td>@set.OpponentRank</td>
+                <td>@(set.Won ? "Won" : "Lost")</td>
                 <td>+@set.Points</td>
             </tr>
         }

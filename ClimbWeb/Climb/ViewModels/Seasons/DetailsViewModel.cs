@@ -18,11 +18,13 @@ namespace Climb.ViewModels.Seasons
             public int OpponentID { get; }
             public string OpponentName { get; }
             public int OpponentRank { get; }
+            public bool Won { get; }
 
-            public SetDetails(int points, DateTime date, SeasonLeagueUser opponent)
+            public SetDetails(int points, DateTime date, SeasonLeagueUser opponent, bool won)
             {
                 Points = points;
                 Date = date;
+                Won = won;
                 OpponentID = opponent.ID;
                 OpponentName = opponent.LeagueUser.DisplayName;
                 OpponentRank = opponent.LeagueUser.Rank;
@@ -48,8 +50,8 @@ namespace Climb.ViewModels.Seasons
                 Debug.Assert(s.UpdatedDate != null, "s.UpdatedDate != null");
 
                 return s.SeasonPlayer1ID == participant.ID
-                    ? new SetDetails(s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2)
-                    : new SetDetails(s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1);
+                    ? new SetDetails(s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2, s.SeasonWinnerID == participant.ID)
+                    : new SetDetails(s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1, s.SeasonWinnerID == participant.ID);
             });
 
             ProfilePic = cdnService.GetUserProfilePicUrl(participant.UserID, participant.User.ProfilePicKey, ClimbImageRules.ProfilePic);
