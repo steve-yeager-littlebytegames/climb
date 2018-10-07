@@ -1,4 +1,5 @@
-﻿@using Climb.Services
+﻿@using Climb.Extensions
+@using Climb.Services
 @model Climb.ViewModels.Seasons.DetailsViewModel
 @inject ICdnService cdnService
 
@@ -9,15 +10,28 @@
 
 @section SeasonsBody
 {
-    <h1>@Model.DetailsPariticpant.LeagueUser.DisplayName Details</h1>
-    <ul class="list-group">
+    <h2 class="my-4">@Model.DetailsPariticpant.LeagueUser.DisplayName Season @Model.Season.Index.ToRoman() History</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Opponent</th>
+            <th scope="col">Rank</th>
+            <th scope="col">Points</th>
+        </tr>
+        </thead>
+        <tbody>
         @foreach(var set in Model.Sets)
         {
-        <li class="list-group-item">
-            <div><a asp-action="Details" asp-route-participantID="@set.OpponentID">@set.OpponentName</a> Rank @set.OpponentRank</div>
-            <div><b>+@set.Points Points</b></div>
-            <div>@set.Date.ToShortDateString()</div>
-        </li>
+            <tr>
+                <td>@set.Date.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-participantID="@set.OpponentID">@set.OpponentName</a>
+                </td>
+                <td>@set.OpponentRank</td>
+                <td>+@set.Points</td>
+            </tr>
         }
-    </ul>
+        </tbody>
+    </table>
 }
