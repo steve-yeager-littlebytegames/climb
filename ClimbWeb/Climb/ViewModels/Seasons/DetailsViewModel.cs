@@ -28,13 +28,13 @@ namespace Climb.ViewModels.Seasons
             }
         }
 
-        public SeasonLeagueUser DetailsPariticpant { get; }
+        public SeasonLeagueUser DetailsParticipant { get; }
         public IEnumerable<SetDetails> Sets { get; }
 
         public DetailsViewModel(ApplicationUser user, SeasonLeagueUser participant, Season season, IHostingEnvironment environment)
             : base(user, season, environment)
         {
-            DetailsPariticpant = participant;
+            DetailsParticipant = participant;
 
             var sets = participant.P1Sets
                 .Concat(participant.P2Sets)

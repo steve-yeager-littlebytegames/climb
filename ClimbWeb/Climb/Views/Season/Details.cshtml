@@ -10,7 +10,24 @@
 
 @section SeasonsBody
 {
-    <h2 class="my-4">@Model.DetailsPariticpant.LeagueUser.DisplayName Season @Model.Season.Index.ToRoman() History</h2>
+    <h2 class="my-4">Season @Model.Season.Index.ToRoman() History</h2>
+    <h4 class="my-4">@Model.DetailsParticipant.LeagueUser.DisplayName</h4>
+
+    <table class="table">
+        <tr>
+            <th>Standing</th>
+            <td>@Model.DetailsParticipant.Standing</td>
+        </tr>
+        <tr>
+            <th>Points</th>
+            <td>@Model.DetailsParticipant.Points</td>
+        </tr>
+        <tr>
+            <th>Tie Breaker Points</th>
+            <td>@Model.DetailsParticipant.Standing</td>
+        </tr>
+    </table>
+
     <table class="table">
         <thead>
         <tr>
