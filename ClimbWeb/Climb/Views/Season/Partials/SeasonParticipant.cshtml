@@ -18,10 +18,8 @@
                 }
             </div>
             <div class="points-text-small">@($"({Model.Participant.Points}.{Model.Participant.TieBreakerPoints})")</div>
-            @*<div>
-                <img src="https://cdn4.iconfinder.com/data/icons/defaulticon/icons/png/256x256/arrow-alt-up.png" width="20" height="20" style="opacity: 0.5;"/>
-            </div>*@
             <div class="rank-text-small">@Model.Participant.Standing</div>
         </div>
     </div>
+    <a class="btn btn-sm btn-primary" role="button" asp-action="Details" asp-route-participantID="@Model.Participant.ID">Details</a>
 </div>
