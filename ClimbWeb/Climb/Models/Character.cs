@@ -9,6 +9,7 @@ namespace Climb.Models
         [Required]
         public string Name { get; set; }
         public int GameID { get; set; }
+        public string ImageKey { get; set; }
 
         [JsonIgnore]
         public Game Game { get; set; }

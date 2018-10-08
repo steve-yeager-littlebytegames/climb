@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
-using Microsoft.AspNetCore.Identity;
+using Climb.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,10 +15,10 @@ namespace Climb.Controllers
     public abstract class BaseController<T> : Controller where T : Controller
     {
         protected readonly ILogger<T> logger;
-        protected readonly UserManager<ApplicationUser> userManager;
+        protected readonly IUserManager userManager;
         protected readonly ApplicationDbContext dbContext;
 
-        protected BaseController(ILogger<T> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        protected BaseController(ILogger<T> logger, IUserManager userManager, ApplicationDbContext dbContext)
         {
             this.logger = logger;
             this.userManager = userManager;
@@ -34,8 +34,8 @@ namespace Climb.Controllers
             }
 
             var loadedUser = await dbContext.Users
-                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).AsNoTracking()
-                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.Seasons).ThenInclude(slu => slu.Season).ThenInclude(s => s.League).AsNoTracking()
+                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).ThenInclude(l => l.Game).AsNoTracking()
+                .Include(u => u.Seasons).ThenInclude(slu => slu.Season).ThenInclude(s => s.League).AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == appUser.Id);
 
             return loadedUser;
@@ -48,6 +48,7 @@ namespace Climb.Controllers
                 case NotFoundException _: return CodeResultAndLog(HttpStatusCode.NotFound, exception.Message);
                 case BadRequestException _: return CodeResultAndLog(HttpStatusCode.BadRequest, exception.Message);
                 case ConflictException _: return CodeResultAndLog(HttpStatusCode.Conflict, exception.Message);
+                case NotAuthorizedException _: return CodeResultAndLog(HttpStatusCode.Forbidden, exception.Message);
                 default:
                     logger.LogError(exception, $"Error handling request\n{request}");
                     return CodeResult(HttpStatusCode.InternalServerError, "Server Error");

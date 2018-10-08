@@ -2,46 +2,22 @@
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Climb.ViewModels.Seasons
 {
-    public class HomeViewModel : BaseViewModel
+    public class HomeViewModel : PageViewModel
     {
-        public Season Season { get; }
-        public int SeasonNumber { get; }
-        public bool IsParticipant { get; }
-        public bool CanStartSeason { get; }
+        public IEnumerable<SeasonLeagueUser> Participants { get; }
+        public IReadOnlyList<Set> RecentSets { get; }
+        public IEnumerable<Set> AvailableSets { get; }
 
-        public IReadOnlyList<SeasonLeagueUser> Participants => Season.Participants;
-
-        private HomeViewModel(ApplicationUser user, Season season, bool isParticipant)
-            : base(user)
+        public HomeViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
+            : base(user, season, environment)
         {
-            Season = season;
-            IsParticipant = isParticipant;
-            SeasonNumber = season.Index + 1;
-
-            Season.Participants.Sort();
-
-            if(season.IsActive)
-            {
-                CanStartSeason = false;
-            }
-            else
-            {
-#if DEBUG
-                CanStartSeason = true;
-#else
-                CanStartSeason = season.League.AdminID == user?.Id;
-#endif
-            }
-        }
-
-        public static HomeViewModel Create(ApplicationUser user, Season season)
-        {
-            var isParticipant = user.LeagueUsers.Any(lu => season.Participants.Any(slu => slu.LeagueUserID == lu.ID));
-
-            return new HomeViewModel(user, season, isParticipant);
+            Participants = Season.Participants.OrderBy(p => p.Standing);
+            RecentSets = Season.Sets.Where(s => s.IsComplete).OrderByDescending(s => s.UpdatedDate).Take(10).ToArray();
+            AvailableSets = Season.Sets.Where(s => !s.IsComplete).OrderBy(s => s.DueDate);
         }
     }
 }

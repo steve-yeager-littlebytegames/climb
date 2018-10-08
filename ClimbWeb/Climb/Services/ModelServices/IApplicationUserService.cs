@@ -11,6 +11,6 @@ namespace Climb.Services.ModelServices
         Task<ApplicationUser> Register(RegisterRequest request, IUrlHelper urlHelper, string requestScheme);
         Task<string> LogIn(LoginRequest request);
         Task<string> UploadProfilePic(string userID, IFormFile image);
-        Task UpdateSettings(string userID, string username, IFormFile profilePic);
+        Task UpdateSettings(string userID, string username, string name, IFormFile profilePic);
     }
 }

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
 using Climb.Data;
 using Climb.Models;
-using Climb.Requests.Games;
-using Climb.Services.ModelServices;
+using Climb.Responses.Models;
+using Climb.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,17 +16,17 @@ namespace Climb.API
     public class GameApi : BaseApi<GameApi>
     {
         private readonly ApplicationDbContext dbContext;
-        private readonly IGameService gameService;
+        private readonly ICdnService cdnService;
 
-        public GameApi(ILogger<GameApi> logger, ApplicationDbContext dbContext, IGameService gameService)
+        public GameApi(ILogger<GameApi> logger, ApplicationDbContext dbContext, ICdnService cdnService)
             : base(logger)
         {
             this.dbContext = dbContext;
-            this.gameService = gameService;
+            this.cdnService = cdnService;
         }
 
         [HttpGet("/api/v1/games/{gameID:int}")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(Game))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(GameDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Get(int gameID)
         {
@@ -39,66 +39,18 @@ namespace Climb.API
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Game with ID '{gameID}'.");
             }
 
-            return CodeResult(HttpStatusCode.OK, game);
-        }
-
-        [HttpPost("/api/v1/games/create")]
-        [SwaggerResponse(HttpStatusCode.Created, typeof(Game))]
-        [SwaggerResponse(HttpStatusCode.Conflict, typeof(string), "Game name is taken.")]
-        public async Task<IActionResult> Create(CreateRequest request)
-        {
-            try
-            {
-                var game = await gameService.Create(request);
-                return CodeResultAndLog(HttpStatusCode.Created, game, "Game created.");
-            }
-            catch(Exception exception)
-            {
-                return GetExceptionResult(exception, request);
-            }
-        }
-
-        [HttpPost("/api/v1/addCharacter")]
-        [SwaggerResponse(HttpStatusCode.Created, typeof(Character))]
-        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Could not find game.")]
-        [SwaggerResponse(HttpStatusCode.Conflict, typeof(string), "Character name is taken.")]
-        public async Task<IActionResult> AddCharacter(AddCharacterRequest request)
-        {
-            try
-            {
-                var character = await gameService.AddCharacter(request);
-                return CodeResultAndLog(HttpStatusCode.Created, character, $"New character {character.Name} created.");
-            }
-            catch(Exception exception)
-            {
-                return GetExceptionResult(exception, request);
-            }
-        }
-
-        [HttpPost("/api/v1/addStage")]
-        [SwaggerResponse(HttpStatusCode.Created, typeof(Stage))]
-        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Could not find game.")]
-        [SwaggerResponse(HttpStatusCode.Conflict, typeof(string), "Stage name is taken.")]
-        public async Task<IActionResult> AddStage(AddStageRequest request)
-        {
-            try
-            {
-                var stage = await gameService.AddStage(request);
-                return CodeResultAndLog(HttpStatusCode.Created, stage, $"New stage {stage.Name} created.");
-            }
-            catch(Exception exception)
-            {
-                return GetExceptionResult(exception, request);
-            }
+            var dto = GameDto.Create(game, cdnService);
+            return CodeResult(HttpStatusCode.OK, dto);
         }
 
         [HttpGet("/api/v1/games")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(List<Game>))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<GameDto>))]
         public async Task<IActionResult> ListAll()
         {
             var games = await dbContext.Games.ToListAsync();
 
-            return CodeResult(HttpStatusCode.OK, games);
+            var dtos = games.Select(g => GameDto.Create(g, cdnService));
+            return CodeResult(HttpStatusCode.OK, dtos);
         }
     }
 }

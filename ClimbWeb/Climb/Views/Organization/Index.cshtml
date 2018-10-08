@@ -1,0 +1,40 @@
+﻿@model Climb.ViewModels.Organizations.IndexViewModel
+
+@{
+    ViewBag.Title = "Organizations";
+}
+
+<div>
+    <h1>All Organizations</h1>
+    
+    <form asp-action="UpdatePost">
+        <input type="text" name="name" placeholder="Name"/>
+        <button>Create</button>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Owners</th>
+                <th scope="col">Date Created</th>
+                <th scope="col">Leagues</th>
+                <th scope="col">Members</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach(var organization in Model.AllOrganizations)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Home" asp-route-organizationID="@organization.ID">@organization.Name</a>
+                </td>
+                <td>@organization.Members.Count(ou => ou.IsOwner)</td>
+                <td>@organization.DateCreated.ToShortDateString()</td>
+                <td>@organization.Leagues.Count</td>
+                <td>@organization.Members.Count</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

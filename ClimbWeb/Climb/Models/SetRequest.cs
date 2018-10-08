@@ -11,6 +11,7 @@ namespace Climb.Models
         public DateTime DateCreated { get; set; }
         public int? SetID { get; set; }
         public bool IsOpen { get; set; } = true;
+        public string Message { get; set; }
 
         public League League { get; set; }
         public LeagueUser Requester { get; set; }

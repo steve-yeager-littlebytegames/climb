@@ -1,0 +1,18 @@
+﻿@using Climb.Services
+@model Climb.ViewModels.Seasons.MembershipViewModel
+@inject ICdnService cdnService
+
+@{
+    ViewBag.Page = "Membership";
+    Layout = "_SeasonsLayout";
+}
+
+@section SeasonsBody
+{
+    <div class="d-flex justify-content-center align-items-center body-temp">
+        @if(Model.CanLeave)
+        {
+            <button id="leave-season-button" class="btn btn-danger" data-participantID="@Model.Participant.ID">Leave</button>
+        }
+    </div>
+}

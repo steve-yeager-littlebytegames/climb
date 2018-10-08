@@ -1,124 +1,157 @@
 ﻿@using Climb.Services
+@using Climb.Services.ModelServices
 @using Climb.ViewModels.Leagues
 @using Climb.ViewModels.Sets
 @model Climb.ViewModels.Users.HomeViewModel
 @inject ICdnService cdnService
+@inject ILeagueService leagueService
 
 @{
-    ViewBag.Title = "Users-Home";
-    Layout = "_LayoutWithNavbar";
+    //ToDo Make this the user you are looking at, no the user who is logged in
+    ViewBag.Title = $"{Model.HomeUser.UserName}";
 }
 
-<div id="challenge-modal" hidden>
-    @foreach(var leagueUser in Model.SharedLeagues)
-    {
-        <div>
-            <div>@leagueUser.Requester.League.Name</div>
-            <button class="request-button" data-requester="@leagueUser.Requester.ID" data-challenged="@leagueUser.Challenged.ID">Challenge!</button>
-        </div>
-    }
-
-    <div>
-        <button id="challenge-modal-close">close</button>
-    </div>
-</div>
-
-<div class="width-100">
-    <div class="header-user flex col align-center-i">
-        <h3 class="page-title">@(Model.IsViewingUserHome ? "Welcome " : "Home of ") @Model.HomeUser.UserName</h3>
-        <img src="@Model.ProfilePic"/>
-    </div>
-    @if(!Model.IsViewingUserHome)
-    {
-        <form>
-            <button id="challenge-button" type="button" class="btn btn-fight">Challenge!</button>
-        </form>
-    }
-
-    <div class="content-user-home">
-        <div class="col-md-4">
-            <div class="home-section">
-                <div class="home-section-head">
-                    <h3>Leagues</h3>
-                </div>
-                <div class="home-section-body">
-                    @foreach(var leagueUser in Model.HomeUser.LeagueUsers)
-                    {
-                        <partial name="../League/Partials/LeagueUser" model="@LeagueUserViewModel.Create(leagueUser, cdnService)"/>
-                    }
-                </div>
+<!-- Challanges/Fight Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@(Model.IsViewingUserHome ? "Challenges" : "Fight!")</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="home-section">
-                <div class="home-section-head">
-                    <h3>Recent</h3>
-                </div>
-                <div class="home-section-body">
-                    @if(Model.RecentSets.Count == 0)
+            <div class="modal-body">
+                @if(Model.IsViewingUserHome)
+                {
+                    if(Model.SetRequests.Count > 0)
                     {
-                        <div class="detail-card justify-center">
-                            <em> No recent activity</em>
-                        </div>
+                        foreach(var setRequest in Model.SetRequests)
+                        {
+                            <div class="card text-center">
+                                <div class="card-header">
+                                    League @setRequest.League.Name
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">@setRequest.Requester.User.UserName</h5>
+                                    <p class="card-text">@setRequest.Message</p>
+                                    <button class="request-decline btn btn-secondary" data-requestId="@setRequest.ID">Decline</button>
+                                    <button class="request-accept btn btn-danger" data-requestId="@setRequest.ID">Accept</button>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    @setRequest.DateCreated.ToShortDateString()
+                                </div>
+                            </div>
+                        }
                     }
                     else
                     {
-                        foreach(var set in Model.RecentSets)
-                        {
-                            <div>@set.ID</div>
-                        }
+                        <div class="detail-card justify-center">
+                            <em> No challenge requests</em>
+                        </div>
                     }
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            @if(Model.ShowSetRequests)
-            {
-                <div class="home-section margin-bottom-25">
-                    <div class="home-section-head">
-                        <h3>Challenge Requests</h3>
-                    </div>
-                    <div class="home-section-body">
-                        @if(Model.SetRequests.Count > 0)
-                        {
-                            foreach(var setRequest in Model.SetRequests)
-                            {
-                                <div>
-                                    <div>League @setRequest.League.Name</div>
-                                    <div>Challenger @setRequest.Requester.User.UserName</div>
-                                    <div>@setRequest.DateCreated.ToShortDateString()</div>
-                                    <div>
-                                        <button class="request-accept" data-requestId="@setRequest.ID">Accept</button>
-                                        <button class="request-decline" data-requestId="@setRequest.ID">Decline</button>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="detail-card justify-center">
-                                <em> No challenge requests</em>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-            <div class="home-section">
-                <div class="home-section-head">
-                    <h3>Sets</h3>
-                </div>
-                <div class="home-section-body">
-                    @foreach(var set in Model.AvailableSets)
+                }
+                else
+                {
+                    foreach(var leagueUser in Model.SharedLeagues)
                     {
-                        <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
+                        <div class="card text-center">
+                            <div class="card-header">
+                                @leagueUser.Requester.League.Name
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@Model.HomeUser.UserName</h5>
+                                <div class="input-group">
+                                    <input id="challenge-message-@leagueUser.Challenged.ID" type="text" value="Let's fight!"/>
+                                </div>
+                                <button class="request-button btn btn-danger" data-requester="@leagueUser.Requester.ID" data-challenged="@leagueUser.Challenged.ID">Challenge!</button>
+                            </div>
+                        </div>
                     }
-                </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
+<div class="container">
+    <!-- Header -->
+    <div id="home-header" class="row justify-content-md-center mt-4">
+        <div id="user-info" class="col-sm-6">
+            <img src="@Model.ProfilePic" width="150" height="150"/>
+
+            <div id="user-info-names">
+                <h2>@Model.HomeUser.UserName</h2>
+                <h4 id="real-name">
+                    <em>@Model.HomeUser.Name</em>
+                </h4>
+                @if(Model.IsViewingUserHome)
+                {
+                    <button id="challenges-button" class="header-button btn" type="button" data-toggle="modal" data-target="#exampleModal">
+                        Challenges <span class="badge badge-light">@Model.SetRequests.Count</span>
+                    </button>
+                }
+                else
+                {
+                    <button id="fight-button" class="header-button btn" type="button" data-toggle="modal" data-target="#exampleModal">Fight!</button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!--Filter-->
+    <partial name="FilterBar"/>
+
+    <!-- Columns -->
+    <div class="row">
+        <!-- Leagues -->
+        <div class="col-xl-4 page-section pb-2 mt-4">
+            <h3>Leagues</h3>
+            <div class="page-section-child">
+                @foreach(var leagueUser in Model.HomeUser.LeagueUsers)
+                {
+                    <partial name="../League/Partials/LeagueUser" model="@await LeagueUserViewModel.Create(leagueUser, cdnService, false, Url, leagueService)"/>
+                }
+            </div>
+        </div>
+
+        <!-- Sets -->
+        <div class="col-xl-4 order-xl-2 page-section pb-2 mt-4">
+            <h3>Sets</h3>
+            <div class="page-section-child">
+                @foreach(var set in Model.AvailableSets)
+                {
+                    <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
+                }
+            </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="col-xl-4 order-xl-1 page-section pb-2 mt-4">
+            <h3>Activity</h3>
+            <div class="page-section-child">
+                @if(Model.RecentSets.Count == 0)
+                {
+                    <div class="text-darker">
+                        <em> No recent activity</em>
+                    </div>
+                }
+                else
+                {
+                    foreach(var set in Model.RecentSets)
+                    {
+                        <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section scripts
 {
-    <script type="module" src="~/dist/scripts/Users-Home.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/dist/styles/users-home.css"/>
+    <script type="module" src="~/dist/scripts/Users-Home.js">
+    </script>
 }

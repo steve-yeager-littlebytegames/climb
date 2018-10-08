@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Climb.Models;
+using Climb.Services;
 
 namespace Climb.Responses.Models
 {
@@ -14,16 +15,19 @@ namespace Climb.Responses.Models
         public string Username { get; }
         public int Points { get; }
         public int Rank { get; }
+        public string ProfilePicture { get; }
 
-        public LeagueUserDto(LeagueUser leagueUser)
+        public LeagueUserDto(LeagueUser leagueUser, ICdnService cdnService)
         {
             ID = leagueUser.ID;
             LeagueID = leagueUser.ID;
             UserID = leagueUser.UserID;
             HasLeft = leagueUser.HasLeft;
-            Username = leagueUser.User.UserName;
+            Username = leagueUser.DisplayName;
             Points = leagueUser.Points;
             Rank = leagueUser.Rank;
+
+            ProfilePicture = cdnService.GetUserProfilePicUrl(leagueUser.UserID, leagueUser.User?.ProfilePicKey, ClimbImageRules.ProfilePic);
         }
     }
 }

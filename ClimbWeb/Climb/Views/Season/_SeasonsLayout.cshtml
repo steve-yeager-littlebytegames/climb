@@ -1,0 +1,40 @@
+﻿@using Climb.ViewModels.Seasons
+@model Climb.ViewModels.Seasons.PageViewModel
+
+@{
+    Layout = "_LayoutWithNavbar";
+    ViewBag.Title = $"{Model.Season.League.Name} Season {Model.SeasonNumber} {ViewBag.Page}";
+}
+
+<div class="container">
+    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
+        <h1>@Model.Season.League.Name Season @Model.SeasonNumber</h1>
+        @if (Model.CanJoin)
+        {
+            <form asp-action="JoinPost" asp-route-userid="@Model.User.Id" asp-route-seasonid="@Model.Season.ID">
+                <button class="btn btn-danger">Join</button>
+            </form>
+        }
+    </div>
+
+    <div class="home-menu d-flex justify-content-between">
+        <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-leaugeID="@Model.Season.ID">Home</a>
+        @if(Model.IsParticipant)
+        {
+            <a class="@(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-leaugeID="@Model.Season.ID">Membership</a>
+        }
+        <a class="@(Model.IsSubPageActive<DataViewModel>() ? "active" : "")" asp-action="Data" asp-route-leaugeID="@Model.Season.ID">Data</a>
+        <a class="@(Model.IsSubPageActive<SetsViewModel>() ? "active" : "")" asp-action="Sets" asp-route-leaugeID="@Model.Season.ID">Sets</a>
+        @if(Model.CanManage)
+        {
+            <a class="@(Model.IsSubPageActive<ManageViewModel>() ? "active" : "")" asp-action="Manage" asp-route-leaugeID="@Model.Season.ID">Manage</a>
+        }
+    </div>
+
+    @RenderSection("SeasonsBody")
+</div>
+
+@section scripts
+{
+    <script type="module" src="~/dist/scripts/Seasons-Home.js"></script>
+}

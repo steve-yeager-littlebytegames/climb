@@ -55,10 +55,10 @@ namespace Climb.ViewModels.Users
 
         public static async Task<HomeViewModel> CreateAsync(ApplicationUser user, ApplicationUser homeUser, ICdnService cdnService, ApplicationDbContext dbContext)
         {
-            var profilePic = homeUser.GetProfilePicUrl(cdnService);
+            var profilePic = cdnService.GetUserProfilePicUrl(homeUser.Id, homeUser.ProfilePicKey, ClimbImageRules.ProfilePic);
             var sets = homeUser.LeagueUsers.SelectMany(lu => lu.P1Sets.Union(lu.P2Sets)).ToArray();
-            var recentSets = sets.Where(s => s.IsComplete).Take(10).ToArray();
-            var availableSets = sets.Where(s => !s.IsComplete).Take(100).ToArray();
+            var recentSets = sets.Where(s => s.IsComplete).OrderByDescending(s => s.UpdatedDate).Take(10).ToArray();
+            var availableSets = sets.Where(s => !s.IsComplete).OrderBy(s => s.DueDate).Take(100).ToArray();
 
 #if DEBUG
             const bool showSetRequests = true;

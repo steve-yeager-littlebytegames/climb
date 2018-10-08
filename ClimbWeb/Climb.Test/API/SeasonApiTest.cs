@@ -8,6 +8,9 @@ using Climb.Data;
 using Climb.Extensions;
 using Climb.Models;
 using Climb.Requests.Seasons;
+using Climb.Responses.Models;
+using Climb.Responses.Sets;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
 using Microsoft.Extensions.Logging;
@@ -34,8 +37,9 @@ namespace Climb.Test.Api
 
             seasonService = Substitute.For<ISeasonService>();
             var logger = Substitute.For<ILogger<SeasonApi>>();
+            var cdnService = Substitute.For<ICdnService>();
 
-            testObj = new SeasonApi(logger, dbContext, seasonService);
+            testObj = new SeasonApi(logger, dbContext, seasonService, cdnService);
         }
 
         [Test]
@@ -44,10 +48,10 @@ namespace Climb.Test.Api
             var season = SeasonUtility.CreateSeason(dbContext, 2).season;
 
             var result = await testObj.Get(season.ID);
-            var resultObj = result.GetObject<Season>();
+            var resultObj = result.GetObject<SeasonDto>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
-            Assert.IsNotNull(resultObj.Participants);
+            Assert.IsNotNull(resultObj);
         }
 
         [Test]
@@ -65,10 +69,10 @@ namespace Climb.Test.Api
             var sets = SeasonUtility.CreateSets(dbContext, season);
 
             var result = await testObj.Sets(season.ID);
-            var resultObj = result.GetObject<HashSet<Set>>();
+            var resultObj = result.GetObject<IEnumerable<SetDto>>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
-            Assert.AreEqual(sets.Count, resultObj.Count);
+            Assert.AreEqual(sets.Count, resultObj.Count());
         }
 
         [Test]
@@ -77,7 +81,7 @@ namespace Climb.Test.Api
             var season = SeasonUtility.CreateSeason(dbContext, 2).season;
 
             var result = await testObj.Sets(season.ID);
-            var resultObj = result.GetObject<IEnumerable<Set>>();
+            var resultObj = result.GetObject<IEnumerable<SetDto>>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
             Assert.IsNotNull(resultObj);
@@ -98,7 +102,7 @@ namespace Climb.Test.Api
             var season = SeasonUtility.CreateSeason(dbContext, participantsCount).season;
 
             var result = await testObj.Participants(season.ID);
-            var resultObj = result.GetObject<IEnumerable<LeagueUser>>();
+            var resultObj = result.GetObject<IEnumerable<SeasonLeagueUserDto>>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
             Assert.AreEqual(participantsCount, resultObj.Count());
@@ -133,8 +137,8 @@ namespace Climb.Test.Api
         [Test]
         public async Task Create_Valid_ReturnOk()
         {
-            var league = DbContextUtility.AddNew<League>(dbContext, l => l.GameID = gameID);
-            var request = new CreateRequest(league.ID, DateTime.Now.AddMinutes(1), DateTime.Now.AddMinutes(2));
+            var request = new CreateRequest(1, DateTime.MinValue, DateTime.MaxValue);
+            seasonService.Create(request.LeagueID, request.StartDate, request.EndDate).Returns(new Season());
 
             var result = await testObj.Create(request);
 
@@ -145,6 +149,8 @@ namespace Climb.Test.Api
         public async Task Start_Valid_Created()
         {
             var season = SeasonUtility.CreateSeason(dbContext, 2).season;
+            SeasonUtility.CreateSets(dbContext, season);
+            seasonService.GenerateSchedule(1).Returns(season);
 
             var result = await testObj.Start(season.ID);
 

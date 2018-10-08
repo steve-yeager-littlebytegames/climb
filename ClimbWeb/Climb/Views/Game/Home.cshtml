@@ -1,36 +1,69 @@
-﻿@model Climb.ViewModels.Games.HomeViewModel
+﻿@using Climb.Services
+@model Climb.ViewModels.Games.HomeViewModel
+@inject ICdnService cdnService
 
 @{
-    ViewBag.Title = "Games-Home";
-    Layout = "_LayoutWithNavbar";
+    ViewBag.Title = @Model.Game.Name;
 }
 
-<link rel="stylesheet" href="~/dist/game/game-home.css"/>
-
 <div>
-    <h1>@Model.Game.Name</h1>
-
-    <div>
-        <div class="game-header">
-            <h3>Characters</h3>
-            <a asp-action="CharacterAdd">Add</a>
-        </div>
-        @foreach (var character in Model.Game.Characters)
-        {
-            <div>@character.Name</div>
-        }
-    </div>
-    @if(Model.Game.HasStages)
-    {
-        <div>
-            <div class="game-header">
-                <h3>Stages</h3>
-                <a asp-action="StageAdd">Add</a>
+    <!--Header-->
+    <div class="container my-4">
+        <div class="row justify-content-center">
+            <div class="col-sm-3 align-items-end">
+                <img src="@Model.LogoUrl" width="100" height="100"/>
             </div>
-            @foreach(var stage in Model.Game.Stages)
+            <div class="col-sm-5">
+                <h1>@Model.Game.Name</h1>
+                <a class="align-self-center ml-2" asp-action="Update">edit</a>
+            </div>
+        </div>
+    </div>
+
+    <!--Characters-->
+    <div class="container">
+        <div>
+            <h3>Characters</h3>
+            <a class="btn btn-danger mb-4" asp-action="CharacterAdd" asp-route-gameid="@Model.Game.ID">Add</a>
+        </div>
+        <div class="card-group">
+            @foreach(var character in Model.Game.Characters)
             {
-                <div>@stage.Name</div>
+                <div class="col-sm-3 pb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">@character.Name</h6>
+                            <img src="@cdnService.GetImageUrl(character.ImageKey, ClimbImageRules.CharacterPic)" width="64" height="64"/>
+                        </div>
+                        <div class="card-footer">
+                            <a asp-action="CharacterAdd" asp-route-gameid="@Model.Game.ID" asp-route-characterid="@character.ID">edit</a>
+                        </div>
+                    </div>
+                </div>
             }
         </div>
-    }
+    </div>
+
+    <!--Stages-->
+    <div class="container">
+        <div>
+            <h3>Stages</h3>
+            <a class="btn btn-danger mb-4" asp-action="StageAdd">Add</a>
+        </div>
+        <div class="card-group">
+            @foreach(var stage in Model.Game.Stages)
+            {
+                <div class="col-sm-3 pb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">@stage.Name</h6>
+                        </div>
+                        <div class="card-footer">
+                            <a asp-action="StageAdd" asp-route-gameid="@Model.Game.ID" asp-route-stageid="@stage.ID">edit</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>

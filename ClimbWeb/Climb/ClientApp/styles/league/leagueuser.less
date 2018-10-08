@@ -1,24 +1,50 @@
 ﻿@import "../vars.less";
 
-.points {
-    font-size: 1.5em;
-    color: @color-darker;
-    padding-left: @league-user-padding;
-    font-family: @monospace;
+.leagueuser-container, .seasonparticipant-container {
+    background-color: @color-light;
 }
 
-.rank {
-    font-size: 3em;
-    font-weight: 700;
-    color: @color-accent;
-    padding-left: @league-user-padding;
-    font-family: @monospace;
+.leagueuser-details {
+    border-bottom: 1px solid @color-dark;
 }
 
-.username {
-    font-size: 1.25em;
-    overflow-wrap: break-word;
-    min-width: 20px;
-    padding-left: @league-user-padding;
+.name {
+    background-color: @color-med;
 }
 
+.profile-pic {
+    border-left: 1px solid @color-dark;
+}
+
+.points-text, .rank-text, 
+.points-text-small, .rank-text-small {
+    font-family: 'Roboto Mono';
+}
+
+.rank-text {
+    font-size: 1.75rem;
+}
+
+.points-text, .rank-text-small {
+    font-size: 1.25rem;
+}
+
+.points-text, .points-text-small {
+    color: #AAA;
+}
+
+.seasonparticipant-container {
+    margin-top: 5px;
+}
+
+.seasonparticipant-container:first-of-type {
+    margin-top: 0;
+}
+
+.fa-arrow-down.rank-trend {
+    color: red;
+}
+
+.fa-arrow-up.rank-trend {
+    color: green;
+}

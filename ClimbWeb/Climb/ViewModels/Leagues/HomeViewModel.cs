@@ -5,27 +5,17 @@ using Climb.Models;
 
 namespace Climb.ViewModels.Leagues
 {
-    public class HomeViewModel : BaseViewModel
+    public class HomeViewModel : PageViewModel
     {
-        public League League { get; }
-        public bool IsMember { get; }
         public IReadOnlyList<LeagueUser> Members { get; }
-        public bool CanStartSeason { get;  }
+        public IReadOnlyList<LeagueUser> Newcomers { get; }
 
         public HomeViewModel(ApplicationUser user, League league)
-            : base(user)
+            : base(user, league)
         {
-            League = league;
-
             league.Members.Sort();
-            Members = league.Members;
-            IsMember = league.Members.Any(lu => lu.UserID == user?.Id);
-
-#if DEBUG
-            CanStartSeason = true;
-#else
-            CanStartSeason = league.AdminID == user.Id;
-#endif
+            Members = league.Members.Where(lu => !lu.IsNewcomer).ToList();
+            Newcomers = league.Members.Where(lu => lu.IsNewcomer).ToList();
         }
     }
 }

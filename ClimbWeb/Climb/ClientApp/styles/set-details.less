@@ -1,0 +1,84 @@
+﻿@import "vars.less";
+// Move all common detail styles to site.less
+
+.set-container {
+    padding-bottom: 4px;
+}
+
+.set-container:last-of-type {
+    padding-bottom: 0;
+}
+
+.set-details {
+    color: @color-darker;
+    background-color: @color-med;
+    padding: 5px 0;
+}
+
+.set-score {
+    font-size: 2rem;
+    font-family: @monospace;
+}
+
+.set-vs {
+    color: @color-darker;
+    font-size: 1.5rem;
+    flex-grow: 1;
+}
+
+.set-names {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-set {
+    color: white;
+    margin-top: -1.5rem;
+}
+
+.btn-fight {
+    color: #ffb;
+    background-color: @color-accent;
+}
+
+.btn-fight:hover {
+    color: white;
+    background-color: #ff9628;
+}
+
+.btn-fight:active {
+    color: #772100;
+    background-color: #d73c00;
+}
+
+.btn-edit {
+    background-color: royalblue;
+}
+
+.btn-edit:hover {
+    color: white;
+    background-color: #4e7afc;
+}
+
+.btn-edit:active {
+    color: #0d2260;
+    background-color: #1841b9;
+}
+
+.btn-neutral {
+    background-color: @color-darker;
+}
+
+.btn-neutral:hover {
+    color: white;
+    background-color: @color-dark;
+}
+
+.btn-neutral:active {
+    color: black;
+    background-color: @color-darkest;
+}
+
+.background-dark {
+    background-color: @color-light;
+}

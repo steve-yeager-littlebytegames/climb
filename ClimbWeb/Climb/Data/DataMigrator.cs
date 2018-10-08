@@ -2,29 +2,44 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Climb.Models;
 using ClimbV1.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Character = Climb.Models.Character;
+using Game = Climb.Models.Game;
+using League = Climb.Models.League;
+using LeagueUser = Climb.Models.LeagueUser;
+using Match = Climb.Models.Match;
+using MatchCharacter = Climb.Models.MatchCharacter;
+using RankSnapshot = Climb.Models.RankSnapshot;
+using Season = Climb.Models.Season;
+using Set = Climb.Models.Set;
+using Stage = Climb.Models.Stage;
 
 namespace Climb.Data
 {
     public static class DataMigrator
     {
-        private static readonly Dictionary<string, string> applicationUserIDs = new Dictionary<string, string>();
+        private const int SetsTillNotNewcomer = 4;
+        private static readonly Dictionary<string, (string id, string name)> applicationUserIDs = new Dictionary<string, (string id, string name)>();
         private static readonly Dictionary<int, int> gameIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> characterIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> leagueIDs = new Dictionary<int, int>();
+        private static readonly Dictionary<int, string> leagueUserToUser = new Dictionary<int, string>();
         private static readonly Dictionary<int, int> leagueUserIDs = new Dictionary<int, int>();
+        private static readonly Dictionary<string, int> seasonLeagueUserIDs = new Dictionary<string, int>();
         private static readonly Dictionary<int, int> seasonIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> setIDs = new Dictionary<int, int>();
         private static readonly Dictionary<int, int> matchIDs = new Dictionary<int, int>();
 
-        public static async Task MigrateV1(ApplicationDbContext context)
+        public static async Task MigrateV1(ApplicationDbContext context, UserManager<ApplicationUser> userManager, string connectionString)
         {
             await ResetDatabase(context);
 
-            ClimbV1Context v1Context = CreateDB();
+            var v1Context = CreateDB(connectionString);
 
-            await MigrateUsers(v1Context, context);
+            await MigrateUsers(v1Context, context, userManager);
             await MigrateGames(v1Context, context);
             await MigrateCharacters(v1Context, context);
             await MigrateStages(v1Context, context);
@@ -44,35 +59,35 @@ namespace Climb.Data
             await context.Database.MigrateAsync();
         }
 
-        private static ClimbV1Context CreateDB()
+        private static ClimbV1Context CreateDB(string connectionString)
         {
             var options = new DbContextOptionsBuilder<ClimbV1Context>()
-                            .UseSqlServer("Data Source=climbranks.database.windows.net;Initial Catalog=climbranks;Integrated Security=False;User ID=climbranks_admin;Password=051xu0wvLYM9;Connect Timeout=30;Encrypt=True;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False")
-                            .Options;
-            ClimbV1Context context = new ClimbV1Context(options);
+                .UseSqlServer(connectionString)
+                .Options;
+            var context = new ClimbV1Context(options);
             return context;
         }
 
-        private static async Task MigrateUsers(ClimbV1Context v1Context, ApplicationDbContext context)
+        private static async Task MigrateUsers(ClimbV1Context v1Context, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             var v1Users = await v1Context.User
                 .Include(u => u.ApplicationUser).AsNoTracking()
                 .ToArrayAsync();
             var users = new ApplicationUser[v1Users.Length];
 
-            for(int i = 0; i < v1Users.Length; i++)
+            for(var i = 0; i < v1Users.Length; i++)
             {
-                var v1User = v1Users[i];
+                var oldUser = v1Users[i];
                 users[i] = new ApplicationUser
                 {
-                    Id = v1User.ApplicationUser.Id,
-                    Email = v1User.ApplicationUser.Email,
-                    NormalizedEmail = v1User.ApplicationUser.NormalizedEmail,
-                    UserName = v1User.Username,
-                    // TODO: Need to normalize.
-                    NormalizedUserName = v1User.Username,
-                    PasswordHash = v1User.ApplicationUser.PasswordHash,
-                    ProfilePicKey = v1User.ProfilePicKey,
+                    Id = oldUser.ApplicationUser.Id,
+                    Email = oldUser.ApplicationUser.Email,
+                    NormalizedEmail = oldUser.ApplicationUser.NormalizedEmail,
+                    UserName = oldUser.Username,
+                    NormalizedUserName = userManager.KeyNormalizer.Normalize(oldUser.Username),
+                    PasswordHash = oldUser.ApplicationUser.PasswordHash,
+                    ConcurrencyStamp = oldUser.ApplicationUser.ConcurrencyStamp,
+                    SecurityStamp = oldUser.ApplicationUser.SecurityStamp,
                 };
             }
 
@@ -81,32 +96,31 @@ namespace Climb.Data
 
             for(var i = 0; i < users.Length; i++)
             {
-                applicationUserIDs[v1Users[i].ApplicationUser.Id] = users[i].Id;
+                applicationUserIDs[v1Users[i].ApplicationUser.Id] = (users[i].Id, users[i].UserName);
             }
         }
 
         private static async Task MigrateGames(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldGames = await v1Context.Game.ToArrayAsync();
-            var games = new Models.Game[oldGames.Length];
+            var games = new Game[oldGames.Length];
 
-            for(int i = 0; i < oldGames.Length; i++)
+            for(var i = 0; i < oldGames.Length; i++)
             {
                 var v1Game = oldGames[i];
-                games[i] = new Models.Game
+                games[i] = new Game
                 {
                     Name = v1Game.Name,
                     CharactersPerMatch = v1Game.CharactersPerMatch,
                     MaxMatchPoints = v1Game.MaxMatchPoints,
                     DateAdded = DateTime.Today,
-                    HasStages = v1Game.RequireStage,
                 };
             }
 
             context.Games.AddRange(games);
             await context.SaveChangesAsync();
 
-            for(int i = 0; i < oldGames.Length; i++)
+            for(var i = 0; i < oldGames.Length; i++)
             {
                 gameIDs[oldGames[i].ID] = games[i].ID;
             }
@@ -115,36 +129,37 @@ namespace Climb.Data
         private static async Task MigrateCharacters(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldCharacters = await v1Context.Character.ToArrayAsync();
-            var characters = new Models.Character[oldCharacters.Length];
+            var characters = new Character[oldCharacters.Length];
 
-            for(int i = 0; i < oldCharacters.Length; i++)
+            for(var i = 0; i < oldCharacters.Length; i++)
             {
-                var v1Character = oldCharacters[i];
-                characters[i] = new Models.Character
+                var oldCharacter = oldCharacters[i];
+                characters[i] = new Character
                 {
-                    Name = v1Character.Name,
-                    GameID = gameIDs[v1Character.GameID],
+                    Name = oldCharacter.Name,
+                    GameID = gameIDs[oldCharacter.GameID],
+                    ImageKey = oldCharacter.PicKey,
                 };
             }
 
             context.Characters.AddRange(characters);
             await context.SaveChangesAsync();
-            
-            for(int i = 0; i < oldCharacters.Length; i++)
+
+            for(var i = 0; i < oldCharacters.Length; i++)
             {
                 characterIDs[oldCharacters[i].ID] = characters[i].ID;
             }
         }
-        
+
         private static async Task MigrateStages(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldStages = await v1Context.Stage.ToArrayAsync();
-            var stages = new Models.Stage[oldStages.Length];
+            var stages = new Stage[oldStages.Length];
 
-            for(int i = 0; i < oldStages.Length; i++)
+            for(var i = 0; i < oldStages.Length; i++)
             {
                 var v1Stage = oldStages[i];
-                stages[i] = new Models.Stage
+                stages[i] = new Stage
                 {
                     Name = v1Stage.Name,
                     GameID = gameIDs[v1Stage.GameID],
@@ -160,25 +175,25 @@ namespace Climb.Data
             var oldLeagues = await v1Context.League
                 .Include(l => l.Admin).ThenInclude(u => u.ApplicationUser).AsNoTracking()
                 .ToArrayAsync();
-            var leagues = new Models.League[oldLeagues.Length];
+            var leagues = new League[oldLeagues.Length];
 
-            for(int i = 0; i < oldLeagues.Length; i++)
+            for(var i = 0; i < oldLeagues.Length; i++)
             {
                 var oldLeague = oldLeagues[i];
-                leagues[i] = new Models.League
+                leagues[i] = new League
                 {
                     GameID = gameIDs[oldLeague.GameID],
                     AdminID = oldLeague.Admin.ApplicationUser.Id,
                     Name = oldLeague.Name,
                     DateCreated = DateTime.Today,
-                    SetsTillRank = 4,
+                    SetsTillRank = SetsTillNotNewcomer,
                 };
             }
 
             context.Leagues.AddRange(leagues);
             await context.SaveChangesAsync();
 
-            for(int i = 0; i < oldLeagues.Length; i++)
+            for(var i = 0; i < oldLeagues.Length; i++)
             {
                 leagueIDs[oldLeagues[i].ID] = leagues[i].ID;
             }
@@ -187,25 +202,26 @@ namespace Climb.Data
         private static async Task MigrateSeasons(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldSeasons = await v1Context.Season.ToArrayAsync();
-            var seasons = new Models.Season[oldSeasons.Length];
+            var seasons = new Season[oldSeasons.Length];
 
-            for(int i = 0; i < oldSeasons.Length; i++)
+            for(var i = 0; i < oldSeasons.Length; i++)
             {
                 var oldSeason = oldSeasons[i];
-                seasons[i] = new Models.Season
+                seasons[i] = new Season
                 {
                     LeagueID = leagueIDs[oldSeason.LeagueID],
                     StartDate = oldSeason.StartDate,
                     EndDate = oldSeason.StartDate + TimeSpan.FromDays(30),
                     Index = oldSeason.Index,
-                    IsActive = !oldSeason.IsComplete,
+                    IsActive = false,
+                    IsComplete = true,
                 };
             }
 
             context.Seasons.AddRange(seasons);
             await context.SaveChangesAsync();
-            
-            for(int i = 0; i < oldSeasons.Length; i++)
+
+            for(var i = 0; i < oldSeasons.Length; i++)
             {
                 seasonIDs[oldSeasons[i].ID] = seasons[i].ID;
             }
@@ -216,131 +232,49 @@ namespace Climb.Data
             var oldLeagueUsers = await v1Context.LeagueUser
                 .Include(lu => lu.User).ThenInclude(u => u.ApplicationUser).AsNoTracking()
                 .ToArrayAsync();
-            var leagueUsers = new Models.LeagueUser[oldLeagueUsers.Length];
+            var leagueUsers = new LeagueUser[oldLeagueUsers.Length];
 
-            for(int i = 0; i < oldLeagueUsers.Length; i++)
+            for(var i = 0; i < oldLeagueUsers.Length; i++)
             {
                 var oldLeagueUser = oldLeagueUsers[i];
-                leagueUsers[i] = new Models.LeagueUser
+                var (oldUserID, oldUsername) = applicationUserIDs[oldLeagueUser.User.ApplicationUser.Id];
+
+                leagueUsers[i] = new LeagueUser
                 {
                     LeagueID = leagueIDs[oldLeagueUser.LeagueID],
-                    UserID = applicationUserIDs[oldLeagueUser.User.ApplicationUser.Id],
+                    UserID = oldUserID,
+                    DisplayName = oldUsername,
                     HasLeft = oldLeagueUser.HasLeft,
                     Rank = oldLeagueUser.Rank,
                     Points = oldLeagueUser.Points,
                     SetCount = oldLeagueUser.SetsPlayed,
+                    IsNewcomer = oldLeagueUser.SetsPlayed < SetsTillNotNewcomer, 
                 };
+
+                leagueUserToUser[oldLeagueUser.ID] = oldUserID;
             }
 
             context.LeagueUsers.AddRange(leagueUsers);
             await context.SaveChangesAsync();
 
-            for(int i = 0; i < oldLeagueUsers.Length; i++)
+            for(var i = 0; i < oldLeagueUsers.Length; i++)
             {
                 leagueUserIDs[oldLeagueUsers[i].ID] = leagueUsers[i].ID;
             }
         }
 
-        private static async Task MigrateSets(ClimbV1Context v1Context, ApplicationDbContext context)
-        {
-            var oldSets = await v1Context.Set.ToArrayAsync();
-            var sets = new Models.Set[oldSets.Length];
-
-            for(int i = 0; i < oldSets.Length; i++)
-            {
-                var oldSet = oldSets[i];
-                Debug.Assert(oldSet.Player1ID != null, "oldSet.Player1ID != null");
-                Debug.Assert(oldSet.Player2ID != null, "oldSet.Player2ID != null");
-                var isComplete = oldSet.Player1Score != null;
-                var player1Won = oldSet.Player1Score > oldSet.Player2Score;
-                var player2Won = oldSet.Player2Score > oldSet.Player1Score;
-                sets[i] = new Models.Set
-                {
-                    LeagueID = leagueIDs[oldSet.LeagueID],
-                    DueDate = oldSet.DueDate,
-                    UpdatedDate = oldSet.UpdatedDate,
-                    IsLocked = oldSet.IsLocked,
-                    Player1ID = leagueUserIDs[oldSet.Player1ID.Value],
-                    Player2ID = leagueUserIDs[oldSet.Player2ID.Value],
-                    SeasonID = oldSet.SeasonID != null ? seasonIDs[oldSet.SeasonID.Value] : (int?)null,
-                    Player1Score = oldSet.Player1Score,
-                    Player2Score = oldSet.Player2Score,
-                    IsComplete = isComplete,
-                    Player1SeasonPoints = isComplete ? player1Won ? 2 : 1 : 0,
-                    Player2SeasonPoints = isComplete ? player2Won ? 2 : 1 : 0,
-                    // TODO: SeasonPlayers
-                };
-            }
-
-            context.Sets.AddRange(sets);
-            await context.SaveChangesAsync();
-            
-            for(int i = 0; i < oldSets.Length; i++)
-            {
-                setIDs[oldSets[i].ID] = sets[i].ID;
-            }
-        }
-        
-        private static async Task MigrateMatches(ClimbV1Context v1Context, ApplicationDbContext context)
-        {
-            var oldMatches = await v1Context.Match
-                .Include(m => m.Set).AsNoTracking()
-                .ToArrayAsync();
-            var matches = new Models.Match[oldMatches.Length];
-
-            for(int i = 0; i < oldMatches.Length; i++)
-            {
-                var oldMatch = oldMatches[i];
-                matches[i] = new Models.Match
-                {
-                    Index = oldMatch.Index,
-                    SetID = setIDs[oldMatch.Set.ID],
-                    Player1Score = oldMatch.Player1Score,
-                    Player2Score = oldMatch.Player2Score,
-                    StageID = oldMatch.StageID,
-                };
-            }
-
-            context.Matches.AddRange(matches);
-            await context.SaveChangesAsync();
-
-            for(int i = 0; i < oldMatches.Length; i++)
-            {
-                matchIDs[oldMatches[i].ID] = matches[i].ID;
-            }
-        }
-
-        private static async Task MigrateMatchCharacters(ClimbV1Context v1Context, ApplicationDbContext context)
-        {
-            var oldMatchCharacters = await v1Context.MatchCharacters.ToArrayAsync();
-            var matchCharacters = new Models.MatchCharacter[oldMatchCharacters.Length];
-
-            for(int i = 0; i < oldMatchCharacters.Length; i++)
-            {
-                var oldMatchCharacter = oldMatchCharacters[i];
-                matchCharacters[i] = new Models.MatchCharacter
-                {
-                    MatchID = matchIDs[oldMatchCharacter.MatchID],
-                    LeagueUserID = leagueUserIDs[oldMatchCharacter.LeagueUserID],
-                    CharacterID = characterIDs[oldMatchCharacter.CharacterID],
-                };
-            }
-
-            context.MatchCharacters.AddRange(matchCharacters);
-            await context.SaveChangesAsync();
-        }
-
         private static async Task MigrateSeasonLeagueUsers(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldLeagueUserSeasons = await v1Context.LeagueUserSeason.ToArrayAsync();
-            var seasonLeagueUsers = new Models.SeasonLeagueUser[oldLeagueUserSeasons.Length];
+            var seasonLeagueUsers = new SeasonLeagueUser[oldLeagueUserSeasons.Length];
 
-            for(int i = 0; i < oldLeagueUserSeasons.Length; i++)
+            for(var i = 0; i < oldLeagueUserSeasons.Length; i++)
             {
                 var oldLeagueUserSeason = oldLeagueUserSeasons[i];
-                seasonLeagueUsers[i] = new Models.SeasonLeagueUser
+                seasonLeagueUsers[i] = new SeasonLeagueUser
                 {
                     LeagueUserID = leagueUserIDs[oldLeagueUserSeason.LeagueUserID],
+                    UserID = leagueUserToUser[oldLeagueUserSeason.LeagueUserID],
                     SeasonID = seasonIDs[oldLeagueUserSeason.SeasonID],
                     Standing = oldLeagueUserSeason.Standing,
                     Points = oldLeagueUserSeason.Points,
@@ -349,17 +283,139 @@ namespace Climb.Data
 
             context.SeasonLeagueUsers.AddRange(seasonLeagueUsers);
             await context.SaveChangesAsync();
+
+            for(var i = 0; i < oldLeagueUserSeasons.Length; i++)
+            {
+                var compositeID = $"{oldLeagueUserSeasons[i].LeagueUserID}-{oldLeagueUserSeasons[i].SeasonID}";
+                seasonLeagueUserIDs[compositeID] = seasonLeagueUsers[i].ID;
+            }
+        }
+
+        private static async Task MigrateSets(ClimbV1Context v1Context, ApplicationDbContext context)
+        {
+            var oldSets = await v1Context.Set.ToArrayAsync();
+            var sets = new List<Set>(oldSets.Length);
+            var setIDsDict = new Dictionary<Set, int>();
+
+            foreach(var oldSet in oldSets)
+            {
+                if(oldSet.Player1Score == null && oldSet.Player2Score == null)
+                {
+                    continue;
+                }
+
+                Debug.Assert(oldSet.Player1ID != null, "oldSet.Player1ID != null");
+                Debug.Assert(oldSet.Player2ID != null, "oldSet.Player2ID != null");
+                var isComplete = oldSet.Player1Score != null;
+                var player1Won = oldSet.Player1Score > oldSet.Player2Score;
+                var player2Won = oldSet.Player2Score > oldSet.Player1Score;
+
+                var newSet = new Set
+                {
+                    LeagueID = leagueIDs[oldSet.LeagueID],
+                    DueDate = oldSet.DueDate,
+                    UpdatedDate = oldSet.UpdatedDate,
+                    IsLocked = true,
+                    Player1ID = leagueUserIDs[oldSet.Player1ID.Value],
+                    Player2ID = leagueUserIDs[oldSet.Player2ID.Value],
+                    Player1Score = oldSet.Player1Score,
+                    Player2Score = oldSet.Player2Score,
+                    IsComplete = isComplete,
+                    Player1SeasonPoints = isComplete ? player1Won ? 2 : 1 : 0,
+                    Player2SeasonPoints = isComplete ? player2Won ? 2 : 1 : 0,
+                };
+
+                if(oldSet.SeasonID != null)
+                {
+                    newSet.SeasonID = oldSet.SeasonID != null ? seasonIDs[oldSet.SeasonID.Value] : (int?)null;
+                    newSet.SeasonPlayer1ID = seasonLeagueUserIDs[$"{oldSet.Player1ID.Value}-{oldSet.SeasonID}"];
+                    newSet.SeasonPlayer2ID = seasonLeagueUserIDs[$"{oldSet.Player2ID.Value}-{oldSet.SeasonID}"];
+                }
+
+                setIDsDict.Add(newSet, oldSet.ID);
+                sets.Add(newSet);
+            }
+
+            context.Sets.AddRange(sets);
+            await context.SaveChangesAsync();
+
+            foreach(var set in setIDsDict)
+            {
+                setIDs[set.Value] = set.Key.ID;
+            }
+        }
+
+        private static async Task MigrateMatches(ClimbV1Context v1Context, ApplicationDbContext context)
+        {
+            var oldMatches = await v1Context.Match
+                .Include(m => m.Set).AsNoTracking()
+                .ToArrayAsync();
+            var matches = new List<Match>(oldMatches.Length);
+            var matchIDsDict = new Dictionary<Match, int>();
+
+            foreach(var oldMatch in oldMatches)
+            {
+                if(oldMatch.Player1Score == 0 && oldMatch.Player2Score == 0)
+                {
+                    continue;
+                }
+
+                var newMatch = new Match
+                {
+                    Index = oldMatch.Index,
+                    SetID = setIDs[oldMatch.Set.ID],
+                    Player1Score = oldMatch.Player1Score,
+                    Player2Score = oldMatch.Player2Score,
+                    StageID = oldMatch.StageID,
+                };
+
+                matches.Add(newMatch);
+                matchIDsDict.Add(newMatch, oldMatch.ID);
+            }
+
+            context.Matches.AddRange(matches);
+            await context.SaveChangesAsync();
+
+            foreach(var match in matchIDsDict)
+            {
+                matchIDs[match.Value] = match.Key.ID;
+            }
+        }
+
+        private static async Task MigrateMatchCharacters(ClimbV1Context v1Context, ApplicationDbContext context)
+        {
+            var oldMatchCharacters = await v1Context.MatchCharacters.ToArrayAsync();
+            var matchCharacters = new List<MatchCharacter>(oldMatchCharacters.Length);
+
+            foreach(var oldMatchCharacter in oldMatchCharacters)
+            {
+                if(!matchIDs.ContainsKey(oldMatchCharacter.MatchID))
+                {
+                    continue;
+                }
+
+                matchCharacters.Add(new MatchCharacter
+                {
+                    MatchID = matchIDs[oldMatchCharacter.MatchID],
+                    LeagueUserID = leagueUserIDs[oldMatchCharacter.LeagueUserID],
+                    CharacterID = characterIDs[oldMatchCharacter.CharacterID],
+                    CreatedDate = DateTime.Now,
+                });
+            }
+
+            context.MatchCharacters.AddRange(matchCharacters);
+            await context.SaveChangesAsync();
         }
 
         private static async Task MigrateRankSnapshots(ClimbV1Context v1Context, ApplicationDbContext context)
         {
             var oldRankSnapshots = await v1Context.RankSnapshot.ToArrayAsync();
-            var rankSnapshots = new Models.RankSnapshot[oldRankSnapshots.Length];
+            var rankSnapshots = new RankSnapshot[oldRankSnapshots.Length];
 
-            for(int i = 0; i < oldRankSnapshots.Length; i++)
+            for(var i = 0; i < oldRankSnapshots.Length; i++)
             {
                 var oldRankSnapshot = oldRankSnapshots[i];
-                rankSnapshots[i] = new Models.RankSnapshot
+                rankSnapshots[i] = new RankSnapshot
                 {
                     CreatedDate = oldRankSnapshot.CreatedDate,
                     LeagueUserID = leagueUserIDs[oldRankSnapshot.LeagueUserID],

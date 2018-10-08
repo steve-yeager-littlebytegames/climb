@@ -8,16 +8,27 @@ namespace Climb.Services
 {
     public abstract class CdnService : ICdnService
     {
-        private readonly string root;
+        protected string root;
 
-        protected CdnService(string root)
+        protected abstract Task UploadImageInternalAsync(IFormFile image, string folder, string fileKey);
+        protected abstract void EnsureFolder(string rulesFolder);
+        public abstract Task DeleteImageAsync(string fileKey, ImageRules rules);
+
+        public string GetUserProfilePicUrl(string id, string imageKey, ImageRules rules)
         {
-            this.root = root;
+            const int defaultPicturesCount = 24;
+
+            if(string.IsNullOrWhiteSpace(imageKey))
+            {
+                var idHash = id.Select(c => (int)c).Sum();
+                var defaultID = idHash % defaultPicturesCount;
+                return $"/images/profile-default/profile-default-{defaultID}.jpg";
+            }
+
+            return GetImageUrl(imageKey, ClimbImageRules.ProfilePic);
         }
 
         public string GetImageUrl(string imageKey, ImageRules rules) => string.IsNullOrWhiteSpace(imageKey) ? rules.MissingUrl : $"{root}/{rules.Folder}/{imageKey}";
-
-        protected abstract Task UploadImageInternalAsync(IFormFile image, string folder, string fileKey);
 
         public async Task<string> UploadImageAsync(IFormFile image, ImageRules rules)
         {
@@ -33,9 +44,15 @@ namespace Climb.Services
             return fileKey;
         }
 
-        protected abstract void EnsureFolder(string rulesFolder);
+        public async Task<string> ReplaceImageAsync(string oldKey, IFormFile image, ImageRules rules)
+        {
+            if(!string.IsNullOrWhiteSpace(oldKey))
+            {
+                await DeleteImageAsync(oldKey, rules);
+            }
 
-        public abstract Task DeleteImageAsync(string fileKey, ImageRules rules);
+            return await UploadImageAsync(image, rules);
+        }
 
         private static bool IsValid(IFormFile image, ImageRules rules)
         {

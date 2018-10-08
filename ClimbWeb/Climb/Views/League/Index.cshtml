@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "Leagues";
-    Layout = "_LayoutWithNavbar";
 }
 
 <div>
@@ -12,7 +11,7 @@
         <input name="adminID" type="hidden" value="@Model.User.Id"/>
         <input type="text" name="name" placeholder="Name"/>
         <select name="gameID">
-            @foreach(var game in Model.Games)
+            @foreach(var game in Model.AllGames)
             {
                 <option value="@game.ID">@game.Name</option>
             }

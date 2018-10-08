@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Climb.API;
@@ -7,8 +8,10 @@ using Climb.Extensions;
 using Climb.Models;
 using Climb.Requests.Leagues;
 using Climb.Responses.Models;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
@@ -30,8 +33,10 @@ namespace Climb.Test.Api
             leagueService = Substitute.For<ILeagueService>();
             dbContext = DbContextUtility.CreateMockDb();
             var logger = Substitute.For<ILogger<LeagueApi>>();
+            var configuration = Substitute.For<IConfiguration>();
+            var cdnService = Substitute.For<ICdnService>();
 
-            testObj = new LeagueApi(logger, dbContext, leagueService);
+            testObj = new LeagueApi(logger, dbContext, leagueService, configuration, cdnService);
         }
 
         [Test]
@@ -44,7 +49,7 @@ namespace Climb.Test.Api
                 GameID = gameID
             };
 
-            leagueService.Create(LeagueName, gameID, "").Returns(new League
+            leagueService.Create(LeagueName, gameID, Arg.Any<string>()).Returns(new League
             {
                 Name = LeagueName,
                 GameID = gameID
@@ -58,10 +63,9 @@ namespace Climb.Test.Api
         [Test]
         public async Task Join_Valid_Created()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            leagueService.Join(1, "ID").Returns(new LeagueUser());
 
-            var request = new JoinRequest(league.ID, user.Id);
+            var request = new JoinRequest(1, "ID");
 
             var result = await testObj.Join(request);
 
@@ -74,7 +78,7 @@ namespace Climb.Test.Api
             var league = LeagueUtility.CreateLeague(dbContext);
 
             var result = await testObj.Get(league.ID);
-            var resultLeague = result.GetObject<League>();
+            var resultLeague = result.GetObject<LeagueDto>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
             Assert.IsNotNull(resultLeague);
@@ -127,9 +131,9 @@ namespace Climb.Test.Api
             DbContextUtility.AddNew<Season>(dbContext, s => s.LeagueID = league.ID);
 
             var result = await testObj.GetSeasons(league.ID);
-            var seasons = result.GetObject<ICollection<Season>>();
+            var seasons = result.GetObject<IEnumerable<SeasonDto>>();
 
-            Assert.AreEqual(2, seasons.Count);
+            Assert.AreEqual(2, seasons.Count());
         }
 
         [Test]

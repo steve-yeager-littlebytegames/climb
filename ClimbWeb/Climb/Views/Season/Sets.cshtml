@@ -1,0 +1,22 @@
+﻿@using Climb.Services
+@using Climb.ViewModels.Sets
+@model Climb.ViewModels.Seasons.SetsViewModel
+@inject ICdnService cdnService
+
+@{
+    ViewBag.Page = "Sets";
+    Layout = "_SeasonsLayout";
+}
+
+@section SeasonsBody
+{
+    <div class="col-xl-4 page-section pb-2 mt-4">
+        <h3>Sets</h3>
+        <div class="page-section-child">
+            @foreach(var set in Model.Season.Sets)
+            {
+                <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
+            }
+        </div>
+    </div>
+}

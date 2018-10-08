@@ -1,0 +1,19 @@
+﻿@using Climb.Services
+@model Climb.ViewModels.Seasons.ManageViewModel
+@inject ICdnService cdnService
+
+@{
+    ViewBag.Page = "Manage";
+    Layout = "_SeasonsLayout";
+}
+
+@section SeasonsBody
+{
+    @if(Model.CanStartSeason)
+    {
+        <form asp-controller="Season" asp-action="Start">
+            <input type="hidden" name="SeasonID" value="@Model.Season.ID"/>
+            <button class="btn btn-primary">Start Season</button>
+        </form>
+    }
+}

@@ -2,12 +2,11 @@
 using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
-using Climb.Data;
 using Climb.Requests.Account;
+using Climb.Responses;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,27 +14,30 @@ namespace Climb.API
 {
     public class AccountApi : BaseApi<AccountApi>
     {
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly ISignInManager signInManager;
         private readonly ITokenHelper tokenHelper;
         private readonly IApplicationUserService applicationUserService;
+        private readonly ICdnService cdnService;
 
-        public AccountApi(SignInManager<ApplicationUser> signInManager, ITokenHelper tokenHelper, ILogger<AccountApi> logger, IApplicationUserService applicationUserService)
+        public AccountApi(ISignInManager signInManager, ITokenHelper tokenHelper, ILogger<AccountApi> logger, IApplicationUserService applicationUserService, ICdnService cdnService)
             : base(logger)
         {
             this.signInManager = signInManager;
             this.tokenHelper = tokenHelper;
             this.applicationUserService = applicationUserService;
+            this.cdnService = cdnService;
         }
 
         [HttpPost("/api/v1/account/register")]
-        [SwaggerResponse(HttpStatusCode.Created, typeof(ApplicationUser))]
+        [SwaggerResponse(HttpStatusCode.Created, typeof(UserDto))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(string), "Email or password is not valid.")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             try
             {
                 var user = await applicationUserService.Register(request, Url, Request.Scheme);
-                return CodeResultAndLog(HttpStatusCode.Created, user, "Created user.");
+                var dto = UserDto.Create(user, cdnService);
+                return CodeResultAndLog(HttpStatusCode.Created, dto, "Created user.");
             }
             catch(Exception exception)
             {

@@ -13,13 +13,17 @@ namespace Climb.Services.ModelServices
     public class SetService : ISetService
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly ISeasonService seasonService;
+        private readonly IDateService dateService;
 
-        public SetService(ApplicationDbContext dbContext)
+        public SetService(ApplicationDbContext dbContext, ISeasonService seasonService, IDateService dateService)
         {
             this.dbContext = dbContext;
+            this.seasonService = seasonService;
+            this.dateService = dateService;
         }
 
-        public async Task<SetRequest> RequestSetAsync(int requesterID, int challengedID)
+        public async Task<SetRequest> RequestSetAsync(int requesterID, int challengedID, string message)
         {
             if (!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == requesterID))
             {
@@ -39,7 +43,8 @@ namespace Climb.Services.ModelServices
                 LeagueID = requester.LeagueID,
                 RequesterID = requesterID,
                 ChallengedID = challengedID,
-                DateCreated = DateTime.Now,
+                DateCreated = dateService.Now,
+                Message = message,
             };
             dbContext.Add(setRequest);
             await dbContext.SaveChangesAsync();
@@ -85,6 +90,8 @@ namespace Climb.Services.ModelServices
         public async Task<Set> Update(int setID, IReadOnlyList<MatchForm> matchForms)
         {
             var set = await dbContext.Sets
+                .Include(s => s.Player1)
+                .Include(s => s.Player2)
                 .Include(s => s.Matches).ThenInclude(m => m.MatchCharacters)
                 .FirstOrDefaultAsync(s => s.ID == setID);
             if(set == null)
@@ -99,10 +106,17 @@ namespace Climb.Services.ModelServices
                 await dbContext.SaveChangesAsync();
                 set.Matches.Clear();
             }
+            else
+            {
+                set.Player1.SetCount++;
+                set.Player2.SetCount++;
+            }
 
-            dbContext.Sets.Update(set);
+            dbContext.Update(set);
 
+            set.IsComplete = true;
             set.Player1Score = set.Player2Score = 0;
+            set.UpdatedDate = dateService.Now;
 
             for(var i = 0; i < matchForms.Count; i++)
             {
@@ -112,8 +126,8 @@ namespace Climb.Services.ModelServices
 
                 for(var j = 0; j < matchForm.Player1Characters.Length; j++)
                 {
-                    AddCharacter(match, matchForm.Player1Characters[j], set.Player1ID);
-                    AddCharacter(match, matchForm.Player2Characters[j], set.Player2ID);
+                    AddCharacter(match, matchForm.Player1Characters[j], set.Player1ID, set.UpdatedDate.Value);
+                    AddCharacter(match, matchForm.Player2Characters[j], set.Player2ID, set.UpdatedDate.Value);
                 }
 
                 if(matchForm.Player1Score > matchForm.Player2Score)
@@ -128,11 +142,20 @@ namespace Climb.Services.ModelServices
 
             await dbContext.SaveChangesAsync();
 
+            if (set.SeasonID != null)
+            {
+                await seasonService.PlaySet(setID);
+                await seasonService.UpdateRanksAsync(set.SeasonID.Value);
+            }
+
             return set;
 
-            void AddCharacter(Match match, int characterID, int playerID)
+            void AddCharacter(Match match, int characterID, int playerID, DateTime createdDate)
             {
-                var character = new MatchCharacter(match.ID, characterID, playerID);
+                var character = new MatchCharacter(match.ID, characterID, playerID)
+                {
+                    CreatedDate = createdDate,
+                };
                 dbContext.MatchCharacters.Add(character);
             }
         }

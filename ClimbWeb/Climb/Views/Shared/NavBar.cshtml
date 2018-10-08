@@ -1,73 +1,112 @@
+@using Climb.Services
 @model Climb.ViewModels.BaseViewModel
+@inject ICdnService cdnService
 
-<nav class="navbar nav fixed-top navbar-expand-md navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand brand" asp-controller="Site" asp-action="Home">Climb</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                @if (Model.User == null)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="LogIn">Log In</a>
-                    </li>
-                    <li>
-                        <a asp-controller="Account" asp-action="Register">Register</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Leagues
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            @foreach (var league in Model.UserActiveLeagues)
-                            {
-                                <a class="dropdown-item text-light" asp-controller="League" asp-action="Home" asp-route-leagueID="@league.ID">@league.Name</a>
-                            }
-                            @if (Model.UserActiveLeagues.Count > 0)
-                            {
-                                <div class="dropdown-divider"></div>
-                            }
-                            <a class="btn btn-primary" asp-controller="League" asp-action="Index">Search</a>
-                        </div>
-                    </li>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <a class="navbar-brand" asp-controller="Site" asp-action="Home">
+        <img src="~/images/logo/logo-32x32.png" width="30" height="30" class="d-inline-block align-top"/>
+        Climb
+    </a>
+    <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-                    if (Model.UserActiveSeasons.Count > 0)
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Seasons
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                @foreach (var season in Model.UserActiveSeasons)
-                                {
-                                    <a class="dropdown-item text-light" asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">@season.League.Name @(season.Index + 1)</a>
-                                }
-                            </div>
-                        </li>
-                    }
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            @if (Model.IsLoggedIn)
+            {
+                <!--Search-->
+                <li class="justify-content-center">
+                    <form class="form-inline my-2 mr-sm-4 mx-auto" asp-controller="Site" asp-action="Search" method="get">
+                        <input class="form-control-sm mr-2" name="search" type="search" placeholder="Game/League/User" aria-label="Search">
+                        <button class="btn btn-sm btn-outline-light" type="submit">Search</button>
+                    </form>
+                </li>
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @Model.User.UserName
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" asp-controller="User" asp-action="Home" asp-route-userID="">Home</a>
-                            <a class="dropdown-item text-light" asp-controller="User" asp-action="Home">Home</a>
-                            <a class="dropdown-item text-light" asp-controller="Account" asp-action="Settings">Settings</a>
-                            <form asp-controller="Account" asp-action="LogOut">
-                                <button type="button" class="btn btn-secondary">Log Out</button>
-                            </form>
-                        </div>
-                    </li>
-                }
-            </ul>
-        </div>
+                <!-- Games -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Games
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        @foreach (var game in Model.Games)
+                        {
+                            <a class="dropdown-item" asp-controller="Game" asp-action="Home" asp-route-gameid="@game.ID">@game.Name</a>
+                        }
+                        @if (Model.Games.Count > 0)
+                        {
+                            <div class="dropdown-divider"></div>
+                        }
+                        <a class="dropdown-item" asp-controller="Game" asp-action="Index">Search</a>
+                    </div>
+                </li>
+
+                <!-- Leagues -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Leagues
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        @foreach (var league in Model.UserActiveLeagues)
+                        {
+                            <a class="dropdown-item" asp-controller="League" asp-action="Home" asp-route-leagueID="@league.ID">@league.Name</a>
+                        }
+                        @if (Model.UserActiveLeagues.Count > 0)
+                        {
+                            <div class="dropdown-divider"></div>
+                        }
+                        <a class="dropdown-item" asp-controller="League" asp-action="Index">Search</a>
+                    </div>
+                </li>
+
+                <!-- Seasons -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Seasons
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        @foreach (var season in Model.UserSeasons)
+                        {
+                            <a class="dropdown-item" asp-controller="Season" asp-action="Home" asp-route-seasonID="@season.ID">@season.League.Name Season @(season.Index + 1)</a>
+                        }
+                    </div>
+                </li>
+
+                <!-- Account -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @Model.User.UserName
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" asp-controller="User" asp-action="Home" asp-route-userID="">Home</a>
+                        <a class="dropdown-item" asp-controller="Account" asp-action="Settings">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <form asp-controller="Account" asp-action="LogOut">
+                            <button class="btn btn-link">Log Out</button>
+                        </form>
+                    </div>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Account" asp-action="LogIn">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+                </li>
+            }
+        </ul>
     </div>
+
+    @if(Model.IsLoggedIn)
+    {
+        <div class="ml-2">
+            <a asp-controller="User" asp-action="Home" asp-route-userID="">
+                <img src="@Model.GetProfilePic(cdnService)" width="30" height="30"/>
+            </a>
+        </div>
+    }
 </nav>
 
 @*<nav class="navbar navbar-expand-lg navbar-light bg-light">

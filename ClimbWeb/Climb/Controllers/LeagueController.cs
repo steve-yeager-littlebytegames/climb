@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Requests.Leagues;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.ViewModels.Leagues;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,7 +15,7 @@ namespace Climb.Controllers
     {
         private readonly ILeagueService leagueService;
 
-        public LeagueController(ILeagueService leagueService, ApplicationDbContext dbContext, ILogger<LeagueController> logger, UserManager<ApplicationUser> userManager)
+        public LeagueController(ILeagueService leagueService, ApplicationDbContext dbContext, ILogger<LeagueController> logger, IUserManager userManager)
             : base(logger, userManager, dbContext)
         {
             this.leagueService = leagueService;
@@ -41,11 +41,67 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
             var league = await dbContext.Leagues
+                .Include(l => l.Game).AsNoTracking()
                 .Include(l => l.Seasons).AsNoTracking()
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
             var viewModel = new HomeViewModel(user, league);
+
+            return View(viewModel);
+        }
+
+        [HttpGet("leagues/membership/{leagueID:int}")]
+        public async Task<IActionResult> Membership(int leagueID)
+        {
+            var user = await GetViewUserAsync();
+            var league = await dbContext.Leagues
+                .Include(l => l.Game).AsNoTracking()
+                .Include(l => l.Seasons).AsNoTracking()
+                .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
+                .FirstOrDefaultAsync(l => l.ID == leagueID);
+
+            var viewModel = new MembershipViewModel(user, league);
+            return View(viewModel);
+        }
+
+        [HttpGet("leagues/data/{leagueID:int}")]
+        public async Task<IActionResult> Data(int leagueID)
+        {
+            var user = await GetViewUserAsync();
+            
+            var viewModel = await DataViewModel.Create(user, leagueID, dbContext);
+
+            return View(viewModel);
+        }
+
+        [HttpGet("leagues/seasons/{leagueID:int}")]
+        public async Task<IActionResult> Seasons(int leagueID)
+        {
+            var user = await GetViewUserAsync();
+            var league = await dbContext.Leagues
+                .Include(l => l.ActiveSeason).AsNoTracking()
+                .Include(l => l.Game).AsNoTracking()
+                .Include(l => l.Seasons).AsNoTracking()
+                .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
+                .FirstOrDefaultAsync(l => l.ID == leagueID);
+
+            var viewModel = new SeasonsViewModel(user, league);
+
+            return View(viewModel);
+        }
+
+        [HttpGet("leagues/manage/{leagueID:int}")]
+        public async Task<IActionResult> Manage(int leagueID)
+        {
+            var user = await GetViewUserAsync();
+            var league = await dbContext.Leagues
+                .Include(l => l.Game).AsNoTracking()
+                .Include(l => l.Seasons).AsNoTracking()
+                .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
+                .FirstOrDefaultAsync(l => l.ID == leagueID);
+
+            var viewModel = new ManageViewModel(user, league);
 
             return View(viewModel);
         }

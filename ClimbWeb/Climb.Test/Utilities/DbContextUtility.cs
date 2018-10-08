@@ -46,5 +46,19 @@ namespace Climb.Test.Utilities
 
             return entries;
         }
+
+        public static void UpdateAndSave<T>(ApplicationDbContext dbContext, T entity, Action update) where T : class
+        {
+            dbContext.Update(entity);
+            update();
+            dbContext.SaveChanges();
+        }
+
+        public static void UpdateAndSave<T>(ApplicationDbContext dbContext, T entity, Action<T> update) where T : class
+        {
+            dbContext.Update(entity);
+            update(entity);
+            dbContext.SaveChanges();
+        }
     }
 }

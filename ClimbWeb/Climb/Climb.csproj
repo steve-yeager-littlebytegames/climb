@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <UserSecretsId>aspnet-Climb-85A66353-818A-4252-A419-4BAAFDBE37A1</UserSecretsId>
     <RootNamespace>Climb</RootNamespace>
     <TypeScriptToolsVersion>2.9</TypeScriptToolsVersion>
@@ -11,42 +11,28 @@
     <StartupObject />
   </PropertyGroup>
 
-    <ItemGroup>
-      <Content Remove="Views\Account\LogIn.cshtml" />
-      <Content Remove="Views\Account\Register.cshtml" />
-      <Content Remove="Views\Account\Settings.cshtml" />
-      <Content Remove="Views\Game\CharacterAdd.cshtml" />
-      <Content Remove="Views\Game\Index.cshtml" />
-      <Content Remove="Views\Game\StageAdd.cshtml" />
-      <Content Remove="Views\League\Index.cshtml" />
-      <Content Remove="Views\Season\Home.cshtml" />
-      <Content Remove="Views\Site\Home.cshtml" />
-      <Content Remove="Views\League\Home.cshtml" />
-      <Content Remove="Views\Game\Home.cshtml" />
-      <Content Remove="Views\Site\Support.cshtml" />
-      <Content Remove="Views\User\Home.cshtml" />
-      <Content Remove="Views\User\Partials\LeagueUser.cshtml" />
-    </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.23.2" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" PrivateAssets="All" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0" />
-    <PackageReference Include="morelinq" Version="2.10.0" />
+    <PackageReference Include="morelinq" Version="3.0.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="11.17.15" />
   </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" PrivateAssets="All" />
-        <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
-        <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" />
-        <PackageReference Include="morelinq" Version="2.10.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="11.17.18" />
-        <PackageReference Include="Sendgrid" Version="9.9.0" />
+        <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.4" PrivateAssets="All" />
+        <PackageReference Include="JetBrains.Annotations" Version="2018.2.1" />
+        <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="NSwag.AspNetCore" Version="11.19.2" />
+        <PackageReference Include="Sendgrid" Version="9.10.0" />
     </ItemGroup>
 
   <ItemGroup>
@@ -61,6 +47,8 @@
     <None Include="Views\Game\CharacterAdd.cshtml" />
     <None Include="Views\Game\Index.cshtml" />
     <None Include="Views\League\Index.cshtml" />
+    <None Include="Views\Organization\Home.cshtml" />
+    <None Include="Views\Organization\Index.cshtml" />
     <None Include="Views\Season\Home.cshtml" />
     <None Include="Views\Site\Support.cshtml" />
     <None Include="Views\Site\Home.cshtml" />
@@ -71,10 +59,55 @@
 
   <PropertyGroup>
     <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
+    <Authors>Steve Yeager</Authors>
+    <Company>Little Byte</Company>
+    <Version>1.0.14</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Update="Views\Account\ResetPassword.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Account\ForgotPassword.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Game\Update.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\League\Seasons.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\League\Manage.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\League\Data.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\League\Membership.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\League\_LeaguesLayout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Season\_SeasonsLayout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Season\Manage.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Season\Data.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Season\Membership.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Season\Sets.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Season\Partials\SeasonParticipant.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\FilterBar.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Shared\Navbar.cshtml">
@@ -86,10 +119,18 @@
     <Content Update="Views\Shared\_LayoutWithNavbar.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\User\Partials\LeagueUserLink.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\images\logo\" />
+    <Folder Include="wwwroot\temp\cdn\character-pics\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Climb.Core.TieBreakers\Climb.Core.TieBreakers.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -114,6 +155,6 @@
     <TypeScriptOutFile />
   </PropertyGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties package_1json__JSONSchema="http://json.schemastore.org/project" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JSONSchema="http://json.schemastore.org/bowerrc" package_1json__JSONSchema="http://json.schemastore.org/project" /></VisualStudio></ProjectExtensions>
 
 </Project>

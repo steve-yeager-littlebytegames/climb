@@ -1,28 +1,38 @@
-﻿@model Climb.ViewModels.Sets.DetailsViewModel
+﻿@using Climb.Extensions
+@model Climb.ViewModels.Sets.DetailsViewModel
 
-<div class="detail-card">
-    @if (Model.UserIsPlaying)
-    {
-        <div class="flex align-center-i justify-center">
-            <img src="@Model.OpponentProfilePic" width="64" height="64" />
-            <div class="flex wrap">
-                <p class="padding-left-10">@Model.Set.Player1.User.UserName</p> 
-                <p class="padding-left-10"><em>vs</em></p>
-                <p class="padding-left-10">@Model.Set.Player2.User.UserName</p>
+<div class="set-container d-flex flex-column filterable" data-filter-keys="@Html.FilterKeys(Model.Set.Player1.DisplayName, Model.Set.Player2.DisplayName, Model.Set.League.Name)">
+    <span class="set-details">@Model.Set.League.Name - @Model.SetType - @Model.Set.DueDate.ToShortDateString()</span>
+    <div class="background-dark">
+        <div class="d-flex justify-content-between align-items-center px-2 py-1">
+            <div class="d-flex flex-column align-items-start w-40">
+                <img src="@Model.P1ProfilePic" width="64" height="64"/>
+                <span>
+                    <small>
+                        <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player1"/>
+                    </small>
+                </span>
+            </div>
+            <div class="set-score">
+                @Model.Set.Player1Score
+            </div>
+            <strong class="set-vs mx-4">
+                <em>@Model.VersusLabel</em>
+            </strong>
+            <div class="set-score">
+                @Model.Set.Player2Score
+            </div>
+            <div class="d-flex flex-column align-items-end w-40">
+                <img src="@Model.P2ProfilePic" width="64" height="64"/>
+                <span>
+                    <small>
+                        <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player2"/>
+                    </small>
+                </span>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="flex align-center-i justify-center">
-            <img src="@Model.P1ProfilePic" width="64" height="64" />
-            <div class="flex wrap">
-                <p class="padding-left-10">@Model.Set.Player1.User.UserName</p>
-                <p class="padding-left-10"><em>vs</em></p>
-                <p class="padding-left-10">@Model.Set.Player2.User.UserName</p>
-            </div>
-            <img src="@Model.P2ProfilePic" width="64" height="64" />
-        </div>
-    }
-    <a class="btn btn-fight margin-left-10" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">Fight</a>
+        <a class="btn btn-set @Model.ActionButtonClass btn-sm w-25 mx-auto mb-1" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
+            <strong>@Model.ActionName</strong>
+        </a>
+    </div>
 </div>

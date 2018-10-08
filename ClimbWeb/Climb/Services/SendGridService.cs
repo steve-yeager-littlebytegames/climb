@@ -16,11 +16,19 @@ namespace Climb.Services
 
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var msg = new SendGridMessage();
-            msg.SetFrom(new EmailAddress("developer@littlebytegames.com", "Climb"));
+            var msg = new SendGridMessage
+            {
+                From = new EmailAddress("developer@littlebytegames.com", "Climb"),
+                Subject = $"Climb - {subject}",
+                PlainTextContent = message,
+                HtmlContent = message,
+            };
             msg.AddTo(email);
-            msg.SetSubject($"Climb - {subject}");
-            msg.AddContent(MimeType.Html, message);
+
+            msg.TrackingSettings = new TrackingSettings
+            {
+                ClickTracking = new ClickTracking { Enable = false }
+            };
 
             var client = new SendGridClient(apiKey);
             await client.SendEmailAsync(msg);

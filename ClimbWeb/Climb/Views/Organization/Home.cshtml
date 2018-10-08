@@ -1,0 +1,25 @@
+﻿@model Climb.ViewModels.Organizations.HomeViewModel
+
+@{
+    ViewBag.Title = Model.Organization.Name + " Home";
+}
+
+<div>
+    <h1>@Model.Organization.Name</h1>
+    <h2>Leagues</h2>
+    <form asp-action="AddLeaguePost" asp-route-organizationid="@Model.Organization.ID">
+        <select name="leagueid">
+            @foreach(var league in Model.AdminLeagues)
+            {
+                <option value="@league.ID">@league.Name</option>
+            }
+        </select>
+        <button>Add League</button>
+    </form>
+    <ul>
+        @foreach(var league in Model.Organization.Leagues)
+        {
+            <li>@league.Name (@league.Members.Count)</li>
+        }
+    </ul>
+</div>

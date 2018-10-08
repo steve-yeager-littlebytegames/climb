@@ -1,13 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Climb.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Climb.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize(ApplicationDbContext dbContext)
+        public static void Initialize(ApplicationDbContext dbContext, IHostingEnvironment environment)
         {
+            if(environment.IsProduction())
+            {
+                return;
+            }
+
             if(!dbContext.Users.Any())
             {
                 CreateTestData(dbContext);
@@ -16,23 +26,27 @@ namespace Climb.Data
 
         private static void CreateTestData(ApplicationDbContext dbContext)
         {
-            var game = CreateTestGame(dbContext);
+            var games = LoadFromFile(dbContext, dbContext.Games, "Games");
+            LoadFromFile(dbContext, dbContext.Characters, "Characters");
+            LoadFromFile(dbContext, dbContext.Stages, "Stages");
+
             var users = CreateTestUsers(dbContext, 8);
-            var league = CreateTestLeague(dbContext, game, users[0]);
+            var league = CreateTestLeague(dbContext, games[0], users[0]);
             CreateTestMembers(dbContext, league, users);
         }
 
-        private static Game CreateTestGame(ApplicationDbContext dbContext)
+        private static List<T> LoadFromFile<T>(DbContext context, DbSet<T> set, string filePath) where T : class
         {
-            var game = new Game("Smash Bros", 1, 1, true);
-            dbContext.Games.Add(game);
-            dbContext.SaveChanges();
-            return game;
+            var data = File.ReadAllText($@".\Data\SeedData\{filePath}.json");
+            var models = JsonConvert.DeserializeObject<List<T>>(data);
+            set.AddRange(models);
+            context.SaveChanges();
+            return models;
         }
 
         private static League CreateTestLeague(ApplicationDbContext dbContext, Game game, ApplicationUser admin)
         {
-            var league = new League(game.ID, "Fun Smash Friends", admin.Id);
+            var league = new League(game.ID, "Fun Smash Friends", admin.Id, DateTime.Now);
             dbContext.Leagues.Add(league);
             dbContext.SaveChanges();
             return league;

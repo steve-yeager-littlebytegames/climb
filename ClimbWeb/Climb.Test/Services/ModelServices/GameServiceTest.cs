@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
 using Climb.Requests.Games;
+using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Climb.Test.Services.ModelServices
@@ -14,72 +17,98 @@ namespace Climb.Test.Services.ModelServices
     {
         private GameService testObj;
         private ApplicationDbContext dbContext;
+        private ICdnService cdnService;
 
         [SetUp]
         public void SetUp()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase("TestDB")
-                .Options;
+            dbContext = DbContextUtility.CreateMockDb();
+            cdnService = Substitute.For<ICdnService>();
+            var dateService = Substitute.For<IDateService>();
 
-            dbContext = new ApplicationDbContext(options);
-
-            testObj = new GameService(dbContext);
+            testObj = new GameService(dbContext, cdnService, dateService);
         }
 
         [Test]
-        public async Task Create_Valid_ReturnGame()
+        public async Task Update_Valid_ReturnGame()
         {
-            var request = new CreateRequest("GameName", 1, 2, true);
+            var logoFile = Substitute.For<IFormFile>();
+            var request = new UpdateRequest("GameName", 1, 2, logoFile);
 
-            var game = await testObj.Create(request);
+            var game = await testObj.Update(request);
 
             Assert.IsNotNull(game);
         }
 
         [Test]
-        public void Create_NameTaken_BadRequestException()
+        public void Update_NameTaken_Conflict()
         {
-            var game = GameUtility.Create(dbContext, 1, 1);
-            var request = new CreateRequest(game.Name, 1, 2, true);
+            var logoFile = Substitute.For<IFormFile>();
+            var gameOld = GameUtility.Create(dbContext, 1, 1);
+            var createRequest = new UpdateRequest(gameOld.Name, 1, 2, logoFile);
 
-            Assert.ThrowsAsync<BadRequestException>(() => testObj.Create(request));
+            Assert.ThrowsAsync<ConflictException>(() => testObj.Update(createRequest));
+
+            var game = GameUtility.Create(dbContext, 0, 0, name:"GameOther");
+            var updateRequest = new UpdateRequest(gameOld.Name, 1, 2, null)
+            {
+                GameID = game.ID,
+            };
+
+            Assert.ThrowsAsync<ConflictException>(() => testObj.Update(updateRequest));
         }
 
         [TestCase(0)]
         [TestCase(-1)]
-        public void Create_InvalidMaxCharacters_BadRequestException(int maxCharacters)
+        public void Update_InvalidMaxCharacters_BadRequestException(int maxCharacters)
         {
-            var request = new CreateRequest("GameName", maxCharacters, 2, true);
+            var logoFile = Substitute.For<IFormFile>();
+            var createRequest = new UpdateRequest("GameName", maxCharacters, 2, logoFile);
 
-            Assert.ThrowsAsync<BadRequestException>(() => testObj.Create(request));
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(createRequest));
+
+            var game = GameUtility.Create(dbContext, 0, 0);
+            var updateRequest = new UpdateRequest("GameName", maxCharacters, 2, logoFile)
+            {
+                GameID = game.ID,
+            };
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(updateRequest));
         }
 
         [TestCase(0)]
         [TestCase(-1)]
-        public void Create_InvalidMaxMatchPoints_BadRequestException(int maxPoints)
+        public void Update_InvalidMaxMatchPoints_BadRequestException(int maxPoints)
         {
-            var request = new CreateRequest("GameName", 1, maxPoints, true);
+            var logoFile = Substitute.For<IFormFile>();
+            var createRequest = new UpdateRequest("GameName", 1, maxPoints, logoFile);
 
-            Assert.ThrowsAsync<BadRequestException>(() => testObj.Create(request));
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(createRequest));
+
+            var game = GameUtility.Create(dbContext, 0, 0);
+            var updateRequest = new UpdateRequest("GameName", 1, maxPoints, logoFile)
+            {
+                GameID = game.ID,
+            };
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(updateRequest));
         }
 
         [Test]
-        public void Create_NameTaken_BadRequest()
+        public void Update_NewGameNoLogo_BadRequest()
         {
-            var game = GameUtility.Create(dbContext, 0, 0);
-            var request = new CreateRequest(game.Name, 1, 1, true);
+            var request = new UpdateRequest("Name", 1, 2, null);
 
-            Assert.ThrowsAsync<BadRequestException>(() => testObj.Create(request));
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(request));
         }
 
         [Test]
         public async Task AddCharacter_Valid_Character()
         {
             var game = GameUtility.Create(dbContext, 0, 0);
-            var request = new AddCharacterRequest(game.ID, "Char1");
+            var imageFile = Substitute.For<IFormFile>();
 
-            var character = await testObj.AddCharacter(request);
+            var character = await testObj.AddCharacter(game.ID, null, "Char1", imageFile);
 
             Assert.IsNotNull(character);
         }
@@ -87,28 +116,100 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void AddCharacter_NoGame_NotFoundException()
         {
-            var request = new AddCharacterRequest(0, "Char1");
+            var imageFile = Substitute.For<IFormFile>();
 
-            Assert.ThrowsAsync<NotFoundException>(() => testObj.AddCharacter(request));
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.AddCharacter(0, null, "Char1", imageFile));
         }
 
-        // TODO: Also need to add utility class for normalizing and testing names.
         [Test]
         public void AddCharacter_NameTaken_ConflictException()
         {
             var game = GameUtility.Create(dbContext, 1, 0);
-            var request = new AddCharacterRequest(game.ID, game.Characters[0].Name);
+            var imageFile = Substitute.For<IFormFile>();
 
-            Assert.ThrowsAsync<ConflictException>(() => testObj.AddCharacter(request));
+            Assert.ThrowsAsync<ConflictException>(() => testObj.AddCharacter(game.ID, null, game.Characters[0].Name, imageFile));
+        }
+
+        [Test]
+        public void AddCharacter_NewCharacterNoImageKey_NullArgumentException()
+        {
+            var game = GameUtility.Create(dbContext, 0, 0);
+
+            Assert.ThrowsAsync<ArgumentNullException>(() => testObj.AddCharacter(game.ID, null, "Char1", null));
+        }
+
+        [Test]
+        public async Task AddCharacter_NewCharacter_UploadImage()
+        {
+            var game = GameUtility.Create(dbContext, 1, 0);
+            var imageFile = Substitute.For<IFormFile>();
+
+            await testObj.AddCharacter(game.ID, null, "Char1", imageFile);
+
+            await cdnService.Received(1).UploadImageAsync(imageFile, ClimbImageRules.CharacterPic);
+        }
+
+        [Test]
+        public async Task AddCharacter_OldCharacterNoImage_ImageKeyNotUpdated()
+        {
+            var game = GameUtility.Create(dbContext, 1, 0);
+            var imageKey = game.Characters[0].ImageKey;
+
+            var character = await testObj.AddCharacter(game.ID, game.Characters[0].ID, "Char1", null);
+
+            Assert.AreEqual(imageKey, character.ImageKey);
+        }
+
+        [Test]
+        public async Task AddCharacter_OldCharacterNewImage_NewImageUploaded()
+        {
+            var game = GameUtility.Create(dbContext, 1, 0);
+            var imageFile = Substitute.For<IFormFile>();
+
+            await testObj.AddCharacter(game.ID, game.Characters[0].ID, "Char1", imageFile);
+
+            await cdnService.Received(1).ReplaceImageAsync(Arg.Any<string>(), imageFile, ClimbImageRules.CharacterPic);
+        }
+
+        [Test]
+        public async Task AddCharacter_OldCharacterNewImage_ImageKeySaved()
+        {
+            var game = GameUtility.Create(dbContext, 1, 0);
+            var imageFile = Substitute.For<IFormFile>();
+            const string imageKey = "key";
+            cdnService.ReplaceImageAsync(Arg.Any<string>(), imageFile, ClimbImageRules.CharacterPic).Returns(imageKey);
+
+            var character = await testObj.AddCharacter(game.ID, game.Characters[0].ID, "Char1", imageFile);
+
+            Assert.AreEqual(imageKey, character.ImageKey);
+        }
+
+        [Test]
+        public async Task AddCharacter_OldCharacterNoImage_ValuesUpdated()
+        {
+            const string name = "NewName";
+            var game = GameUtility.Create(dbContext, 1, 0);
+
+            var character = await testObj.AddCharacter(game.ID, game.Characters[0].ID, name, null);
+
+            Assert.AreEqual(name, character.Name);
+        }
+
+        [Test]
+        public void AddCharacter_HasCharacterIDButNoCharacter_NotFoundException()
+        {
+            var game = GameUtility.Create(dbContext, 0, 0);
+            var imageFile = Substitute.For<IFormFile>();
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.AddCharacter(game.ID, 1, "Char1", imageFile));
         }
 
         [Test]
         public async Task AddStage_Valid_Stage()
         {
             var game = GameUtility.Create(dbContext, 0, 0);
-            var request = new AddStageRequest(game.ID, "Stage1");
 
-            var stage = await testObj.AddStage(request);
+            var stage = await testObj.AddStage(game.ID, null, "Stage1");
 
             Assert.IsNotNull(stage);
         }
@@ -116,18 +217,34 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void AddStage_NoGame_NotFoundException()
         {
-            var request = new AddStageRequest(0, "Stage1");
-
-            Assert.ThrowsAsync<NotFoundException>(() => testObj.AddStage(request));
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.AddStage(0, null, "Stage1"));
         }
 
         [Test]
         public void AddStage_NameTaken_ConflictException()
         {
             var game = GameUtility.Create(dbContext, 0, 1);
-            var request = new AddStageRequest(game.ID, game.Stages[0].Name);
 
-            Assert.ThrowsAsync<ConflictException>(() => testObj.AddStage(request));
+            Assert.ThrowsAsync<ConflictException>(() => testObj.AddStage(game.ID, null, game.Stages[0].Name));
+        }
+        
+        [Test]
+        public void AddStage_HasStageIDButNoStage_NotFoundException()
+        {
+            var game = GameUtility.Create(dbContext, 0, 0);
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.AddStage(game.ID, 1, "Stage1"));
+        }
+
+        [Test]
+        public async Task AddStage_OldStage_ValuesUpdated()
+        {
+            const string name = "NewName";
+            var game = GameUtility.Create(dbContext, 0, 1);
+
+            var stage = await testObj.AddStage(game.ID, game.Stages[0].ID, name);
+
+            Assert.AreEqual(name, stage.Name);
         }
     }
 }

@@ -1,4 +1,7 @@
 ﻿import { ClimbClient } from "../gen/climbClient.js";
+import { FilterCollection } from "./Filterable.js";
+
+FilterCollection.create();
 
 var openButton = document.getElementById("challenge-button");
 if (openButton != null) {
@@ -15,8 +18,10 @@ for (let i = 0; i < requestButtons.length; i++) {
     const button = requestButtons[i] as HTMLButtonElement;
     const requester = button.getAttribute("data-requester");
     const challenged = button.getAttribute("data-challenged");
+    const message = document.getElementById(`challenge-message-${challenged}`) as HTMLInputElement;
+
     if (requester != null && challenged != null) {
-        button.onclick = () => sendRequest(parseInt(requester), parseInt(challenged));
+        button.onclick = () => sendRequest(parseInt(requester), parseInt(challenged), message.value);
     }
 }
 
@@ -47,9 +52,9 @@ function toggleChallengeModal(open: Boolean) {
     challengeModal.hidden = !open;
 }
 
-function sendRequest(requesterId: number, challengedId: number) {
+function sendRequest(requesterId: number, challengedId: number, message: string) {
     const setApi = new ClimbClient.SetApi();
-    setApi.challengeUser(requesterId, challengedId)
+    setApi.challengeUser(requesterId, challengedId, message)
         .then(() => {
             window.location.reload();
         })

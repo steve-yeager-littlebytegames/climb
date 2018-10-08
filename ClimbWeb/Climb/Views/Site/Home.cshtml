@@ -1,8 +1,7 @@
 ﻿@model Climb.ViewModels.Site.HomeViewModel
 
 @{
-    ViewBag.Title = "Climb";
-    Layout = "_LayoutWithNavbar";
+    ViewBag.Title = "Welcome";
 }
 
 <link rel="stylesheet" href="~/dist/styles/site-home.css" />
@@ -15,11 +14,11 @@
     </p>
     
     <h3>Games</h3>
-    @foreach(var game in Model.Games)
+    @foreach(var game in Model.TopGames)
     {
         <div>
             <a asp-controller="Game" asp-action="Home" asp-route-gameID="@game.ID">@game.Name</a>
         </div>
     }
-    <a asp-controller="Game" asp-action="Index">See more!</a>
+    <a class="btn btn-primary mt-4" asp-controller="Game" asp-action="Index">See more!</a>
 </div>

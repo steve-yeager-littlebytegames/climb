@@ -1,13 +1,15 @@
 ﻿import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ClimbClient } from "../gen/climbClient";
+import { SetDetails } from "./SetDetails";
 import { MatchSummary } from "./MatchSummary";
 import { MatchEdit } from "./MatchEdit";
+import { SetCount } from "./SetCount";
 
 interface ISetSubmitState {
     set: ClimbClient.SetDto | null;
     selectedMatch: ClimbClient.MatchDto | null;
-    game: ClimbClient.Game | null;
+    game: ClimbClient.GameDto | null;
     player1: ClimbClient.LeagueUserDto | null;
     player2: ClimbClient.LeagueUserDto | null;
 }
@@ -15,6 +17,8 @@ interface ISetSubmitState {
 export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmitState> {
     client: ClimbClient.SetApi;
     setId: number;
+
+    static readonly missingStageName = "-----";
 
     constructor(props: RouteComponentProps<any>) {
         super(props);
@@ -35,6 +39,7 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         this.onMatchEdited = this.onMatchEdited.bind(this);
         this.onMatchCancelled = this.onMatchCancelled.bind(this);
         this.onMatchDelete = this.onMatchDelete.bind(this);
+        this.onSelectMatch = this.onSelectMatch.bind(this);
     }
 
     componentDidMount() {
@@ -54,6 +59,8 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         if (this.state.selectedMatch != null) {
             return <MatchEdit match={this.state.selectedMatch}
                               game={game}
+                              player1Name={player1.username}
+                              player2Name={player2.username}
                               onEdit={this.onMatchEdited}
                               onCancel={this.onMatchCancelled}
                               onDelete={this.onMatchDelete}/>;
@@ -63,52 +70,28 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             (m: any, i: any) => <MatchSummary key={i}
                                               game={game}
                                               match={m}
-                                              onSelect={match => this.setState({ selectedMatch: match })}/>);
+                                              onSelect={this.onSelectMatch}/>);
 
         const canSubmit = set.player1Score !== set.player2Score;
 
         return (
-            <div>
-                <div id="set-submit-header">
-                    <div id="set-submit-player-info">
-                        <div className="set-submit-player">
-                            <div className="set-submit-player-top">
-                                <img src="https://cdn2.iconfinder.com/data/icons/professions/512/user_boy_avatar-64.png"/>
-                                <div className="set-submit-player-meta">
-                                    <div className="set-submit-player-rank">#4</div>
-                                    <div className="set-submit-player-trend">↓</div>
-                                </div>
-                            </div>
-                        </div>
+            <div className="pb-4">
+                <SetDetails set={set} player1={player1} player2={player2}/>
+                <SetCount set={set}/>
 
-                        <div id="set-submit-score-container">
-                            <div className="set-submit-score right">{set.player1Score}</div>
-                            <div id="set-submit-score-divide">-</div>
-                            <div className="set-submit-score left">{set.player2Score}</div>
-                        </div>
+                <div className="card-deck">{matches}</div>
 
-                        <div className="set-submit-player">
-                            <div className="set-submit-player-top">
-                                <div className="set-submit-player-meta">
-                                    <div className="set-submit-player-rank">#4</div>
-                                    <div className="set-submit-player-trend">↓</div>
-                                </div>
-                                <img src="https://cdn2.iconfinder.com/data/icons/professions/512/user_boy_avatar-64.png"/>
-                            </div>
+                {!set.isLocked &&
+                    <div className="mt-4">
+                        <div>
+                        <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add {game.matchName}</button>
+                        </div>
+                
+                        <div className="d-flex justify-content-end">
+                            <button id="submit-button" className="btn btn-danger mt-4" disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
                         </div>
                     </div>
-
-                    <div id="set-submit-player-names">
-                        <div className="set-submit-player-name left">{player1.username}</div>
-                        <div className="set-submit-player-name right">{player2.username}</div>
-                    </div>
-                </div>
-
-                <div>{matches}</div>
-                <div className="match-summary-buttons">
-                    <button disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
-                    <button onClick={this.onAddMatch}>Add Match</button>
-                </div>
+                }
             </div>
         );
     }
@@ -170,9 +153,10 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
     }
 
     private onMatchDelete() {
-        if (!this.state.selectedMatch) throw new Error("Selected match can't be null.");
+        const selectedMatch = this.state.selectedMatch;
+        if (!selectedMatch) throw new Error("Selected match can't be null.");
 
-        const index = this.state.selectedMatch.index;
+        const index = selectedMatch.index;
 
         const set = this.state.set;
         if (!set || !set.matches) throw new Error("Set and Matches can't be null");
@@ -206,17 +190,26 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         this.client.submit(setRequest)
             .then(() => {
                 console.log("Set submitted!");
-                window.location.reload();
+                const referer = $("#referer").attr("data-referer");
+                if (referer !== undefined && referer !== "") {
+                    window.location.assign(referer);
+                } else {
+                    window.location.reload();
+                }
             })
             .catch(reason => alert(`Could not submit set\n${reason}`));
     }
 
     private onAddMatch() {
         const set = this.state.set;
-        if (!set || !set.matches) throw new Error();
+        const game = this.state.game;
+        if (!set || !set.matches || !game) throw new Error();
 
         const newMatch = new ClimbClient.MatchDto();
         newMatch.index = set.matches.length;
+
+        newMatch.player1Score = 0;
+        newMatch.player2Score = 0;
 
         if (newMatch.index > 0) {
             const prevMatch = set.matches[newMatch.index - 1];
@@ -224,10 +217,24 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             newMatch.player1Characters = prevMatch.player1Characters.slice(0);
             newMatch.player2Characters = prevMatch.player2Characters.slice(0);
         } else {
+            const characters = game.characters;
+            
             newMatch.player1Characters = [];
             newMatch.player2Characters = [];
+
+            for (let i = 0; i < game.charactersPerMatch; i++) {
+                newMatch.player1Characters.push(characters[i].id);
+                newMatch.player2Characters.push(characters[i].id);
+            }
         }
 
         this.setState({ selectedMatch: newMatch });
+    }
+
+    private onSelectMatch(match: ClimbClient.MatchDto) {
+        const set = this.state.set;
+        if (set && !set.isLocked) {
+            this.setState({ selectedMatch: match });
+        }
     }
 }

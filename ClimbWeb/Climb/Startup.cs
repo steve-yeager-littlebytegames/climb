@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Reflection;
+using Climb.Core.TieBreakers;
 using Climb.Data;
 using Climb.Services;
 using Climb.Services.ModelServices;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +30,14 @@ namespace Climb
         {
             ConfigureDB(services);
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -40,19 +47,56 @@ namespace Climb
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddCookieTempDataProvider();
 
+            ConfigureCdn(services);
+
             services.AddTransient<IApplicationUserService, ApplicationUserService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<ILeagueService, LeagueService>();
             services.AddTransient<ISeasonService, SeasonService>();
             services.AddTransient<ISetService, SetService>();
-
-            services.AddSingleton<IEmailSender, SendGridService>();
+            services.AddTransient<IOrganizationService, OrganizationService>();
             services.AddTransient<ITokenHelper, TokenHelper>();
             services.AddTransient<IUrlUtility, UrlUtility>();
             services.AddTransient<IScheduleFactory, RoundRobinScheduler>();
-            services.AddTransient<ICdnService, FileStorageCdn>();
             services.AddTransient<IPointService, EloPointService>();
             services.AddTransient<ISeasonPointCalculator, ParticipationSeasonPointCalculator>();
+            services.AddTransient<ITieBreakerFactory, TieBreakerFactory>();
+            services.AddTransient<ISignInManager, SignInManager>();
+            services.AddTransient<IUserManager, UserManager>();
+
+            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            {
+                services.AddTransient<IDateService, DateService>();
+            }
+            else
+            {
+                services.AddTransient<IDateService, ControlledDateService>();
+            }
+
+            if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
+            {
+                services.AddTransient<IEmailSender, NullEmailService>();
+            }
+            else
+            {
+                services.AddTransient<IEmailSender, SendGridService>();
+            }
+        }
+
+        private void ConfigureCdn(IServiceCollection services)
+        {
+            var cdnType = Configuration["CDN"];
+            switch (cdnType)
+            {
+                case "S3":
+                    services.AddSingleton<ICdnService, S3Cdn>();
+                    break;
+                case "Local":
+                    services.AddSingleton<ICdnService, FileStorageCdn>();
+                    break;
+                default:
+                    throw new NotSupportedException("Need to set a CDN type.");
+            }
         }
 
         private void ConfigureDB(IServiceCollection services)

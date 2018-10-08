@@ -8,15 +8,6 @@ namespace Climb.Requests.Games
         public int GameID { get; set; }
         [Required]
         public string Name { get; set; }
-
-        public AddStageRequest()
-        {
-        }
-
-        public AddStageRequest(int gameID, string name)
-        {
-            GameID = gameID;
-            Name = name;
-        }
+        public int? StageID { get; set; }
     }
 }

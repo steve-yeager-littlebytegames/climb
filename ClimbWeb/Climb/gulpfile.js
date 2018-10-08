@@ -1,4 +1,5 @@
-﻿const gulp = require("gulp");
+﻿/// <binding ProjectOpened='watch-less' />
+const gulp = require("gulp");
 const ts = require("gulp-typescript");
 const less = require("gulp-less");
 const path = require("path");
@@ -23,6 +24,10 @@ gulp.task("less", () => {
             paths: [path.join(__dirname, "ClientApp", "styles")]
         }))
         .pipe(gulp.dest("wwwroot/dist/styles"));
+});
+
+gulp.task("watch-less", () => {
+    gulp.watch("./ClientApp/styles/**/*.less", gulp.series("less"));
 });
 
 gulp.task("default", gulp.parallel("less", "ts", "ts-climb"));
