@@ -1,0 +1,70 @@
+﻿@using Climb.Services
+@model Climb.ViewModels.Seasons.DetailsViewModel
+@inject ICdnService cdnService
+
+@{
+    ViewBag.Page = "Details";
+    Layout = "_SeasonsLayout";
+}
+
+@section SeasonsBody
+{
+    <h2 class="my-4">History</h2>
+
+    <div class="mx-auto d-flex justify-content-center">
+        <img src="@Model.ProfilePic" height="150" width="150"/>
+        <div class="d-flex flex-column">
+            <table class="table table-sm table-borderless">
+                <tr>
+                    <th class="text-left">Standing</th>
+                    <td class="text-right monospace">@Model.DetailsParticipant.Standing</td>
+                </tr>
+                <tr>
+                    <th class="text-left">Points</th>
+                    <td class="text-right monospace">@Model.DetailsParticipant.Points</td>
+                </tr>
+                <tr>
+                    <th class="text-left">Tie Breaker</th>
+                    <td class="text-right monospace">@Model.DetailsParticipant.TieBreakerPoints</td>
+                </tr>
+                <tr>
+                    <th class="text-left">Sets Played</th>
+                    <td class="text-right monospace">@Model.Sets.Count</td>
+                </tr>
+                <tr>
+                    <th class="text-left">Sets Remaining</th>
+                    <td class="text-right monospace">@Model.RemainingSets</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <h5 class="mb-4">
+        <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.DetailsParticipant.LeagueUser"/>
+    </h5>
+
+    <table class="table table-striped table-responsive-sm">
+        <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">VS</th>
+            <th scope="col">VS Rank</th>
+            <th scope="col">Outcome</th>
+            <th scope="col">Points</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach(var set in Model.Sets)
+        {
+            <tr>
+                <td>@set.Date.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-participantID="@set.OpponentID">@set.OpponentName</a>
+                </td>
+                <td>@set.OpponentRank</td>
+                <td>@(set.Won ? "W" : "L")</td>
+                <td>+@set.Points</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
