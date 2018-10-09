@@ -13,6 +13,7 @@ namespace Climb.ViewModels.Seasons
     {
         public class SetDetails
         {
+            public int ID { get; }
             public int Points { get; }
             public DateTime Date { get; }
             public int OpponentID { get; }
@@ -20,11 +21,12 @@ namespace Climb.ViewModels.Seasons
             public int OpponentRank { get; }
             public bool Won { get; }
 
-            public SetDetails(int points, DateTime date, SeasonLeagueUser opponent, bool won)
+            public SetDetails(int id, int points, DateTime date, SeasonLeagueUser opponent, bool won)
             {
                 Points = points;
                 Date = date;
                 Won = won;
+                ID = id;
                 OpponentID = opponent.ID;
                 OpponentName = opponent.LeagueUser.DisplayName;
                 OpponentRank = opponent.LeagueUser.Rank;
@@ -51,8 +53,8 @@ namespace Climb.ViewModels.Seasons
                     Debug.Assert(s.UpdatedDate != null, "s.UpdatedDate != null");
 
                     return s.SeasonPlayer1ID == participant.ID
-                        ? new SetDetails(s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2, s.SeasonWinnerID == participant.ID)
-                        : new SetDetails(s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1, s.SeasonWinnerID == participant.ID);
+                        ? new SetDetails(s.ID, s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2, s.SeasonWinnerID == participant.ID)
+                        : new SetDetails(s.ID, s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1, s.SeasonWinnerID == participant.ID);
                 })
                 .ToArray();
 
