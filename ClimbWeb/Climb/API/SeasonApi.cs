@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
 using Climb.Data;
-using Climb.Models;
 using Climb.Requests.Seasons;
 using Climb.Responses.Models;
 using Climb.Responses.Sets;
@@ -166,6 +165,20 @@ namespace Climb.API
             catch(Exception exception)
             {
                 return GetExceptionResult(exception, new {participantID});
+            }
+        }
+
+        [HttpPost("/api/v1/seasons/update-ranks")]
+        public async Task<IActionResult> UpdateStandings(int seasonID)
+        {
+            try
+            {
+                var season = await seasonService.UpdateRanksAsync(seasonID);
+                return CodeResultAndLog(HttpStatusCode.OK, season.Participants, $"Season {seasonID} standings updated.");
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {seasonID});
             }
         }
     }
