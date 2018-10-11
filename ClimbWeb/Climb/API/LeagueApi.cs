@@ -183,5 +183,22 @@ namespace Climb.API
 
             return Ok(sets);
         }
+
+        [HttpGet("/api/v1/leagues/recent-characters")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(CharacterDto[]))]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Can't find league user.")]
+        public async Task<IActionResult> GetRecentCharacters(int leagueUserID, int characterCount)
+        {
+            try
+            {
+                var characters = await leagueService.GetUsersRecentCharactersAsync(leagueUserID, characterCount);
+                var dtos = characters.Select(c => CharacterDto.Create(c, cdnService));
+                return Ok(dtos);
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {leagueUserID, characterCount});
+            }
+        }
     }
 }
