@@ -239,12 +239,12 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             const lastCharacters2 = this.state.player2LastCharacters;
 
             for (let i = 0; i < game.charactersPerMatch; i++) {
-                if (lastCharacters1) {
+                if (lastCharacters1 && lastCharacters1.length > i) {
                     newMatch.player1Characters.push(lastCharacters1[i].id);
                 } else {
                     newMatch.player1Characters.push(characters[i].id);
                 }
-                if (lastCharacters2) {
+                if (lastCharacters2 && lastCharacters2.length > i) {
                     newMatch.player2Characters.push(lastCharacters2[i].id);
                 } else {
                     newMatch.player2Characters.push(characters[i].id);
