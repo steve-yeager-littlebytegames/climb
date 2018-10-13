@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NJsonSchema;
 using NSwag.AspNetCore;
 
@@ -19,9 +20,12 @@ namespace Climb
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger<Startup> logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            this.logger = logger;
         }
 
         private IConfiguration Configuration { get; }
@@ -95,7 +99,8 @@ namespace Climb
                     services.AddSingleton<ICdnService, FileStorageCdn>();
                     break;
                 default:
-                    throw new NotSupportedException("Need to set a CDN type.");
+                    logger.LogWarning("No CDN established");
+                    break;
             }
         }
 
