@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Climb.Core.TieBreakers;
 using Climb.Data;
 using Climb.Services;
@@ -35,13 +34,13 @@ namespace Climb
             ConfigureDB(services);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-            })
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -68,7 +67,7 @@ namespace Climb
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
 
-            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            if(string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
             {
                 services.AddTransient<IDateService, DateService>();
             }
@@ -77,7 +76,7 @@ namespace Climb
                 services.AddTransient<IDateService, ControlledDateService>();
             }
 
-            if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
+            if(string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
             {
                 services.AddTransient<IEmailSender, NullEmailService>();
             }
@@ -90,7 +89,7 @@ namespace Climb
         private void ConfigureCdn(IServiceCollection services)
         {
             var cdnType = Configuration["CDN"];
-            switch (cdnType)
+            switch(cdnType)
             {
                 case "S3":
                     services.AddSingleton<ICdnService, S3Cdn>();
@@ -106,14 +105,19 @@ namespace Climb
 
         private void ConfigureDB(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("defaultConnection");
-            if(string.IsNullOrWhiteSpace(connectionString))
+            using(logger.BeginScope("Configuring DB"))
             {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("Test"));
-            }
-            else
-            {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+                var connectionString = Configuration.GetConnectionString("defaultConnection");
+                if(string.IsNullOrWhiteSpace(connectionString))
+                {
+                    logger.LogInformation("Using In Memory DB");
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("Test"));
+                }
+                else
+                {
+                    logger.LogInformation("Using SQL Server DB");
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+                }
             }
         }
 
