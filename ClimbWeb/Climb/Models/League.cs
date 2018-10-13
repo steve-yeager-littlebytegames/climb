@@ -19,6 +19,7 @@ namespace Climb.Models
         public DateTime DateCreated { get; set; }
         public string AdminID { get; set; }
         public int? ActiveSeasonID { get; set; }
+        public DateTime LastRankUpdate { get; set; }
 
         public Game Game { get; set; }
         public List<LeagueUser> Members { get; set; }
@@ -42,5 +43,7 @@ namespace Climb.Models
         }
 
         public bool IsMemberNew(LeagueUser member) => member.SetCount < SetsTillRank;
+
+        public override string ToString() => $"{ID}:{Name}";
     }
 }
