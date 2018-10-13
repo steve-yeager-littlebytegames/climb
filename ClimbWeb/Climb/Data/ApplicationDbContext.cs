@@ -22,6 +22,10 @@ namespace Climb.Data
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationUser> OrganizationUsers { get; set; }
 
+        public ApplicationDbContext()
+        {
+        }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
