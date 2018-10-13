@@ -15,7 +15,7 @@ namespace Climb.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -132,6 +132,8 @@ namespace Climb.Migrations
                     b.Property<DateTime>("DateCreated");
 
                     b.Property<int>("GameID");
+
+                    b.Property<DateTime>("LastRankUpdate");
 
                     b.Property<string>("Name")
                         .IsRequired();
