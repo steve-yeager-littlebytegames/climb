@@ -7,12 +7,6 @@ namespace ClimbV1.Models
 {
     public class Game
     {
-        private class CharacterPercentages
-        {
-            public decimal matches;
-            public decimal wins;
-        }
-
         public int ID { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
