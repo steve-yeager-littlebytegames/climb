@@ -1892,6 +1892,7 @@ export class LeagueUserDto implements ILeagueUserDto {
     points!: number;
     rank!: number;
     profilePicture?: string | undefined;
+    rankTrend!: RankTrends;
 
     constructor(data?: ILeagueUserDto) {
         if (data) {
@@ -1912,6 +1913,7 @@ export class LeagueUserDto implements ILeagueUserDto {
             this.points = data["points"];
             this.rank = data["rank"];
             this.profilePicture = data["profilePicture"];
+            this.rankTrend = data["rankTrend"];
         }
     }
 
@@ -1932,6 +1934,7 @@ export class LeagueUserDto implements ILeagueUserDto {
         data["points"] = this.points;
         data["rank"] = this.rank;
         data["profilePicture"] = this.profilePicture;
+        data["rankTrend"] = this.rankTrend;
         return data; 
     }
 }
@@ -1945,6 +1948,13 @@ export interface ILeagueUserDto {
     points: number;
     rank: number;
     profilePicture?: string | undefined;
+    rankTrend: RankTrends;
+}
+
+export enum RankTrends {
+    None = 0, 
+    Up = 1, 
+    Down = -1, 
 }
 
 export class SeasonDto implements ISeasonDto {

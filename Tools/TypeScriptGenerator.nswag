@@ -42,7 +42,7 @@
       "typeStyle": "Class",
       "classTypes": [],
       "extendedClasses": [],
-      "extensionCode": "../Climb/ClientApp/components/BaseClass.ts",
+      "extensionCode": "../ClimbWeb/Climb/ClientApp/components/BaseClass.ts",
       "generateDefaultValues": true,
       "excludedTypeNames": [],
       "handleReferences": false,
@@ -58,7 +58,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../Climb/ClientApp/gen/climbClient.ts"
+      "output": "../ClimbWeb/Climb/ClientApp/gen/climbClient.ts"
     }
   }
 }
