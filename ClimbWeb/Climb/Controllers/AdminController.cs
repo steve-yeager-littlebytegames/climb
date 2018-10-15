@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Services;
 using Climb.Services.ModelServices;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,27 +26,6 @@ namespace Climb.Controllers
             this.serviceProvider = serviceProvider;
             this.logger = logger;
             this.dateService = dateService;
-        }
-
-        [HttpPost("admin/data/migrate")]
-        public async Task<IActionResult> Migrate([FromHeader] string key)
-        {
-            if(!Validate(key))
-            {
-                return Unauthorized();
-            }
-
-            try
-            {
-                var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-                await DataMigrator.MigrateV1(dbContext, userManager, configuration.GetConnectionString("ClimbV1"));
-                return Ok();
-            }
-            catch(Exception exception)
-            {
-                logger.LogError("Failed migrating data.", exception);
-                return StatusCode(500, exception);
-            }
         }
 
         [HttpPost("admin/update-all-leagues")]
