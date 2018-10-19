@@ -48,14 +48,9 @@ namespace Climb.ViewModels.Seasons
                 .OrderByDescending(s => s.UpdatedDate)
                 .ToArray();
 
-            Sets = sets.Where(s => s.IsComplete).Select(s =>
-                {
-                    Debug.Assert(s.UpdatedDate != null, "s.UpdatedDate != null");
-
-                    return s.SeasonPlayer1ID == participant.ID
-                        ? new SetDetails(s.ID, s.Player1SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer2, s.SeasonWinnerID == participant.ID)
-                        : new SetDetails(s.ID, s.Player2SeasonPoints, s.UpdatedDate.Value, s.SeasonPlayer1, s.SeasonWinnerID == participant.ID);
-                })
+            Sets = sets.Where(s => s.IsComplete).Select(s => s.SeasonPlayer1ID == participant.ID
+                    ? new SetDetails(s.ID, s.Player1SeasonPoints, s.UpdatedDate ?? season.StartDate, s.SeasonPlayer2, s.SeasonWinnerID == participant.ID)
+                    : new SetDetails(s.ID, s.Player2SeasonPoints, s.UpdatedDate ?? season.StartDate, s.SeasonPlayer1, s.SeasonWinnerID == participant.ID))
                 .ToArray();
 
             RemainingSets = sets.Count(s => !s.IsComplete);
