@@ -23,24 +23,6 @@
                     </form>
                 </li>
 
-                <!-- Games -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Games
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @foreach (var game in Model.Games)
-                        {
-                            <a class="dropdown-item" asp-controller="Game" asp-action="Home" asp-route-gameid="@game.ID">@game.Name</a>
-                        }
-                        @if (Model.Games.Count > 0)
-                        {
-                            <div class="dropdown-divider"></div>
-                        }
-                        <a class="dropdown-item" asp-controller="Game" asp-action="Index">Search</a>
-                    </div>
-                </li>
-
                 <!-- Leagues -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
