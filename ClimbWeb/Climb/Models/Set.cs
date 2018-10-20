@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Climb.Services;
 using Newtonsoft.Json;
 
 namespace Climb.Models
@@ -81,7 +82,7 @@ namespace Climb.Models
             throw new ArgumentException($"LeagueUser with ID '{leagueUserID}' is not playing this set.");
         }
 
-        public void Forfeit(int leagueUserID)
+        public void Forfeit(int leagueUserID, IDateService dateService)
         {
             if(Player1ID == leagueUserID)
             {
@@ -100,6 +101,7 @@ namespace Climb.Models
 
             IsForfeit = true;
             IsComplete = true;
+            UpdatedDate = dateService.Now;
         }
 
         public bool IsRematch(Set otherSet)
