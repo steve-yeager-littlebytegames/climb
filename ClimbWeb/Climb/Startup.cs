@@ -34,13 +34,13 @@ namespace Climb
             ConfigureDB(services);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                })
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -51,7 +51,29 @@ namespace Climb
                 .AddCookieTempDataProvider();
 
             ConfigureCdn(services);
+            ConfigureTransient(services);
 
+            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            {
+                services.AddTransient<IDateService, DateService>();
+            }
+            else
+            {
+                services.AddTransient<IDateService, ControlledDateService>();
+            }
+
+            if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
+            {
+                services.AddTransient<IEmailSender, NullEmailService>();
+            }
+            else
+            {
+                services.AddTransient<IEmailSender, SendGridService>();
+            }
+        }
+
+        private static void ConfigureTransient(IServiceCollection services)
+        {
             services.AddTransient<IApplicationUserService, ApplicationUserService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<ILeagueService, LeagueService>();
@@ -66,24 +88,7 @@ namespace Climb
             services.AddTransient<ITieBreakerFactory, TieBreakerFactory>();
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
-
-            if(string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
-            {
-                services.AddTransient<IDateService, DateService>();
-            }
-            else
-            {
-                services.AddTransient<IDateService, ControlledDateService>();
-            }
-
-            if(string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
-            {
-                services.AddTransient<IEmailSender, NullEmailService>();
-            }
-            else
-            {
-                services.AddTransient<IEmailSender, SendGridService>();
-            }
+            services.AddTransient<ITournamentService, TournamentService>();
         }
 
         private void ConfigureCdn(IServiceCollection services)
