@@ -2575,6 +2575,7 @@ export interface ISetRequestDto {
 export class TournamentDto implements ITournamentDto {
     id!: number;
     name?: string | undefined;
+    competitors?: TournamentUserDto[] | undefined;
 
     constructor(data?: ITournamentDto) {
         if (data) {
@@ -2589,6 +2590,11 @@ export class TournamentDto implements ITournamentDto {
         if (data) {
             this.id = data["id"];
             this.name = data["name"];
+            if (data["competitors"] && data["competitors"].constructor === Array) {
+                this.competitors = [];
+                for (let item of data["competitors"])
+                    this.competitors.push(TournamentUserDto.fromJS(item));
+            }
         }
     }
 
@@ -2603,6 +2609,11 @@ export class TournamentDto implements ITournamentDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        if (this.competitors && this.competitors.constructor === Array) {
+            data["competitors"] = [];
+            for (let item of this.competitors)
+                data["competitors"].push(item.toJSON());
+        }
         return data; 
     }
 }
@@ -2610,6 +2621,51 @@ export class TournamentDto implements ITournamentDto {
 export interface ITournamentDto {
     id: number;
     name?: string | undefined;
+    competitors?: TournamentUserDto[] | undefined;
+}
+
+export class TournamentUserDto implements ITournamentUserDto {
+    id!: number;
+    userID?: string | undefined;
+    seed!: number;
+
+    constructor(data?: ITournamentUserDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.userID = data["userID"];
+            this.seed = data["seed"];
+        }
+    }
+
+    static fromJS(data: any): TournamentUserDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TournamentUserDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userID"] = this.userID;
+        data["seed"] = this.seed;
+        return data; 
+    }
+}
+
+export interface ITournamentUserDto {
+    id: number;
+    userID?: string | undefined;
+    seed: number;
 }
 
 export class CreateRequest implements ICreateRequest {

@@ -1,4 +1,6 @@
-﻿namespace Climb.Models
+﻿using System.Collections.Generic;
+
+namespace Climb.Models
 {
     public class Tournament
     {
@@ -12,5 +14,6 @@
         public LeagueUser[] LeagueUsers { get; set; }
         public SetSlot[] SetSlots { get; set; }
         public Set[] Sets { get; set; }
+        public List<TournamentUser> TournamentUsers { get; set; }
     }
 }
