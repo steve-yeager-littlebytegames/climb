@@ -28,39 +28,6 @@ export class Admin extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
-    migrate(key: string | null | undefined): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/admin/data/migrate";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "POST",
-            headers: {
-                "key": key !== undefined && key !== null ? "" + key : "", 
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processMigrate(_response);
-        });
-    }
-
-    protected processMigrate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(<any>null);
-    }
-
     updateAllLeagues(key: string | null | undefined): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/admin/update-all-leagues";
         url_ = url_.replace(/[?&]$/, "");
@@ -1493,6 +1460,135 @@ export class SetApi extends BaseClass {
     }
 }
 
+export class TournamentApi extends BaseClass {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        super();
+        this.http = http ? http : <any>window;
+        this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
+    }
+
+    get(tournamentID: number): Promise<TournamentDto> {
+        let url_ = this.baseUrl + "/api/v1/tournaments/{tournamentID}";
+        if (tournamentID === undefined || tournamentID === null)
+            throw new Error("The parameter 'tournamentID' must be defined.");
+        url_ = url_.replace("{tournamentID}", encodeURIComponent("" + tournamentID)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<TournamentDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? TournamentDto.fromJS(resultData200) : new TournamentDto();
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TournamentDto>(<any>null);
+    }
+
+    getAll(): Promise<TournamentDto[]> {
+        let url_ = this.baseUrl + "/api/v1/tournaments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<TournamentDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(TournamentDto.fromJS(item));
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TournamentDto[]>(<any>null);
+    }
+
+    post(request: CreateRequest): Promise<TournamentDto> {
+        let url_ = this.baseUrl + "/api/v1/tournaments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPost(_response);
+        });
+    }
+
+    protected processPost(response: Response): Promise<TournamentDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 201) {
+            return response.text().then((_responseText) => {
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = resultData201 ? TournamentDto.fromJS(resultData201) : new TournamentDto();
+            return result201;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TournamentDto>(<any>null);
+    }
+}
+
 export class UserApi extends BaseClass {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -2023,6 +2119,8 @@ export class SetDto implements ISetDto {
     leagueName?: string | undefined;
     seasonID?: number | undefined;
     gameID!: number;
+    user1ID?: string | undefined;
+    user2ID?: string | undefined;
     player1ID!: number;
     player2ID!: number;
     player1Name?: string | undefined;
@@ -2055,6 +2153,8 @@ export class SetDto implements ISetDto {
             this.leagueName = data["leagueName"];
             this.seasonID = data["seasonID"];
             this.gameID = data["gameID"];
+            this.user1ID = data["user1ID"];
+            this.user2ID = data["user2ID"];
             this.player1ID = data["player1ID"];
             this.player2ID = data["player2ID"];
             this.player1Name = data["player1Name"];
@@ -2088,6 +2188,8 @@ export class SetDto implements ISetDto {
         data["leagueName"] = this.leagueName;
         data["seasonID"] = this.seasonID;
         data["gameID"] = this.gameID;
+        data["user1ID"] = this.user1ID;
+        data["user2ID"] = this.user2ID;
         data["player1ID"] = this.player1ID;
         data["player2ID"] = this.player2ID;
         data["player1Name"] = this.player1Name;
@@ -2114,6 +2216,8 @@ export interface ISetDto {
     leagueName?: string | undefined;
     seasonID?: number | undefined;
     gameID: number;
+    user1ID?: string | undefined;
+    user2ID?: string | undefined;
     player1ID: number;
     player2ID: number;
     player1Name?: string | undefined;
@@ -2466,6 +2570,90 @@ export interface ISetRequestDto {
     setID?: number | undefined;
     isOpen: boolean;
     message?: string | undefined;
+}
+
+export class TournamentDto implements ITournamentDto {
+    id!: number;
+    name?: string | undefined;
+
+    constructor(data?: ITournamentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+        }
+    }
+
+    static fromJS(data: any): TournamentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TournamentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface ITournamentDto {
+    id: number;
+    name?: string | undefined;
+}
+
+export class CreateRequest implements ICreateRequest {
+    leagueID!: number;
+    seasonID?: number | undefined;
+    name?: string | undefined;
+
+    constructor(data?: ICreateRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.leagueID = data["leagueID"];
+            this.seasonID = data["seasonID"];
+            this.name = data["name"];
+        }
+    }
+
+    static fromJS(data: any): CreateRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["leagueID"] = this.leagueID;
+        data["seasonID"] = this.seasonID;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface ICreateRequest {
+    leagueID: number;
+    seasonID?: number | undefined;
+    name?: string | undefined;
 }
 
 export interface FileParameter {
