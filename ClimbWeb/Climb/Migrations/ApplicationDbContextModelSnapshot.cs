@@ -522,6 +522,8 @@ namespace Climb.Migrations
 
                     b.Property<int>("Seed");
 
+                    b.Property<int>("TournamentID");
+
                     b.Property<string>("UserID");
 
                     b.HasKey("ID");
@@ -529,6 +531,8 @@ namespace Climb.Migrations
                     b.HasIndex("LeagueUserID");
 
                     b.HasIndex("SeasonLeagueUserID");
+
+                    b.HasIndex("TournamentID");
 
                     b.HasIndex("UserID");
 
@@ -872,6 +876,11 @@ namespace Climb.Migrations
                     b.HasOne("Climb.Models.SeasonLeagueUser", "SeasonLeagueUser")
                         .WithMany()
                         .HasForeignKey("SeasonLeagueUserID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Climb.Models.Tournament", "Tournament")
+                        .WithMany("TournamentUsers")
+                        .HasForeignKey("TournamentID")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Climb.Data.ApplicationUser", "User")

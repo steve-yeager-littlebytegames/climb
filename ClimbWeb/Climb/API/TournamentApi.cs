@@ -46,6 +46,7 @@ namespace Climb.API
         public async Task<IActionResult> GetAll()
         {
             var tournaments = await dbContext.Tournaments
+                .Include(t => t.TournamentUsers)
                 .Select(t => new TournamentDto(t))
                 .ToArrayAsync();
 
