@@ -14,6 +14,7 @@ namespace Climb.Models
         public int ID { get; set; }
         public int LeagueID { get; set; }
         public int? SeasonID { get; set; }
+        public int? TournamentID { get; set; }
         public int Player1ID { get; set; }
         public int Player2ID { get; set; }
         public int? SeasonPlayer1ID { get; set; }
@@ -28,26 +29,21 @@ namespace Climb.Models
         public int Player1SeasonPoints { get; set; }
         public int Player2SeasonPoints { get; set; }
 
-        [JsonIgnore]
         public League League { get; set; }
-        [JsonIgnore]
         public Season Season { get; set; }
-        [JsonIgnore]
         [InverseProperty("P1Sets")]
         [ForeignKey("Player1ID")]
         public LeagueUser Player1 { get; set; }
-        [JsonIgnore]
         [InverseProperty("P2Sets")]
         [ForeignKey("Player2ID")]
         public LeagueUser Player2 { get; set; }
-        [JsonIgnore]
         [InverseProperty("P1Sets")]
         [ForeignKey("SeasonPlayer1ID")]
         public SeasonLeagueUser SeasonPlayer1 { get; set; }
-        [JsonIgnore]
         [InverseProperty("P2Sets")]
         [ForeignKey("SeasonPlayer2ID")]
         public SeasonLeagueUser SeasonPlayer2 { get; set; }
+        public Tournament Tournament { get; set; }
 
         [Required]
         public List<Match> Matches { get; set; }

@@ -21,6 +21,9 @@ namespace Climb.Data
         public DbSet<SetRequest> SetRequests { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationUser> OrganizationUsers { get; set; }
+        public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<SetSlot> SetSlots { get; set; }
+        public DbSet<TournamentUser> TournamentUsers { get; set; }
 
         public ApplicationDbContext()
         {
