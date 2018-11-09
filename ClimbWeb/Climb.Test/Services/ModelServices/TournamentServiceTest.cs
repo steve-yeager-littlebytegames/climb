@@ -4,6 +4,7 @@ using Climb.Data;
 using Climb.Exceptions;
 using Climb.Services;
 using Climb.Test.Utilities;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Climb.Test.Services.ModelServices
@@ -13,13 +14,15 @@ namespace Climb.Test.Services.ModelServices
     {
         private TournamentService testObj;
         private ApplicationDbContext dbContext;
+        private IBracketGenerator bracketGenerator;
 
         [SetUp]
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
+            bracketGenerator = Substitute.For<IBracketGenerator>();
 
-            testObj = new TournamentService(dbContext);
+            testObj = new TournamentService(dbContext, bracketGenerator);
         }
 
         [Test]

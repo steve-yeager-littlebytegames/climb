@@ -68,5 +68,21 @@ namespace Climb.API
                 return GetExceptionResult(exception, request);
             }
         }
+
+        [HttpPost("generate-bracket/{id:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(TournamentDto))]
+        public async Task<IActionResult> GenerateBracket(int id)
+        {
+            try
+            {
+                var tournament = await tournamentService.GenerateBracket(id);
+                var dto = new TournamentDto(tournament);
+                return Ok(dto);
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {id});
+            }
+        }
     }
 }
