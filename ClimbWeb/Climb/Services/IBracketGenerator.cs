@@ -6,6 +6,6 @@ namespace Climb.Services
     public interface IBracketGenerator
     {
         int MinCompetitors { get; }
-        List<SetSlot> Generate(IReadOnlyList<TournamentUser> competitors);
+        List<SetSlot> Generate(int competitorCount);
     }
 }

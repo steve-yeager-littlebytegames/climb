@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Climb.Models;
 
 namespace Climb.Services
@@ -7,9 +8,14 @@ namespace Climb.Services
     {
         public int MinCompetitors => 4;
 
-        public List<SetSlot> Generate(IReadOnlyList<TournamentUser> competitors)
+        public List<SetSlot> Generate(int competitorCount)
         {
-            throw new System.NotImplementedException();
+            if(competitorCount < MinCompetitors)
+            {
+                throw new ArgumentException($"Need at least {MinCompetitors} competitors to generate bracket.", nameof(competitorCount));
+            }
+
+            throw new NotImplementedException();
         }
     }
 }
