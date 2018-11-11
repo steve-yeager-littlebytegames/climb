@@ -69,7 +69,7 @@ namespace Climb.Controllers
             {
                 var random = new Random();
 
-                for(int i = 0; i < tournament.Winners.Rounds.Count - 1; i++)
+                for(int i = 0; i < tournament.Winners.Rounds.Count; i++)
                 {
                     foreach(var game in tournament.Winners.Rounds[i].Games)
                     {
@@ -90,7 +90,7 @@ namespace Climb.Controllers
                     }
                 }
 
-                for(int i = 0; i < tournament.Losers.Rounds.Count - 1; i++)
+                for(int i = 0; i < tournament.Losers.Rounds.Count; i++)
                 {
                     foreach(var game in tournament.Losers.Rounds[i].Games)
                     {
