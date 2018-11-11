@@ -93,7 +93,7 @@
                 <div class="d-flex flex-column justify-content-around flex-grow-1">
                     @foreach (var game in round.Games)
                     {
-                        <div class="d-flex">
+                        <div class="d-flex @(game.IsBye ? "hidden" : "")">
                             <div class="game-id">@game.ID</div>
                             <div class="game-container">
                                 <div class="d-flex @(game.P1 != null ? "player" : "")" data-player-id="@game.P1">
@@ -120,7 +120,7 @@
             <div class="d-flex flex-column justify-content-around h-100 align-items-center">
                 @{
                     var grandFinals = Model.Tournament.GrandFinals.Games[0];
-                    <div class="d-flex">
+                    <div class="d-flex @(grandFinals.IsBye ? "hidden" : "")">
                         <div class="game-id">@grandFinals.ID</div>
                         <div class="game-container">
                             <div class="d-flex @(grandFinals.P1 != null ? " player" : "" )" data-player-id="@grandFinals.P1">
@@ -146,7 +146,7 @@
             <div class="d-flex flex-column justify-content-around h-100 align-items-center">
                 @{
                     var reset = Model.Tournament.GrandFinals.Games[1];
-                    <div class="d-flex">
+                    <div class="d-flex @(reset.IsBye ? "hidden" : "")">
                         <div class="game-id">@reset.ID</div>
                         <div class="game-container">
                             <div class="d-flex @(reset.P1 != null ? "player" : "")" data-player-id="@reset.P1">
@@ -178,7 +178,7 @@
                 <div class="d-flex flex-column justify-content-around h-100">
                     @foreach(var game in round.Games)
                     {
-                        <div class="d-flex">
+                        <div class="d-flex @(game.IsBye ? "hidden" : "")">
                             <div class="game-id">@game.ID</div>
                             <div class="game-container">
                                 <div class="d-flex @(game.P1 != null ? "player" : "")" data-player-id="@game.P1">
@@ -203,6 +203,8 @@
 </div>
 
 <script type="text/javascript">
+    $("")
+
     $(".player").hover(function() {
             const playerId = $(this).attr("data-player-id");
             $(`[data-player-id="${playerId}"]`).css("background-color", "#555555");

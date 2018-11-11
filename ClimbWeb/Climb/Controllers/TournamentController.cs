@@ -73,7 +73,7 @@ namespace Climb.Controllers
                 {
                     foreach(var game in tournament.Winners.Rounds[i].Games)
                     {
-                        if(random.NextDouble() < 0.5)
+                        if(game.P2== null || game.P1 != null && random.NextDouble() < 0.5)
                         {
                             game.NextWin.AddPlayer(game.P1);
                             game.NextLoss.AddPlayer(game.P2);
@@ -94,7 +94,7 @@ namespace Climb.Controllers
                 {
                     foreach(var game in tournament.Losers.Rounds[i].Games)
                     {
-                        if(random.NextDouble() < 0.5)
+                        if(game.P2== null || game.P1 != null && random.NextDouble() < 0.5)
                         {
                             game.NextWin.AddPlayer(game.P1);
                             game.P1Score = 2;
