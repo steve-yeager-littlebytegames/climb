@@ -52,12 +52,15 @@ namespace Climb.Controllers
         }
 
         [HttpGet("tournaments/test/{count:int}")]
-        public IActionResult Test(int count)
+        public IActionResult Test(int count, bool randomize)
         {
             var bracketGenerator = new BracketGenerator();
             var tournament = bracketGenerator.CreateTournament(count);
 
-            Randomize();
+            if(randomize)
+            {
+                Randomize(); 
+            }
 
             var viewModel = new Test(tournament);
             return View(viewModel);
