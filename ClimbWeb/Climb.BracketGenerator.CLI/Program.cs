@@ -2,9 +2,9 @@
 
 namespace Climb.BracketGenerator.CLI
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
             while(true)
             {
@@ -14,10 +14,27 @@ namespace Climb.BracketGenerator.CLI
                 if(int.TryParse(command, out var competitorCount))
                 {
                     var bracketGenerator = new Services.BracketGenerator();
-                    var slots = bracketGenerator.Generate(competitorCount);
-                    Console.WriteLine($"Competitor Count: {competitorCount}, Slot Count: {slots.Count}");
+                    var tournament = bracketGenerator.CreateTournament(competitorCount);
+                    PrintTournament(tournament);
                 }
             }
+        }
+
+        private static void PrintTournament(Services.BracketGenerator.Tournament tournament)
+        {
+            Console.WriteLine("---Winners---");
+            foreach(var round in tournament.Winners.Rounds)
+            {
+                PrintRound(round);
+            }
+
+            Console.WriteLine("---Losers---");
+            foreach(var round in tournament.Losers.Rounds)
+            {
+                PrintRound(round);
+            }
+
+            void PrintRound(Services.BracketGenerator.Round round) => Console.WriteLine($"Round {round.Index}\n{string.Join("\n", round.Games)}");
         }
     }
 }

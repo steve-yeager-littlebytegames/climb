@@ -16,4 +16,12 @@
             <button class="btn btn-primary">Start Season</button>
         </form>
     }
+
+    <h3>Create Tournament</h3>
+    <form id="create-tournament">
+        <input type="hidden" name="LeagueID" value="@Model.Season.LeagueID"/>
+        <input type="hidden" name="SeasonID" value="@Model.Season.ID"/>
+        <input type="text" name="Name"/>
+        <button class="btn btn-primary">Create</button>
+    </form>
 }

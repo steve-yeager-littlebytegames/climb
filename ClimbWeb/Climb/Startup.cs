@@ -89,6 +89,7 @@ namespace Climb
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
             services.AddTransient<ITournamentService, TournamentService>();
+            services.AddTransient<IBracketGenerator, BracketGenerator>();
         }
 
         private void ConfigureCdn(IServiceCollection services)
