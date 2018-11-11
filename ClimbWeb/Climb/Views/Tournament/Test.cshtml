@@ -69,6 +69,31 @@
 
 <div id="bracket" style="overflow: auto"></div>
 
+<h1>Grand Finals</h1>
+<div class="d-flex flex-column justify-content-around h-100 align-items-center">
+    @foreach(var game in Model.Tournament.GrandFinals.Games)
+    {
+        <div class="d-flex">
+            <div class="game-id">@game.ID</div>
+            <div class="game-container">
+                <div class="d-flex @(game.P1 != null ? "player" : "")" data-player-id="@game.P1">
+                    <div class="game-player-seed">@(game.P1 + 1)</div>
+                    <div class="game-player-name @(game.P1 == null ? "small" : "")">@(game.P1 == null ? $"from game {game.P1Game?.ID}" : $"Player {game.P1 + 1}")</div>
+                    <div class="game-player-score">@game.P1Score</div>
+                </div>
+                <div class="game-player-border">
+                </div>
+                <div class="d-flex @(game.P2 != null ? "player" : "")" data-player-id="@game.P2">
+                    <div class="game-player-seed">@(game.P2 + 1)</div>
+                    <div class="game-player-name @(game.P2 == null ? "small" : "")">@(game.P2 == null ? $"from game {game.P2Game?.ID}" : $"Player {game.P2 + 1}")</div>
+                    <div class="game-player-score">@game.P2Score</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
 <h1>Winners</h1>
 <div class="d-flex">
     @foreach(var round in Model.Tournament.Winners.Rounds)

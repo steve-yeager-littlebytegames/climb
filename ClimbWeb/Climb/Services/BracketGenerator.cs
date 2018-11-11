@@ -69,6 +69,7 @@ namespace Climb.Services
 
             public Bracket Winners { get; } = new Bracket();
             public Bracket Losers { get; } = new Bracket();
+            public Round GrandFinals { get; set; }
 
             public Tournament(List<int?> competitors)
             {
@@ -239,12 +240,12 @@ namespace Climb.Services
             var lastWinners = tournament.Winners.Rounds[tournament.Winners.Rounds.Count - 1];
             var lastLosers = tournament.Losers.Rounds[tournament.Losers.Rounds.Count - 1];
 
-            var grandFinals = tournament.AddRound(tournament.Winners);
-            var firstGame = tournament.AddGame(grandFinals);
+            tournament.GrandFinals = new Round(++tournament.RoundCount);
+            var firstGame = tournament.AddGame(tournament.GrandFinals);
             lastWinners.Games[0].NextWin = firstGame;
             lastLosers.Games[0].NextWin = firstGame;
 
-            var secondGame = tournament.AddGame(grandFinals);
+            var secondGame = tournament.AddGame(tournament.GrandFinals);
             firstGame.NextWin = secondGame;
             firstGame.NextLoss = secondGame;
         }
