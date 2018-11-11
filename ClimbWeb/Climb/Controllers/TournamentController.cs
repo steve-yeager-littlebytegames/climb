@@ -57,8 +57,55 @@ namespace Climb.Controllers
             var bracketGenerator = new BracketGenerator();
             var tournament = bracketGenerator.CreateTournament(count);
 
+            Randomize();
+
             var viewModel = new Test(tournament);
             return View(viewModel);
+
+            void Randomize()
+            {
+                var random = new Random();
+
+                for(int i = 0; i < tournament.Winners.Rounds.Count - 1; i++)
+                {
+                    foreach(var game in tournament.Winners.Rounds[i].Games)
+                    {
+                        if(random.NextDouble() < 0.5)
+                        {
+                            game.NextWin.AddPlayer(game.P1);
+                            game.NextLoss.AddPlayer(game.P2);
+                            game.P1Score = 2;
+                            game.P2Score = random.Next(0, 2);
+                        }
+                        else
+                        {
+                            game.NextWin.AddPlayer(game.P2);
+                            game.NextLoss.AddPlayer(game.P1);
+                            game.P1Score = random.Next(0, 2);
+                            game.P2Score = 2;
+                        }
+                    }
+                }
+
+                for(int i = 0; i < tournament.Losers.Rounds.Count - 1; i++)
+                {
+                    foreach(var game in tournament.Losers.Rounds[i].Games)
+                    {
+                        if(random.NextDouble() < 0.5)
+                        {
+                            game.NextWin.AddPlayer(game.P1);
+                            game.P1Score = 2;
+                            game.P2Score = random.Next(0, 2);
+                        }
+                        else
+                        {
+                            game.NextWin.AddPlayer(game.P2);
+                            game.P1Score = random.Next(0, 2);
+                            game.P2Score = 2;
+                        }
+                    }
+                }
+            }
         }
     }
 }
