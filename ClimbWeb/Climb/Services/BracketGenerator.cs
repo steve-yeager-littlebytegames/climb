@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Climb.Models;
 
 namespace Climb.Services
@@ -10,16 +11,38 @@ namespace Climb.Services
         {
             public int ID { get; }
             public bool IsBye { get; }
+            public int? P1 { get; private set; }
+            public int? P2 { get; private set; }
             public Game NextWin { get; set; }
             public Game NextLoss { get; set; }
+            public Game P1Game { get; set; }
+            public Game P2Game { get; set; }
+            public int? P1Score { get; set; }
+            public int? P2Score { get; set; }
 
-            public Game(int id, bool isBye)
+            public Game(int id, bool isBye, int? p1, int? p2)
             {
                 ID = id;
                 IsBye = isBye;
+                P1 = p1;
+                P2 = p2;
             }
 
             public override string ToString() => $"{ID} W={NextWin?.ID} L={NextLoss?.ID} B={IsBye}";
+
+            public void AddPlayer(int? player)
+            {
+                Debug.Assert(P1 == null || P2 == null);
+
+                if(P1 == null)
+                {
+                    P1 = player;
+                }
+                else
+                {
+                    P2 = player;
+                }
+            }
         }
 
         public class Round
@@ -43,7 +66,7 @@ namespace Climb.Services
             public int GameCount { get; set; }
             public int RoundCount { get; set; }
             public List<int?> Competitors { get; }
-            
+
             public Bracket Winners { get; } = new Bracket();
             public Bracket Losers { get; } = new Bracket();
 
@@ -60,10 +83,10 @@ namespace Climb.Services
                 return round;
             }
 
-            public Game AddGame(Round round, bool isBye = false)
+            public Game AddGame(Round round, int? p1 = null, int? p2 = null, bool isBye = false)
             {
                 ++GameCount;
-                var game = new Game(GameCount, isBye);
+                var game = new Game(GameCount, isBye, p1, p2);
                 round.Games.Add(game);
                 return game;
             }
@@ -107,7 +130,7 @@ namespace Climb.Services
         {
             var count = competitors.Count;
             var sortedCompetitors = new List<int?>(count);
-            for(int i = 0; i < count/2; i++)
+            for(var i = 0; i < count / 2; i++)
             {
                 sortedCompetitors.Add(competitors[i]);
                 sortedCompetitors.Add(competitors[count - i - 1]);
@@ -149,14 +172,14 @@ namespace Climb.Services
             for(var i = 0; i < competitors.Count; i += 2)
             {
                 var isBye = competitors[i] == null || competitors[i + 1] == null;
-                tournament.AddGame(winners, isBye);
+                tournament.AddGame(winners, competitors[i], competitors[i + 1], isBye);
             }
 
             var losers = tournament.AddRound(tournament.Losers);
             for(var i = 0; i < winners.Games.Count; i += 2)
             {
                 var isBye = winners.Games[i].IsBye || winners.Games[i + 1].IsBye;
-                var game = tournament.AddGame(losers, isBye);
+                var game = tournament.AddGame(losers, null, null, isBye);
                 winners.Games[i].NextLoss = game;
                 winners.Games[i + 1].NextLoss = game;
             }
@@ -177,8 +200,10 @@ namespace Climb.Services
             for(var i = 0; i < lastWinnersRound.Games.Count; i += 2)
             {
                 var game = tournament.AddGame(winners);
-                lastWinnersRound.Games[i].NextWin = game;
-                lastWinnersRound.Games[i + 1].NextWin = game;
+                game.P1Game = lastWinnersRound.Games[i];
+                game.P2Game = lastWinnersRound.Games[i + 1];
+                game.P1Game.NextWin = game;
+                game.P2Game.NextWin = game;
             }
 
             var lastLosersRound = tournament.Losers.Rounds[tournament.Losers.Rounds.Count - 1];
@@ -187,18 +212,22 @@ namespace Climb.Services
             for(var i = 0; i < lastLosersRound.Games.Count; i++)
             {
                 var game = tournament.AddGame(losers);
-                lastLosersRound.Games[i].NextWin = game;
-                winners.Games[i].NextLoss = game;
+                game.P1Game = lastLosersRound.Games[i];
+                game.P2Game = winners.Games[i];
+                game.P1Game.NextWin = game;
+                game.P2Game.NextLoss = game;
             }
 
             if(losers.Games.Count > 1)
             {
                 var secondLosers = tournament.AddRound(tournament.Losers);
-                for(var i = 0; i < losers.Games.Count; i += 2)
+                for(var i = 0; i < losers.Games.Count; i++)
                 {
                     var game = tournament.AddGame(secondLosers);
-                    losers.Games[i].NextWin = game;
-                    losers.Games[i + 1].NextWin = game;
+                    game.P1Game = losers.Games[i];
+                    game.P2Game = losers.Games[++i];
+                    game.P1Game.NextWin = game;
+                    game.P2Game.NextWin = game;
                 }
             }
 
