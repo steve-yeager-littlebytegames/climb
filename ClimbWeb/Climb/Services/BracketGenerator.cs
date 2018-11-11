@@ -181,8 +181,10 @@ namespace Climb.Services
             {
                 var isBye = winners.Games[i].IsBye || winners.Games[i + 1].IsBye;
                 var game = tournament.AddGame(losers, null, null, isBye);
-                winners.Games[i].NextLoss = game;
-                winners.Games[i + 1].NextLoss = game;
+                game.P1Game = winners.Games[i];
+                game.P2Game = winners.Games[i + 1];
+                game.P1Game.NextLoss = game;
+                game.P2Game.NextLoss = game;
             }
         }
 
