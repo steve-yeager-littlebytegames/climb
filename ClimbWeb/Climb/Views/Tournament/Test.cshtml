@@ -1,4 +1,4 @@
-@model Climb.ViewModels.Tournaments.Test
+﻿@model Climb.ViewModels.Tournaments.Test
 
 @{
     Layout = "";
@@ -187,7 +187,7 @@
                 <div class="d-flex flex-column justify-content-around h-100">
                     @foreach(var game in round.Games)
                     {
-                        <div id="game-@game.ID" data-parent="@game.NextWin?.ID" class="game d-flex @(game.IsBye ? "hidden" : "")">
+                        <div id="game-@game.ID" data-parent="@game.NextWin?.ID" class="@(round != Model.Tournament.Losers.Rounds.Last() ? "game" : "") d-flex @(game.IsBye ? "hidden" : "")">
                             <div class="game-id">@game.ID</div>
                             <div class="game-container">
                                 <div class="d-flex @(game.P1 != null ? "player" : "")" data-player-id="@game.P1">
