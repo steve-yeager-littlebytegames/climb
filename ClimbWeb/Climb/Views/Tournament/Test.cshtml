@@ -129,7 +129,7 @@
             <div class="d-flex flex-column justify-content-around h-100 align-items-center">
                 @{
                     var grandFinals = Model.Tournament.GrandFinals.Games[0];
-                    <div id="game-@grandFinals.ID" class="d-flex @(grandFinals.IsBye ? "hidden" : "")">
+                    <div id="game-@grandFinals.ID" data-parent="@grandFinals.NextWin?.ID" class="game d-flex @(grandFinals.IsBye ? "hidden" : "")">
                         <div class="game-id">@grandFinals.ID</div>
                         <div class="game-container">
                             <div class="d-flex @(grandFinals.P1 != null ? " player" : "")" data-player-id="@grandFinals.P1">
@@ -155,7 +155,7 @@
             <div class="d-flex flex-column justify-content-around h-100 align-items-center">
                 @{
                     var reset = Model.Tournament.GrandFinals.Games[1];
-                    <div id="target" class="d-flex @(reset.IsBye ? "hidden" : "")">
+                    <div id="game-@reset.ID" class="game d-flex @(reset.IsBye ? "hidden" : "")">
                         <div class="game-id">@reset.ID</div>
                         <div class="game-container">
                             <div class="d-flex @(reset.P1 != null ? "player" : "")" data-player-id="@reset.P1">
@@ -213,14 +213,6 @@
 
 <script type="text/javascript">
     window.onload = () => {
-        jsPlumb.connect({
-            source: 'game-@grandFinals.ID',
-            target: 'target',
-            anchors: ["Right", "Left"],
-            connector: ["Flowchart", { alwaysRespectStubs: true }],
-            endpoint: ["Blank", {}]
-        });
-
         $(".game").each(function() {
             if ($(this).hasClass("hidden")) return;
 
