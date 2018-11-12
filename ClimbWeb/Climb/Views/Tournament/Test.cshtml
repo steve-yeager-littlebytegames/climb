@@ -1,4 +1,4 @@
-﻿@model Climb.ViewModels.Tournaments.Test
+@model Climb.ViewModels.Tournaments.Test
 
 @{
     Layout = "";
@@ -218,7 +218,6 @@
 
             const id = $(this).attr("id");
             const parentId = $(this).attr("data-parent");
-            console.log(`Child: ${$(this).attr("id")}, Parent: ${parentId}`);
 
             jsPlumb.connect({
                 source: id,
