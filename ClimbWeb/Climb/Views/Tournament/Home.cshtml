@@ -1,7 +1,10 @@
-﻿@model Climb.ViewModels.GenericViewModel<Climb.Models.Tournament>
+﻿@model Climb.ViewModels.Tournaments.HomeViewModel
 
 @{
-    ViewBag.Page = "Home";
+    Layout = "_TournamentsLayout";
 }
 
-<h1>Tournament @Model.Value.Name</h1>
+@section TournamentsBody
+{
+    TournamentsBody
+}

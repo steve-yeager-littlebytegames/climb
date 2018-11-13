@@ -27,13 +27,13 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
 
-            var tournament = await dbContext.Tournaments.FirstOrDefaultAsync(t => t.ID == id);
-            if(tournament == null)
-            {
-                return NotFound();
-            }
+            //var tournament = await dbContext.Tournaments.FirstOrDefaultAsync(t => t.ID == id);
+            //if(tournament == null)
+            //{
+            //    return NotFound();
+            //}
 
-            var viewModel = new GenericViewModel<Tournament>(user, tournament);
+            var viewModel = new HomeViewModel(user);
             return View(viewModel);
         }
 

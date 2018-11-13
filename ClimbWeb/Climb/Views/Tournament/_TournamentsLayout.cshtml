@@ -1,0 +1,23 @@
+﻿@model Climb.ViewModels.Tournaments.PageViewModel
+
+@{
+    Layout = "_LayoutWithNavbar";
+}
+
+<div class="container">
+    <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
+        <h1>Tournament</h1>
+       
+    </div>
+
+    <div class="home-menu d-flex justify-content-between">
+       
+    </div>
+
+    @RenderSection("TournamentsBody")
+</div>
+
+@section scripts
+{
+    @RenderSection("Scripts", false)
+}
