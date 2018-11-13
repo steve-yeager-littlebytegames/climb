@@ -122,6 +122,9 @@
     <Content Update="Views\Tournament\Test.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Tournament\_TournamentsLayout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\User\Partials\LeagueUserLink.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
