@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Climb.Data;
-using Climb.Models;
 using Climb.Requests.Tournaments;
 using Climb.Services;
-using Climb.ViewModels;
 using Climb.ViewModels.Tournaments;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -43,7 +40,10 @@ namespace Climb.Controllers
             try
             {
                 var tournament = await tournamentService.Create(request.LeagueID, request.SeasonID, request.Name);
-                return RedirectToAction("Home", new {tournament.ID});
+                return RedirectToAction("Home", new
+                {
+                    tournament.ID
+                });
             }
             catch(Exception exception)
             {
@@ -59,7 +59,7 @@ namespace Climb.Controllers
 
             if(randomize)
             {
-                Randomize(); 
+                Randomize();
             }
 
             var viewModel = new Test(tournament);
@@ -69,11 +69,11 @@ namespace Climb.Controllers
             {
                 var random = new Random();
 
-                for(int i = 0; i < tournament.Winners.Rounds.Count; i++)
+                for(var i = 0; i < tournament.Winners.Count; i++)
                 {
-                    foreach(var game in tournament.Winners.Rounds[i].Games)
+                    foreach(var game in tournament.Winners[i].Games)
                     {
-                        if(game.P2== null || game.P1 != null && random.NextDouble() < 0.5)
+                        if(game.P2 == null || game.P1 != null && random.NextDouble() < 0.5)
                         {
                             game.NextWin.AddPlayer(game.P1);
                             game.NextLoss.AddPlayer(game.P2);
@@ -90,11 +90,11 @@ namespace Climb.Controllers
                     }
                 }
 
-                for(int i = 0; i < tournament.Losers.Rounds.Count; i++)
+                for(var i = 0; i < tournament.Losers.Count; i++)
                 {
-                    foreach(var game in tournament.Losers.Rounds[i].Games)
+                    foreach(var game in tournament.Losers[i].Games)
                     {
-                        if(game.P2== null || game.P1 != null && random.NextDouble() < 0.5)
+                        if(game.P2 == null || game.P1 != null && random.NextDouble() < 0.5)
                         {
                             game.NextWin.AddPlayer(game.P1);
                             game.P1Score = 2;

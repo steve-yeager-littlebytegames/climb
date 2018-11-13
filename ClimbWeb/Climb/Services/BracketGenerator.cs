@@ -57,19 +57,14 @@ namespace Climb.Services
             }
         }
 
-        public class Bracket
-        {
-            public List<Round> Rounds { get; } = new List<Round>();
-        }
-
         public class Tournament
         {
             public int GameCount { get; set; }
             public int RoundCount { get; set; }
             public List<int?> Competitors { get; }
 
-            public Bracket Winners { get; } = new Bracket();
-            public Bracket Losers { get; } = new Bracket();
+            public List<Round> Winners { get; } = new List<Round>();
+            public List<Round> Losers { get; } = new List<Round>();
             public Round GrandFinals { get; set; }
 
             public Tournament(List<int?> competitors)
@@ -77,11 +72,11 @@ namespace Climb.Services
                 Competitors = competitors;
             }
 
-            public Round AddRound(Bracket bracket)
+            public Round AddRound(List<Round> bracket)
             {
                 ++RoundCount;
                 var round = new Round(RoundCount);
-                bracket.Rounds.Add(round);
+                bracket.Add(round);
                 return round;
             }
 
@@ -191,7 +186,7 @@ namespace Climb.Services
 
         private static void CreateMiddleRounds(Tournament tournament)
         {
-            var lastWinnersRound = tournament.Winners.Rounds[0];
+            var lastWinnersRound = tournament.Winners[0];
             while(lastWinnersRound.Games.Count > 1)
             {
                 lastWinnersRound = CreateRoundGroup(tournament, lastWinnersRound);
@@ -210,7 +205,7 @@ namespace Climb.Services
                 game.P2Game.NextWin = game;
             }
 
-            var lastLosersRound = tournament.Losers.Rounds[tournament.Losers.Rounds.Count - 1];
+            var lastLosersRound = tournament.Losers[tournament.Losers.Count - 1];
 
             var losers = tournament.AddRound(tournament.Losers);
             for(var i = 0; i < lastLosersRound.Games.Count; i++)
@@ -240,8 +235,8 @@ namespace Climb.Services
 
         private static void CreateGrandFinals(Tournament tournament)
         {
-            var lastWinners = tournament.Winners.Rounds[tournament.Winners.Rounds.Count - 1];
-            var lastLosers = tournament.Losers.Rounds[tournament.Losers.Rounds.Count - 1];
+            var lastWinners = tournament.Winners[tournament.Winners.Count - 1];
+            var lastLosers = tournament.Losers[tournament.Losers.Count - 1];
 
             tournament.GrandFinals = new Round(++tournament.RoundCount);
             var firstGame = tournament.AddGame(tournament.GrandFinals);
@@ -259,38 +254,38 @@ namespace Climb.Services
         {
             tournament.GrandFinals.Name = "Grand Finals";
 
-            var winnersCount = tournament.Winners.Rounds.Count;
+            var winnersCount = tournament.Winners.Count;
             var namedRounds = 0;
 
-            tournament.Winners.Rounds[winnersCount - 1].Name = "Winners Finals";
+            tournament.Winners[winnersCount - 1].Name = "Winners Finals";
             ++namedRounds;
 
             if(winnersCount > 3)
             {
-                tournament.Winners.Rounds[winnersCount - 2].Name = "Winners Semi-Finals";
+                tournament.Winners[winnersCount - 2].Name = "Winners Semi-Finals";
                 ++namedRounds;
             }
 
             for(int i = winnersCount - namedRounds - 1; i >= 0; i--)
             {
-                tournament.Winners.Rounds[i].Name = $"Winners {i + 1}";
+                tournament.Winners[i].Name = $"Winners {i + 1}";
             }
 
-            var losersCount = tournament.Losers.Rounds.Count;
+            var losersCount = tournament.Losers.Count;
             namedRounds = 0;
 
-            tournament.Losers.Rounds[losersCount - 1].Name = "Losers Finals";
+            tournament.Losers[losersCount - 1].Name = "Losers Finals";
             ++namedRounds;
 
             if(losersCount > 3)
             {
-                tournament.Losers.Rounds[losersCount - 2].Name = "Losers Semi-Finals";
+                tournament.Losers[losersCount - 2].Name = "Losers Semi-Finals";
                 ++namedRounds;
             }
 
             for(int i = losersCount - namedRounds - 1; i >= 0; i--)
             {
-                tournament.Losers.Rounds[i].Name = $"Losers {i + 1}";
+                tournament.Losers[i].Name = $"Losers {i + 1}";
             }
         }
     }
