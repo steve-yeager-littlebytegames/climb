@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Climb.Core.TieBreakers.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Climb.Jobs", "Climb.Jobs\Climb.Jobs.csproj", "{96A39248-0C42-4153-829C-33A3ACE97F07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climb.BracketGenerator.CLI", "Climb.BracketGenerator.CLI\Climb.BracketGenerator.CLI.csproj", "{82E56021-6BDC-4FBD-92AF-64A4E62F4B6F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{BC95FBF0-E5CB-463F-AEC8-A9D2D264C409}.Release|Any CPU.Build.0 = Release|Any CPU
 		{96A39248-0C42-4153-829C-33A3ACE97F07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96A39248-0C42-4153-829C-33A3ACE97F07}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82E56021-6BDC-4FBD-92AF-64A4E62F4B6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82E56021-6BDC-4FBD-92AF-64A4E62F4B6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82E56021-6BDC-4FBD-92AF-64A4E62F4B6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82E56021-6BDC-4FBD-92AF-64A4E62F4B6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
