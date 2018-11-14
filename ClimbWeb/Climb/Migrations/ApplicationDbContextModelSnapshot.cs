@@ -452,19 +452,19 @@ namespace Climb.Migrations
 
             modelBuilder.Entity("Climb.Models.SetSlot", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("LoseSlotID");
-
-                    b.Property<string>("RoundName");
+                    b.Property<int>("Identifier");
 
                     b.Property<int>("TournamentID");
 
-                    b.Property<int?>("WinSlotID");
+                    b.Property<int>("Bracket");
 
-                    b.HasKey("ID");
+                    b.Property<int?>("LoseSlotIdentifier");
+
+                    b.Property<string>("RoundName");
+
+                    b.Property<int?>("WinSlotIdentifier");
+
+                    b.HasKey("Identifier", "TournamentID");
 
                     b.HasIndex("TournamentID");
 

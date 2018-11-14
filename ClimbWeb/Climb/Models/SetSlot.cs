@@ -2,11 +2,19 @@
 {
     public class SetSlot
     {
-        public int ID { get; set; }
+        public enum Brackets
+        {
+            Winners,
+            Losers,
+            Grands,
+        }
+
+        public int Identifier { get; set; }
         public int TournamentID { get; set; }
         public string RoundName { get; set; }
-        public int? WinSlotID { get; set; }
-        public int? LoseSlotID { get; set; }
+        public int? WinSlotIdentifier { get; set; }
+        public int? LoseSlotIdentifier { get; set; }
+        public Brackets Bracket { get; set; }
 
         public Tournament Tournament { get; set; }
     }

@@ -4,7 +4,7 @@ using Climb.Models;
 
 namespace Climb.Services
 {
-    public class BracketGenerator : IBracketGenerator
+    public partial class BracketGenerator : IBracketGenerator
     {
         public int MinCompetitors => 4;
 
