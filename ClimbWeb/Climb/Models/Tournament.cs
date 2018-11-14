@@ -12,8 +12,8 @@ namespace Climb.Models
         public League League { get; set; }
         public Season Season { get; set; }
         public LeagueUser[] LeagueUsers { get; set; }
-        public SetSlot[] SetSlots { get; set; }
-        public Set[] Sets { get; set; }
+        public List<SetSlot> SetSlots { get; set; }
+        public List<Set> Sets { get; set; }
         public List<TournamentUser> TournamentUsers { get; set; }
     }
 }

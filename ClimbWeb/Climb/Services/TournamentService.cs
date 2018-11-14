@@ -59,9 +59,39 @@ namespace Climb.Services
             }
         }
 
-        public Task<Tournament> GenerateBracket(int leagueID)
+        public async Task<Tournament> GenerateBracket(int tournamentID)
         {
-            throw new System.NotImplementedException();
+            var tournament = await dbContext.Tournaments
+                .Include(s => s.TournamentUsers).AsNoTracking()
+                .Include(t => t.SetSlots)
+                .FirstOrDefaultAsync(t => t.ID == tournamentID);
+            dbContext.Update(tournament);
+
+            var tournamentData = bracketGenerator.Generate(tournament.TournamentUsers.Count);
+
+            dbContext.SetSlots.RemoveRange(tournament.SetSlots);
+            tournament.SetSlots.Clear();
+
+            tournament.SetSlots.AddRange(tournamentData.Winners.SelectMany(r => r.Games.Select(g => CreateSlot(g, SetSlot.Brackets.Winners))));
+            tournament.SetSlots.AddRange(tournamentData.Losers.SelectMany(r => r.Games.Select(g => CreateSlot(g, SetSlot.Brackets.Losers))));
+            tournament.SetSlots.AddRange(tournamentData.GrandFinals.Games.Select(g => CreateSlot(g, SetSlot.Brackets.Grands)));
+
+            dbContext.AddRange(tournament.SetSlots);
+            await dbContext.SaveChangesAsync();
+
+            return tournament;
+
+            SetSlot CreateSlot(BracketGenerator.GameData game, SetSlot.Brackets bracket)
+            {
+                return new SetSlot
+                {
+                    TournamentID = tournamentID,
+                    Identifier = game.ID,
+                    WinSlotIdentifier = game.NextWin.ID,
+                    LoseSlotIdentifier = game.NextLoss.ID,
+                    Bracket = bracket,
+                };
+            }
         }
     }
 }

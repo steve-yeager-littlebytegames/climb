@@ -1,15 +1,15 @@
-﻿using Climb.Models;
+﻿using Climb.Services;
 using Newtonsoft.Json;
 
 namespace Climb.ViewModels.Tournaments
 {
     public class Test
     {
-        public TournamentData Tournament { get; }
+        public BracketGenerator.TournamentData Tournament { get; }
         public string[][] Competitors { get; }
         public string BracketData { get; }
 
-        public Test(TournamentData tournament)
+        public Test(BracketGenerator.TournamentData tournament)
         {
             Tournament = tournament;
             Competitors = new string[tournament.Competitors.Count / 2][];

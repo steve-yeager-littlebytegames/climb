@@ -38,6 +38,7 @@ namespace Climb.Data
         {
             base.OnModelCreating(builder);
 
+            // TODO: Delete?
             foreach(var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
@@ -48,6 +49,7 @@ namespace Climb.Data
             builder.Entity<SeasonLeagueUser>().HasQueryFilter(slu => !slu.HasLeft);
             builder.Entity<MatchCharacter>().HasKey(m => new {m.MatchID, m.CharacterID, m.LeagueUserID});
             builder.Entity<SetRequest>().HasQueryFilter(lu => lu.IsOpen);
+            builder.Entity<SetSlot>().HasKey(ss => new {ss.Identifier, ss.TournamentID});
         }
     }
 }
