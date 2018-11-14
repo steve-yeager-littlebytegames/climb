@@ -55,7 +55,7 @@ namespace Climb.Controllers
         public IActionResult Test(int count, bool randomize)
         {
             var bracketGenerator = new BracketGenerator();
-            var tournament = bracketGenerator.CreateTournament(count);
+            var tournament = bracketGenerator.Generate(count);
 
             if(randomize)
             {

@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Climb.Models;
+﻿using Climb.Models;
 
 namespace Climb.Services
 {
     public interface IBracketGenerator
     {
         int MinCompetitors { get; }
-        List<SetSlot> Generate(int competitorCount);
+        TournamentData Generate(int competitorCount);
     }
 }

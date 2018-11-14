@@ -1,97 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Climb.Models;
 
 namespace Climb.Services
 {
     public class BracketGenerator : IBracketGenerator
     {
-        public class Game
-        {
-            public int ID { get; }
-            public bool IsBye { get; }
-            public int? P1 { get; private set; }
-            public int? P2 { get; private set; }
-            public Game NextWin { get; set; }
-            public Game NextLoss { get; set; }
-            public Game P1Game { get; set; }
-            public Game P2Game { get; set; }
-            public int? P1Score { get; set; }
-            public int? P2Score { get; set; }
-
-            public Game(int id, bool isBye, int? p1, int? p2)
-            {
-                ID = id;
-                IsBye = isBye;
-                P1 = p1;
-                P2 = p2;
-            }
-
-            public override string ToString() => $"{ID} W={NextWin?.ID} L={NextLoss?.ID} B={IsBye}";
-
-            public void AddPlayer(int? player)
-            {
-                Debug.Assert(P1 == null || P2 == null);
-
-                if(P1 == null)
-                {
-                    P1 = player;
-                }
-                else
-                {
-                    P2 = player;
-                }
-            }
-        }
-
-        public class Round
-        {
-            public int Index { get; }
-            public string Name { get; set; }
-            public List<Game> Games { get; } = new List<Game>();
-
-            public Round(int index)
-            {
-                Index = index;
-            }
-        }
-
-        public class Tournament
-        {
-            public int GameCount { get; set; }
-            public int RoundCount { get; set; }
-            public List<int?> Competitors { get; }
-
-            public List<Round> Winners { get; } = new List<Round>();
-            public List<Round> Losers { get; } = new List<Round>();
-            public Round GrandFinals { get; set; }
-
-            public Tournament(List<int?> competitors)
-            {
-                Competitors = competitors;
-            }
-
-            public Round AddRound(List<Round> bracket)
-            {
-                ++RoundCount;
-                var round = new Round(RoundCount);
-                bracket.Add(round);
-                return round;
-            }
-
-            public Game AddGame(Round round, int? p1 = null, int? p2 = null, bool isBye = false)
-            {
-                ++GameCount;
-                var game = new Game(GameCount, isBye, p1, p2);
-                round.Games.Add(game);
-                return game;
-            }
-        }
-
         public int MinCompetitors => 4;
 
-        public List<SetSlot> Generate(int competitorCount)
+        public TournamentData Generate(int competitorCount)
         {
             if(competitorCount < MinCompetitors)
             {
@@ -99,10 +16,16 @@ namespace Climb.Services
             }
 
             var competitors = GetCompetitors(competitorCount);
+            competitors = SortCompetitors(competitors);
 
-            var tournament = new Tournament(competitors);
+            var tournament = new TournamentData(competitors);
 
-            throw new NotImplementedException();
+            CreateFirstRounds(tournament, competitors);
+            CreateMiddleRounds(tournament);
+            CreateGrandFinals(tournament);
+            NameRounds(tournament);
+
+            return tournament;
         }
 
         private static List<int?> GetCompetitors(int count)
@@ -144,26 +67,7 @@ namespace Climb.Services
             return (int)result;
         }
 
-        public Tournament CreateTournament(int competitorCount)
-        {
-            if(competitorCount < MinCompetitors)
-            {
-                throw new ArgumentException($"Need at least {MinCompetitors} competitors to generate bracket.", nameof(competitorCount));
-            }
-
-            var competitors = GetCompetitors(competitorCount);
-            competitors = SortCompetitors(competitors);
-
-            var tournament = new Tournament(competitors);
-
-            CreateFirstRounds(tournament, competitors);
-            CreateMiddleRounds(tournament);
-            CreateGrandFinals(tournament);
-            NameRounds(tournament);
-
-            return tournament;
-        }
-        private static void CreateFirstRounds(Tournament tournament, IReadOnlyList<int?> competitors)
+        private static void CreateFirstRounds(TournamentData tournament, IReadOnlyList<int?> competitors)
         {
             var winners = tournament.AddRound(tournament.Winners);
             for(var i = 0; i < competitors.Count; i += 2)
@@ -184,7 +88,7 @@ namespace Climb.Services
             }
         }
 
-        private static void CreateMiddleRounds(Tournament tournament)
+        private static void CreateMiddleRounds(TournamentData tournament)
         {
             var lastWinnersRound = tournament.Winners[0];
             while(lastWinnersRound.Games.Count > 1)
@@ -193,7 +97,7 @@ namespace Climb.Services
             }
         }
 
-        private static Round CreateRoundGroup(Tournament tournament, Round lastWinnersRound)
+        private static RoundData CreateRoundGroup(TournamentData tournament, RoundData lastWinnersRound)
         {
             var winners = tournament.AddRound(tournament.Winners);
             for(var i = 0; i < lastWinnersRound.Games.Count; i += 2)
@@ -233,12 +137,12 @@ namespace Climb.Services
             return winners;
         }
 
-        private static void CreateGrandFinals(Tournament tournament)
+        private static void CreateGrandFinals(TournamentData tournament)
         {
             var lastWinners = tournament.Winners[tournament.Winners.Count - 1];
             var lastLosers = tournament.Losers[tournament.Losers.Count - 1];
 
-            tournament.GrandFinals = new Round(++tournament.RoundCount);
+            tournament.GrandFinals = new RoundData(++tournament.RoundCount);
             var firstGame = tournament.AddGame(tournament.GrandFinals);
             lastWinners.Games[0].NextWin = firstGame;
             lastLosers.Games[0].NextWin = firstGame;
@@ -250,7 +154,7 @@ namespace Climb.Services
             firstGame.NextLoss = secondGame;
         }
 
-        private static void NameRounds(Tournament tournament)
+        private static void NameRounds(TournamentData tournament)
         {
             tournament.GrandFinals.Name = "Grand Finals";
 
@@ -266,7 +170,7 @@ namespace Climb.Services
                 ++namedRounds;
             }
 
-            for(int i = winnersCount - namedRounds - 1; i >= 0; i--)
+            for(var i = winnersCount - namedRounds - 1; i >= 0; i--)
             {
                 tournament.Winners[i].Name = $"Winners {i + 1}";
             }
@@ -283,7 +187,7 @@ namespace Climb.Services
                 ++namedRounds;
             }
 
-            for(int i = losersCount - namedRounds - 1; i >= 0; i--)
+            for(var i = losersCount - namedRounds - 1; i >= 0; i--)
             {
                 tournament.Losers[i].Name = $"Losers {i + 1}";
             }
