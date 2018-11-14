@@ -1,20 +1,20 @@
-﻿using Climb.Services;
+﻿using Climb.Models;
 using Newtonsoft.Json;
 
 namespace Climb.ViewModels.Tournaments
 {
     public class Test
     {
-        public BracketGenerator.Tournament Tournament { get; }
+        public TournamentData Tournament { get; }
         public string[][] Competitors { get; }
         public string BracketData { get; }
 
-        public Test(BracketGenerator.Tournament tournament)
+        public Test(TournamentData tournament)
         {
             Tournament = tournament;
             Competitors = new string[tournament.Competitors.Count / 2][];
 
-            int index = 0;
+            var index = 0;
             for(var i = 0; i < tournament.Competitors.Count; i += 2)
             {
                 Competitors[index] = new[] {GetPlayer(tournament.Competitors[i]), GetPlayer(tournament.Competitors[i + 1])};
@@ -22,10 +22,10 @@ namespace Climb.ViewModels.Tournaments
             }
 
             var winnersBracket = new int[tournament.Winners.Count - 1][][];
-            for(int i = 0; i < winnersBracket.Length; i++)
+            for(var i = 0; i < winnersBracket.Length; i++)
             {
                 winnersBracket[i] = new int[tournament.Winners[i].Games.Count][];
-                for(int j = 0; j < tournament.Winners[i].Games.Count; j++)
+                for(var j = 0; j < tournament.Winners[i].Games.Count; j++)
                 {
                     //winnersBracket[i][j] = new int[0];
                     winnersBracket[i][j] = new[] {2, 1};
@@ -33,10 +33,10 @@ namespace Climb.ViewModels.Tournaments
             }
 
             var losersBracket = new int[tournament.Losers.Count][][];
-            for(int i = 0; i < losersBracket.Length; i++)
+            for(var i = 0; i < losersBracket.Length; i++)
             {
                 losersBracket[i] = new int[tournament.Losers[i].Games.Count][];
-                for(int j = 0; j < tournament.Losers[i].Games.Count; j++)
+                for(var j = 0; j < tournament.Losers[i].Games.Count; j++)
                 {
                     //losersBracket[i][j] = new int[0];
                     losersBracket[i][j] = new[] {2, 1};
@@ -45,11 +45,11 @@ namespace Climb.ViewModels.Tournaments
 
             var grandFinals = new[]
             {
-                new []
+                new[]
                 {
                     new[] {1, 2},
                 },
-                new []
+                new[]
                 {
                     new[] {1, 2},
                 }
@@ -57,8 +57,8 @@ namespace Climb.ViewModels.Tournaments
 
             var data = new
             {
-                teams=Competitors,
-                results= new [] {winnersBracket, losersBracket, grandFinals},
+                teams = Competitors,
+                results = new[] {winnersBracket, losersBracket, grandFinals},
             };
             BracketData = JsonConvert.SerializeObject(data, Formatting.Indented);
 

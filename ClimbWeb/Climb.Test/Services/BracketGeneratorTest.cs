@@ -24,16 +24,14 @@ namespace Climb.Test.Services
         }
 
         [TestCase(4)]
-        [TestCase(15)]
         [TestCase(16)]
-        [TestCase(17)]
         public void Generate_CreateCorrectAmountOfSetSlots(int competitorCount)
         {
-            int expectedCount = (competitorCount - 1) * 2 - 1;
+            int expectedCount = competitorCount * 2 - 1;
 
-            var slots = testObj.Generate(competitorCount);
+            var tournament = testObj.Generate(competitorCount);
 
-            Assert.AreEqual(expectedCount, slots.Count);
+            Assert.AreEqual(expectedCount, tournament.GameCount);
         }
 
         // need to create byes
