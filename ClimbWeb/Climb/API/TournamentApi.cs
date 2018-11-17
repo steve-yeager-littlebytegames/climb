@@ -31,7 +31,9 @@ namespace Climb.API
         [SwaggerResponse(HttpStatusCode.NotFound, null)]
         public async Task<IActionResult> Get(int tournamentID)
         {
-            var tournament = await dbContext.Tournaments.FirstOrDefaultAsync(t => t.ID == tournamentID);
+            var tournament = await dbContext.Tournaments
+                .Include(t => t.TournamentUsers)
+                .FirstOrDefaultAsync(t => t.ID == tournamentID);
             if(tournament == null)
             {
                 return NotFound();
