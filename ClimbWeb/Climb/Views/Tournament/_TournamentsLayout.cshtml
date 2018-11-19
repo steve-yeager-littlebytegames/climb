@@ -7,11 +7,11 @@
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>Tournament</h1>
-       
+
     </div>
 
     <div class="home-menu d-flex justify-content-between">
-       
+
     </div>
 
     @RenderSection("TournamentsBody")
@@ -19,5 +19,8 @@
 
 @section scripts
 {
+    <script src="~/lib/jquery-bracket/jquery.bracket.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="~/lib/jquery-bracket/jquery.bracket.min.css"/>
+
     @RenderSection("Scripts", false)
 }

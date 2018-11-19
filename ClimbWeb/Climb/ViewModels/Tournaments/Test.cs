@@ -1,25 +1,14 @@
 ﻿using Climb.Services;
-using Newtonsoft.Json;
 
 namespace Climb.ViewModels.Tournaments
 {
     public class Test
     {
         public BracketGenerator.TournamentData Tournament { get; }
-        public string[][] Competitors { get; }
-        public string BracketData { get; }
 
         public Test(BracketGenerator.TournamentData tournament)
         {
             Tournament = tournament;
-            Competitors = new string[tournament.Competitors.Count / 2][];
-
-            var index = 0;
-            for(var i = 0; i < tournament.Competitors.Count; i += 2)
-            {
-                Competitors[index] = new[] {GetPlayer(tournament.Competitors[i]), GetPlayer(tournament.Competitors[i + 1])};
-                ++index;
-            }
 
             var winnersBracket = new int[tournament.Winners.Count - 1][][];
             for(var i = 0; i < winnersBracket.Length; i++)
@@ -41,30 +30,6 @@ namespace Climb.ViewModels.Tournaments
                     //losersBracket[i][j] = new int[0];
                     losersBracket[i][j] = new[] {2, 1};
                 }
-            }
-
-            var grandFinals = new[]
-            {
-                new[]
-                {
-                    new[] {1, 2},
-                },
-                new[]
-                {
-                    new[] {1, 2},
-                }
-            };
-
-            var data = new
-            {
-                teams = Competitors,
-                results = new[] {winnersBracket, losersBracket, grandFinals},
-            };
-            BracketData = JsonConvert.SerializeObject(data, Formatting.Indented);
-
-            string GetPlayer(int? seed)
-            {
-                return seed == null ? null : $"Seed {seed + 1}";
             }
         }
     }

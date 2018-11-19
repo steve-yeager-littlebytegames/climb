@@ -1,0 +1,12 @@
+﻿@using Climb.ViewModels.Tournaments
+@model Climb.Models.Round
+
+<div class="round d-flex flex-column">
+    <div class="round-name">@Model.Name</div>
+    <div class="d-flex flex-column justify-content-around flex-grow-1">
+        @foreach(var setSlot in Model.SetSlots)
+        {
+            <partial name="./Partials/Game" model="@new GameViewModel(setSlot)"/>
+        }
+    </div>
+</div>

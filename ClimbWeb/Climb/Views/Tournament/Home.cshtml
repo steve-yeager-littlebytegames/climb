@@ -6,5 +6,62 @@
 
 @section TournamentsBody
 {
-    TournamentsBody
+    <h1>Tournament @Model.Name</h1>
+    <div class="bracket">
+        <div class="d-flex">
+            @foreach(var round in Model.Winners)
+            {
+                <partial name="./Partials/Round.cshtml" model="@round"/>
+            }
+
+            @foreach(var round in Model.GrandFinals)
+            {
+                <partial name="./Partials/Round.cshtml" model="@round"/>
+            }
+        </div>
+    </div>
+
+    <div class="bracket">
+        <div class="d-flex">
+            @foreach(var round in Model.Losers)
+            {
+                <partial name="./Partials/Round.cshtml" model="@round"/>
+            }
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script src="~/lib/jsplumb.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="~/dist/styles/tournament.css"/>
+
+    <script type="text/javascript">
+        window.onload = () => {
+            $(".game").each(function() {
+                if ($(this).hasClass("hidden")) return;
+
+                const id = $(this).attr("id");
+                const parentId = $(this).attr("data-parent");
+
+                jsPlumb.connect({
+                    source: id,
+                    target: `game-${parentId}`,
+                    anchors: ["Right", "Left"],
+                    connector: ["Flowchart", { alwaysRespectStubs: true }],
+                    endpoint: ["Blank", {}]
+                });
+            });
+
+            $(".player").hover(function() {
+                    const playerId = $(this).attr("data-player-id");
+                    $(`[data-player-id="${playerId}"]`).css("background-color", "#555555");
+
+                },
+                function() {
+                    const playerId = $(this).attr("data-player-id");
+                    $(`[data-player-id="${playerId}"]`).css("background-color", "#999999");
+                });
+        }
+    </script>
 }

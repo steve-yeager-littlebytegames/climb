@@ -304,6 +304,27 @@ namespace Climb.Migrations
                     b.ToTable("RankSnapshots");
                 });
 
+            modelBuilder.Entity("Climb.Models.Round", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Bracket");
+
+                    b.Property<int>("Index");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("TournamentID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TournamentID");
+
+                    b.ToTable("Rounds");
+                });
+
             modelBuilder.Entity("Climb.Models.Season", b =>
                 {
                     b.Property<int>("ID")
@@ -456,15 +477,21 @@ namespace Climb.Migrations
 
                     b.Property<int>("TournamentID");
 
-                    b.Property<int>("Bracket");
+                    b.Property<bool>("IsBye");
 
                     b.Property<int?>("LoseSlotIdentifier");
 
-                    b.Property<string>("RoundName");
+                    b.Property<int>("RoundID");
+
+                    b.Property<int?>("SetID");
 
                     b.Property<int?>("WinSlotIdentifier");
 
                     b.HasKey("Identifier", "TournamentID");
+
+                    b.HasIndex("RoundID");
+
+                    b.HasIndex("SetID");
 
                     b.HasIndex("TournamentID");
 
@@ -750,6 +777,14 @@ namespace Climb.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("Climb.Models.Round", b =>
+                {
+                    b.HasOne("Climb.Models.Tournament", "Tournament")
+                        .WithMany("Rounds")
+                        .HasForeignKey("TournamentID")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("Climb.Models.Season", b =>
                 {
                     b.HasOne("Climb.Models.League", "League")
@@ -839,6 +874,16 @@ namespace Climb.Migrations
 
             modelBuilder.Entity("Climb.Models.SetSlot", b =>
                 {
+                    b.HasOne("Climb.Models.Round", "Round")
+                        .WithMany("SetSlots")
+                        .HasForeignKey("RoundID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Climb.Models.Set", "Set")
+                        .WithMany()
+                        .HasForeignKey("SetID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Climb.Models.Tournament", "Tournament")
                         .WithMany("SetSlots")
                         .HasForeignKey("TournamentID")

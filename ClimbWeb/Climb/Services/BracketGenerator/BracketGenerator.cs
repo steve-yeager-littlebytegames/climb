@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Climb.Models;
 
 namespace Climb.Services
 {
@@ -142,12 +141,13 @@ namespace Climb.Services
             var lastWinners = tournament.Winners[tournament.Winners.Count - 1];
             var lastLosers = tournament.Losers[tournament.Losers.Count - 1];
 
-            tournament.GrandFinals = new RoundData(++tournament.RoundCount);
-            var firstGame = tournament.AddGame(tournament.GrandFinals);
+            tournament.GrandFinals = new List<RoundData>(2) {new RoundData(++tournament.RoundCount), new RoundData(++tournament.RoundCount)};
+
+            var firstGame = tournament.AddGame(tournament.GrandFinals[0]);
             lastWinners.Games[0].NextWin = firstGame;
             lastLosers.Games[0].NextWin = firstGame;
 
-            var secondGame = tournament.AddGame(tournament.GrandFinals);
+            var secondGame = tournament.AddGame(tournament.GrandFinals[1]);
             secondGame.P1Game = firstGame;
             secondGame.P2Game = firstGame;
             firstGame.NextWin = secondGame;
@@ -156,7 +156,8 @@ namespace Climb.Services
 
         private static void NameRounds(TournamentData tournament)
         {
-            tournament.GrandFinals.Name = "Grand Finals";
+            tournament.GrandFinals[0].Name = "Grand Finals";
+            tournament.GrandFinals[1].Name = "Grand Finals Reset";
 
             var winnersCount = tournament.Winners.Count;
             var namedRounds = 0;
