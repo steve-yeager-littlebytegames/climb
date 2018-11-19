@@ -12,7 +12,7 @@ namespace Climb.Services
 
             public List<RoundData> Winners { get; } = new List<RoundData>();
             public List<RoundData> Losers { get; } = new List<RoundData>();
-            public RoundData GrandFinals { get; set; }
+            public List<RoundData> GrandFinals { get; set; }
 
             public TournamentData(List<int?> competitors)
             {

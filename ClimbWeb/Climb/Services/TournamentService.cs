@@ -63,33 +63,50 @@ namespace Climb.Services
         {
             var tournament = await dbContext.Tournaments
                 .Include(s => s.TournamentUsers).AsNoTracking()
+                .Include(t => t.Rounds)
                 .Include(t => t.SetSlots)
                 .FirstOrDefaultAsync(t => t.ID == tournamentID);
             dbContext.Update(tournament);
 
             var tournamentData = bracketGenerator.Generate(tournament.TournamentUsers.Count);
 
+            dbContext.Rounds.RemoveRange(tournament.Rounds);
+            tournament.Rounds.Clear();
             dbContext.SetSlots.RemoveRange(tournament.SetSlots);
             tournament.SetSlots.Clear();
 
-            tournament.SetSlots.AddRange(tournamentData.Winners.SelectMany(r => r.Games.Select(g => CreateSlot(g, SetSlot.Brackets.Winners))));
-            tournament.SetSlots.AddRange(tournamentData.Losers.SelectMany(r => r.Games.Select(g => CreateSlot(g, SetSlot.Brackets.Losers))));
-            tournament.SetSlots.AddRange(tournamentData.GrandFinals.Games.Select(g => CreateSlot(g, SetSlot.Brackets.Grands)));
+            tournament.Rounds.AddRange(tournamentData.Winners.Select(rd => CreateRound(rd, Round.Brackets.Winners)));
+            tournament.Rounds.AddRange(tournamentData.Losers.Select(rd => CreateRound(rd, Round.Brackets.Losers)));
+            tournament.Rounds.AddRange(tournamentData.GrandFinals.Select(rd => CreateRound(rd, Round.Brackets.Grands)));
 
-            dbContext.AddRange(tournament.SetSlots);
             await dbContext.SaveChangesAsync();
 
             return tournament;
 
-            SetSlot CreateSlot(BracketGenerator.GameData game, SetSlot.Brackets bracket)
+            Round CreateRound(BracketGenerator.RoundData roundData, Round.Brackets bracket)
+            {
+                var round = new Round
+                {
+                    Index = roundData.Index,
+                    TournamentID = tournamentID,
+                    Name = roundData.Name,
+                    Bracket = bracket,
+                };
+                round.SetSlots = roundData.Games.Select(g => CreateSlot(g, round)).ToList();
+            
+                return round;
+            }
+
+            SetSlot CreateSlot(BracketGenerator.GameData game, Round round)
             {
                 return new SetSlot
                 {
                     TournamentID = tournamentID,
                     Identifier = game.ID,
-                    WinSlotIdentifier = game.NextWin.ID,
-                    LoseSlotIdentifier = game.NextLoss.ID,
-                    Bracket = bracket,
+                    Round = round,
+                    WinSlotIdentifier = game.NextWin?.ID,
+                    LoseSlotIdentifier = game.NextLoss?.ID,
+                    IsBye = game.IsBye,
                 };
             }
         }

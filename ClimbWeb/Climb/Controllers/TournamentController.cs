@@ -5,6 +5,7 @@ using Climb.Requests.Tournaments;
 using Climb.Services;
 using Climb.ViewModels.Tournaments;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -24,13 +25,20 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
 
-            //var tournament = await dbContext.Tournaments.FirstOrDefaultAsync(t => t.ID == id);
-            //if(tournament == null)
-            //{
-            //    return NotFound();
-            //}
+            var tournament = await dbContext.Tournaments
+                .Include(t => t.League).AsNoTracking()
+                .Include(t => t.Season).AsNoTracking()
+                .Include(t => t.Rounds).AsNoTracking()
+                .Include(t => t.Sets).AsNoTracking()
+                .Include(t => t.SetSlots).ThenInclude(ss => ss.Round).AsNoTracking()
+                .Include(t => t.LeagueUsers).AsNoTracking()
+                .FirstOrDefaultAsync(t => t.ID == id);
+            if (tournament == null)
+            {
+                return NotFound();
+            }
 
-            var viewModel = new HomeViewModel(user);
+            var viewModel = new HomeViewModel(user, tournament);
             return View(viewModel);
         }
 
