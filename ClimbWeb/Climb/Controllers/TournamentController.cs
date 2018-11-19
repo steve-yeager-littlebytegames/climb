@@ -31,7 +31,7 @@ namespace Climb.Controllers
                 .Include(t => t.Rounds).AsNoTracking()
                 .Include(t => t.Sets).AsNoTracking()
                 .Include(t => t.SetSlots).ThenInclude(ss => ss.Round).AsNoTracking()
-                .Include(t => t.LeagueUsers).AsNoTracking()
+                .Include(t => t.TournamentUsers).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .FirstOrDefaultAsync(t => t.ID == id);
             if (tournament == null)
             {
