@@ -7,6 +7,17 @@
 @section TournamentsBody
 {
     <h1>Tournament @Model.Name</h1>
+    <div>
+        <h3>Competitors</h3>
+        <ol>
+            @foreach(var competitor in Model.Competitors)
+            {
+                <li>@competitor.LeagueUser.DisplayName</li>
+            }
+        </ol>
+    </div>
+    
+
     <div class="bracket">
         <div class="d-flex">
             @foreach(var round in Model.Winners)
