@@ -24,10 +24,5 @@ namespace Climb.ViewModels.Leagues
             IsAdmin = user?.Id == league.AdminID;
 #endif
         }
-        
-        public bool IsSubPageActive<T>() where T : PageViewModel
-        {
-            return this is T;
-        }
     }
 }

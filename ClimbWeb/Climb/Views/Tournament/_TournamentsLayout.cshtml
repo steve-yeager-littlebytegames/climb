@@ -1,4 +1,5 @@
-﻿@model Climb.ViewModels.Tournaments.PageViewModel
+﻿@using Climb.ViewModels.Tournaments
+@model Climb.ViewModels.Tournaments.PageViewModel
 
 @{
     Layout = "_LayoutWithNavbar";
@@ -10,7 +11,8 @@
     </div>
 
     <div class="home-menu d-flex justify-content-between">
-
+        <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-id="@Model.Tournament.ID">Home</a>
+        <a class="@(Model.IsSubPageActive<CompetitorsViewModel>() ? "active" : "")" asp-action="Competitors" asp-route-id="@Model.Tournament.ID">Competitors</a>
     </div>
 
     @RenderSection("TournamentsBody")

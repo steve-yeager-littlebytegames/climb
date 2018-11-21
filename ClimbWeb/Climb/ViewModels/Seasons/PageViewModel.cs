@@ -30,10 +30,5 @@ namespace Climb.ViewModels.Seasons
 
             CanManage = environment.IsSiteAdmin() || Season.League.AdminID == Participant?.UserID;
         }
-
-        public bool IsSubPageActive<T>() where T : PageViewModel
-        {
-            return this is T;
-        }
     }
 }

@@ -5,7 +5,7 @@ namespace Climb.ViewModels.Tournaments
 {
     public class PageViewModel : BaseViewModel
     {
-        protected Tournament Tournament { get; }
+        public Tournament Tournament { get; }
 
         public string Name => Tournament.Name;
 
