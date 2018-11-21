@@ -7,17 +7,6 @@
 @section TournamentsBody
 {
     <div>
-        <h1>Tournament @Model.Name</h1>
-        <div>
-            <h3>Competitors</h3>
-            <ol>
-                @foreach(var competitor in Model.Competitors)
-                {
-                    <li>@competitor.LeagueUser.DisplayName</li>
-                }
-            </ol>
-        </div>
-
         <div id="bracket-scroll">
             <div id="bracket-container">
                 <div class="bracket">
@@ -51,6 +40,8 @@
 
 @section Scripts
 {
+    <script src="~/lib/jquery-bracket/jquery.bracket.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="~/lib/jquery-bracket/jquery.bracket.min.css"/>
     <script src="~/lib/jsplumb.js" type="text/javascript"></script>
     <link rel="stylesheet" href="~/dist/styles/tournament.css"/>
 

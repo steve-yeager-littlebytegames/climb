@@ -1,0 +1,18 @@
+﻿@model Climb.ViewModels.Tournaments.CompetitorsViewModel
+
+@{
+    Layout = "_TournamentsLayout";
+}
+
+@section TournamentsBody
+{
+    <div>
+        <h3>Competitors</h3>
+        <ol>
+            @foreach(var competitor in Model.Competitors)
+            {
+                <li>@competitor.LeagueUser.DisplayName</li>
+            }
+        </ol>
+    </div>
+}
