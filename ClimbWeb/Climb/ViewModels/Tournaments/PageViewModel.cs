@@ -1,12 +1,18 @@
 ﻿using Climb.Data;
+using Climb.Models;
 
 namespace Climb.ViewModels.Tournaments
 {
     public class PageViewModel : BaseViewModel
     {
-        public PageViewModel(ApplicationUser user)
+        protected Tournament Tournament { get; }
+
+        public string Name => Tournament.Name;
+
+        public PageViewModel(ApplicationUser user, Tournament tournament)
             : base(user)
         {
+            Tournament = tournament;
         }
     }
 }

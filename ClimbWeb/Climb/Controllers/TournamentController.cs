@@ -42,6 +42,19 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
+        [HttpGet("tournaments/competitors/{id:int}")]
+        public async Task<IActionResult> Competitors(int id)
+        {
+            var user = await GetViewUserAsync();
+
+            var tournament = await dbContext.Tournaments
+                .Include(t => t.TournamentUsers).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
+                .FirstOrDefaultAsync(t => t.ID == id);
+
+            var viewModel = new CompetitorsViewModel(user, tournament);
+            return View(viewModel);
+        }
+
         [HttpPost("tournaments")]
         public async Task<IActionResult> Create(CreateRequest request)
         {
