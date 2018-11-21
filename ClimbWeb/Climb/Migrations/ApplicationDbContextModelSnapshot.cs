@@ -481,6 +481,10 @@ namespace Climb.Migrations
 
                     b.Property<int?>("LoseSlotIdentifier");
 
+                    b.Property<int?>("P1Game");
+
+                    b.Property<int?>("P2Game");
+
                     b.Property<int>("RoundID");
 
                     b.Property<int?>("SetID");

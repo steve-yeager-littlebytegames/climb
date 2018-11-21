@@ -106,6 +106,8 @@ namespace Climb.Services
                     Round = round,
                     WinSlotIdentifier = game.NextWin?.ID,
                     LoseSlotIdentifier = game.NextLoss?.ID,
+                    P1Game = game.P1Game?.ID,
+                    P2Game = game.P2Game?.ID,
                     IsBye = game.IsBye,
                 };
             }
