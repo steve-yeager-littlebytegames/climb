@@ -1,7 +1,7 @@
 ﻿@using Climb.ViewModels.Tournaments
 @model GameViewModel
 
-<div id="game-@Model.Identifier" class="game d-flex @(Model.IsBye ? "hidden" : "")">
+<div id="game-@Model.Identifier" data-parent="@Model.WinID"  class="game d-flex @(Model.IsBye ? "hidden" : "")">
     <div class="game-id">@Model.Identifier</div>
     <div class="game-container">
         <partial name="./GamePlayer.cshtml" model="@new GamePlayerViewModel(Model.Player1ID, Model.Player1ID ?? 0, Model.P1GameID, Model.P1Score, Model.P1Score > Model.P2Score)" />
