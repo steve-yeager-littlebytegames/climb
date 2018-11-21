@@ -11,6 +11,7 @@ namespace Climb.ViewModels.Tournaments
         public CompetitorsViewModel(ApplicationUser user, Tournament tournament)
             : base(user, tournament)
         {
+            tournament.TournamentUsers.Sort((x, y) => x.Seed.CompareTo(y.Seed));
             Competitors = tournament.TournamentUsers;
         }
     }
