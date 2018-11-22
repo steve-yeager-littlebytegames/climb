@@ -151,11 +151,7 @@ namespace Climb
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-#pragma warning disable 618
-            // Need this to register middlewares until NSwag problem is fixed.
             app.UseSwaggerUi3(typeof(Startup).GetTypeInfo().Assembly, s => { });
-#pragma warning restore 618
-            app.UseSwaggerUi3WithApiExplorer(settings => settings.GeneratorSettings.DefaultPropertyNameHandling = PropertyNameHandling.CamelCase);
 
             app.UseAuthentication();
 

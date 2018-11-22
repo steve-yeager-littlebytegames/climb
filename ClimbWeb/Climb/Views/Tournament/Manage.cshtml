@@ -1,0 +1,17 @@
+﻿@model Climb.ViewModels.Tournaments.ManageViewModel
+
+@{
+    Layout = "_TournamentsLayout";
+}
+
+@section Scripts
+{
+    <script src="~/dist/scripts/Tournaments.js" type="module"></script>
+}
+
+@section TournamentsBody
+{
+    <div>
+        <button id="generate-bracket-button" data-tournament-id="@Model.Tournament.ID">Generate Bracket</button>
+    </div>
+}
