@@ -11,8 +11,9 @@
     </div>
 
     <div class="home-menu d-flex justify-content-between">
-        <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-id="@Model.Tournament.ID">Home</a>
-        <a class="@(Model.IsSubPageActive<CompetitorsViewModel>() ? "active" : "")" asp-action="Competitors" asp-route-id="@Model.Tournament.ID">Competitors</a>
+        <a class="@(Model.SubPageNavbarClass<HomeViewModel>())" asp-action="Home" asp-route-id="@Model.Tournament.ID">Home</a>
+        <a class="@(Model.SubPageNavbarClass<CompetitorsViewModel>())" asp-action="Competitors" asp-route-id="@Model.Tournament.ID">Competitors</a>
+        <a class="@(Model.SubPageNavbarClass<ManageViewModel>())" asp-action="Manage" asp-route-id="@Model.Tournament.ID">Manage</a>
     </div>
 
     @RenderSection("TournamentsBody")

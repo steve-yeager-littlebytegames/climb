@@ -42,9 +42,7 @@ namespace Climb.ViewModels
             return cdnService.GetUserProfilePicUrl(User.Id, User.ProfilePicKey, ClimbImageRules.ProfilePic);
         }
 
-        public bool IsSubPageActive<T>() where T : BaseViewModel
-        {
-            return this is T;
-        }
+        public bool IsSubPageActive<T>() where T : BaseViewModel => this is T;
+        public string SubPageNavbarClass<T>() where T : BaseViewModel => IsSubPageActive<T>() ? "active" : "";
     }
 }
