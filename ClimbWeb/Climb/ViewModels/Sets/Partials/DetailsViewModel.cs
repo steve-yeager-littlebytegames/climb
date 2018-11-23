@@ -28,17 +28,17 @@ namespace Climb.ViewModels.Sets
             if(set.IsLocked)
             {
                 ActionName = "Details";
-                ActionButtonClass = "btn-neutral";
+                ActionButtonClass = "btn-cstm-secondary";
             }
             else if(set.IsComplete)
             {
                 ActionName = "Edit";
-                ActionButtonClass = "btn-edit";
+                ActionButtonClass = "btn-cstm-secondary";
             }
             else
             {
                 ActionName = "Fight";
-                ActionButtonClass = "btn-fight";
+                ActionButtonClass = "btn-cstm-primary";
             }
         }
 

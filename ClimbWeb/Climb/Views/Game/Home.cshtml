@@ -15,7 +15,7 @@
             </div>
             <div class="col-sm-5">
                 <h1>@Model.Game.Name</h1>
-                <a class="align-self-center ml-2" asp-action="Update">edit</a>
+                <a class="align-self-center btn btn-cstm-secondary ml-2" asp-action="Update">Edit</a>
             </div>
         </div>
     </div>
@@ -24,7 +24,7 @@
     <div class="container">
         <div>
             <h3>Characters</h3>
-            <a class="btn btn-danger mb-4" asp-action="CharacterAdd" asp-route-gameid="@Model.Game.ID">Add</a>
+            <a class="btn btn-cstm-primary mb-4" asp-action="CharacterAdd" asp-route-gameid="@Model.Game.ID">Add</a>
         </div>
         <div class="card-group">
             @foreach(var character in Model.Game.Characters)
@@ -48,7 +48,7 @@
     <div class="container">
         <div>
             <h3>Stages</h3>
-            <a class="btn btn-danger mb-4" asp-action="StageAdd">Add</a>
+            <a class="btn btn-cstm-primary mb-4" asp-action="StageAdd">Add</a>
         </div>
         <div class="card-group">
             @foreach(var stage in Model.Game.Stages)

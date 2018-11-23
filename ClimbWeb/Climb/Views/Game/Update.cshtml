@@ -49,6 +49,6 @@
             <input class="form-control col-md-2" asp-for="Request.MatchName" value="@(Model.Game?.MatchName ?? Game.DefaultMatchName)" />
             <span asp-validation-for="Request.MatchName" class="text-danger"></span>
         </div>
-        <button class="btn btn-set btn-lg btn-edit btn-block mt-3 mx-auto" type="submit">@Model.Action</button>
+        <button class="btn btn-cstm-primary mt-3 mx-auto" type="submit">@Model.Action</button>
     </form>
 </div>

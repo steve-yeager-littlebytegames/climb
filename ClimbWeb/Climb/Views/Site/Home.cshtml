@@ -4,21 +4,21 @@
     ViewBag.Title = "Welcome";
 }
 
-<link rel="stylesheet" href="~/dist/styles/site-home.css" />
+<link rel="stylesheet" href="~/dist/styles/site-home.css"/>
 
 <div id="banner">
     <img src="~/images/logo/logo-128x128.png" alt="logo"/>
-    <h1>Welcome to Climb!</h1>
+    <h1 class="h1">Welcome to Climb!</h1>
     <p id="description">
         This site is for Fighting Game Leagues. Climb has Seasons, Power Rankings, Stats, and more! Happy punching and good luck in your Climb to the top!
     </p>
-    
+
     <h3>Games</h3>
-    @foreach(var game in Model.TopGames)
+    @foreach (var game in Model.TopGames)
     {
         <div>
             <a asp-controller="Game" asp-action="Home" asp-route-gameID="@game.ID">@game.Name</a>
         </div>
     }
-    <a class="btn btn-primary mt-4" asp-controller="Game" asp-action="Index">See more!</a>
+    <a class="btn btn-cstm-primary mt-4" asp-controller="Game" asp-action="Index">See more!</a>
 </div>

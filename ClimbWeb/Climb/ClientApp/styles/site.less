@@ -8,7 +8,12 @@ html {
 body {
     min-width: 300px;
     margin-bottom: 150px;
+    color: @color-text;
     overflow-y: scroll;
+}
+
+.h1 {
+    font-size: 2em;
 }
 
 .footer {
@@ -29,6 +34,40 @@ a:hover {
 
 a:active {
     color: @color-link-active;
+}
+
+.btn-cstm-primary {
+    color: white;
+    font-weight: 500;
+    background-color: #ff6400;
+}
+
+.btn-cstm-primary:hover {
+    color: white;
+    background-color: #ffaf00;
+}
+
+.btn-cstm-primary:active {
+    color: white;
+    background-color: #d64000;
+}
+
+.btn-cstm-secondary {
+    color: #ff6400;
+    font-weight: 500;
+    border: 2px solid #ff9632;
+}
+
+.btn-cstm-secondary:hover {
+    color: #ffaf00;
+    font-weight: 500;
+    border: 2px solid #ffaf00;
+}
+
+.btn-cstm-secondary:active {
+    color: #d64000;
+    font-weight: 500;
+    border: 2px solid #d64000;
 }
 
 .text-darker {
