@@ -84,7 +84,7 @@ namespace Climb.Test.Services
 
         private void AddUser()
         {
-            DbContextUtility.AddNew<ApplicationUser>(dbContext, u =>
+            dbContext.AddNew<ApplicationUser>(u =>
             {
                 u.Id = ID;
                 u.Email = Email;

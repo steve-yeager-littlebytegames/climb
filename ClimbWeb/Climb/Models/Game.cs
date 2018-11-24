@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Climb.Models
 {
@@ -8,9 +9,11 @@ namespace Climb.Models
         public const string DefaultScoreName = "Rounds Taken";
         public const string DefaultMatchName = "Match";
 
+        [UsedImplicitly]
         public int ID { get; set; }
         public string Name { get; set; } = "";
-        public DateTime DateAdded { get; set; }
+        [UsedImplicitly]
+        public DateTime DateAdded { get; private set; }
         public int CharactersPerMatch { get; set; }
         public int MaxMatchPoints { get; set; }
         public string LogoImageKey { get; set; }
@@ -19,7 +22,8 @@ namespace Climb.Models
 
         public List<Character> Characters { get; set; }
         public List<Stage> Stages { get; set; }
-        public List<League> Leagues { get; set; }
+        [UsedImplicitly]
+        public List<League> Leagues { get; } = new List<League>();
 
         public Game()
         {

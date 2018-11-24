@@ -6,7 +6,7 @@
     <div class="d-flex flex-column justify-content-around flex-grow-1">
         @foreach(var setSlot in Model.SetSlots)
         {
-            <partial name="./Partials/Game" model="@new GameViewModel(setSlot)"/>
+            <partial name="./Partials/Game" model="@GameViewModel.Create(setSlot)"/>
         }
     </div>
 </div>

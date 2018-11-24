@@ -1,31 +1,36 @@
 ﻿using System;
-using Newtonsoft.Json;
+using JetBrains.Annotations;
 
 namespace Climb.Models
 {
     public class MatchCharacter
     {
-        public int MatchID { get; set; }
-        public int CharacterID { get; set; }
-        public int LeagueUserID { get; set; }
-        public DateTime CreatedDate { get; set; }
+        [UsedImplicitly]
+        public int MatchID { get; private set; }
+        [UsedImplicitly]
+        public int CharacterID { get; private set; }
+        [UsedImplicitly]
+        public int LeagueUserID { get; private set; }
+        [UsedImplicitly]
+        public DateTime CreatedDate { get; private set; }
 
-        [JsonIgnore]
-        public Match Match { get; set; }
-        [JsonIgnore]
-        public Character Character { get; set; }
-        [JsonIgnore]
-        public LeagueUser LeagueUser { get; set; }
+        [UsedImplicitly]
+        public Match Match { get; private set; }
+        [UsedImplicitly]
+        public Character Character { get; private set; }
+        [UsedImplicitly]
+        public LeagueUser LeagueUser { get; private set; }
 
         public MatchCharacter()
         {
         }
 
-        public MatchCharacter(int matchID, int characterID, int leagueUserID)
+        public MatchCharacter(int matchID, int characterID, int leagueUserID, DateTime createdDate)
         {
             MatchID = matchID;
             CharacterID = characterID;
             LeagueUserID = leagueUserID;
+            CreatedDate = createdDate;
         }
     }
 }

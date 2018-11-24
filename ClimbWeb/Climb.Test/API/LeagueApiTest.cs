@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task Create_Valid_CreatedResult()
         {
-            var gameID = DbContextUtility.AddNew<Game>(dbContext).ID;
+            var gameID = dbContext.AddNew<Game>().ID;
             var request = new CreateRequest
             {
                 Name = LeagueName,
@@ -127,8 +128,8 @@ namespace Climb.Test.Api
         public async Task GetSeasons_Valid_ReturnsSeasons()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            DbContextUtility.AddNew<Season>(dbContext, s => s.LeagueID = league.ID);
-            DbContextUtility.AddNew<Season>(dbContext, s => s.LeagueID = league.ID);
+            dbContext.AddAndSave(new Season(league.ID, 0, DateTime.MinValue, DateTime.MaxValue));
+            dbContext.AddAndSave(new Season(league.ID, 1, DateTime.MinValue, DateTime.MaxValue));
 
             var result = await testObj.GetSeasons(league.ID);
             var seasons = result.GetObject<IEnumerable<SeasonDto>>();
@@ -142,50 +143,6 @@ namespace Climb.Test.Api
             var result = await testObj.GetSeasons(0);
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
-        }
-
-        //[Test]
-        //public async Task GetSets_NoLeagueUser_NotFound()
-        //{
-        //    var result = await testObj.GetSets(0);
-
-        //    ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
-        //}
-
-        //[Test]
-        //public async Task GetSets_HasSets_Ok()
-        //{
-        //    var members = CreateMembersWithSets(2);
-
-        //    var result = await testObj.GetSets(members[0].ID);
-
-        //    ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
-        //}
-
-        //[TestCase(0)]
-        //[TestCase(1)]
-        //[TestCase(10)]
-        //public async Task GetSets_HasSets_ReturnSets(int setCount)
-        //{
-        //    var members = CreateMembersWithSets(setCount);
-
-        //    var result = await testObj.GetSets(members[0].ID);
-        //    var resultObj = result.GetObject<SetDto[]>();
-
-        //    Assert.AreEqual(setCount, resultObj.Length);
-        //}
-
-        private List<LeagueUser> CreateMembersWithSets(int setCount)
-        {
-            var league = LeagueUtility.CreateLeague(dbContext);
-            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
-
-            for(var i = 0; i < setCount; ++i)
-            {
-                SetUtility.Create(dbContext, members[0].ID, members[1].ID, league.ID);
-            }
-
-            return members;
         }
     }
 }

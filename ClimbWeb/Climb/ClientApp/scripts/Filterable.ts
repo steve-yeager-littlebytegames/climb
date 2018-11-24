@@ -51,7 +51,7 @@ export class FilterCollection {
         const filterInput = document.getElementById(filterBarId) as HTMLInputElement;
         if (!filterInput) throw new Error(`Could not find filter-bar`);
 
-        filterInput.onkeyup = e => {
+        filterInput.onkeyup = () => {
             const filter = filterInput.value.toLowerCase();
             this.filter(filter);
         }

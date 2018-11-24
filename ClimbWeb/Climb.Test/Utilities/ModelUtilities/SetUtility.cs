@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Climb.Data;
 using Climb.Models;
 
@@ -8,35 +9,15 @@ namespace Climb.Test.Utilities
     {
         public static Set Create(ApplicationDbContext dbContext, int player1ID, int player2ID, int leagueID, Season season = null)
         {
-            var set = DbContextUtility.AddNew<Set>(dbContext, s =>
-            {
-                s.Player1ID = player1ID;
-                s.Player2ID = player2ID;
-                s.LeagueID = leagueID;
-                s.SeasonID = season?.ID;
-            });
-
-            return set;
+            return dbContext.AddAndSave(new Set(leagueID, player1ID, player2ID, DateTime.MaxValue, season?.ID));
         }
 
         public static Set Create(ApplicationDbContext dbContext, SeasonLeagueUser player1, SeasonLeagueUser player2, int leagueID)
         {
-            var set = DbContextUtility.AddNew<Set>(dbContext, s =>
-            {
-                s.LeagueID = leagueID;
-                s.SeasonID = player1.Season.ID;
-                s.Player1ID = player1.LeagueUserID;
-                s.Player2ID = player2.LeagueUserID;
-                s.SeasonPlayer1 = player1;
-                s.SeasonPlayer2 = player2;
-                s.Player1 = player1.LeagueUser;
-                s.Player2 = player2.LeagueUser;
-            });
-
-            return set;
+            return dbContext.AddAndSave(new Set(leagueID, player1.LeagueUserID, player2.LeagueUserID, DateTime.MaxValue, player1.Season.ID, player1.ID, player2.ID));
         }
 
-        public static Set Create(ApplicationDbContext dbContext)
+        public static Set CreateWithSeason(ApplicationDbContext dbContext)
         {
             GameUtility.Create(dbContext, 3, 3);
 
@@ -45,9 +26,18 @@ namespace Climb.Test.Utilities
             return set;
         }
 
+        public static Set CreateWithLeague(ApplicationDbContext dbContext)
+        {
+            GameUtility.Create(dbContext, 3, 3);
+
+            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var set = Create(dbContext, league.Members[0].ID, league.Members[1].ID, league.ID);
+            return set;
+        }
+
         public static List<Match> AddMatches(ApplicationDbContext dbContext, Set set, int count)
         {
-            return DbContextUtility.AddNewRange<Match>(dbContext, count, (m, i) =>
+            return dbContext.AddNewRange<Match>(count, (m, i) =>
             {
                 m.Index = i;
                 m.SetID = set.ID;

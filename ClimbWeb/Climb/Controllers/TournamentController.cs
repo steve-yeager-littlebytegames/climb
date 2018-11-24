@@ -103,9 +103,9 @@ namespace Climb.Controllers
             {
                 var random = new Random();
 
-                for(var i = 0; i < tournament.Winners.Count; i++)
+                foreach(var round in tournament.Winners)
                 {
-                    foreach(var game in tournament.Winners[i].Games)
+                    foreach(var game in round.Games)
                     {
                         if(game.P2 == null || game.P1 != null && random.NextDouble() < 0.5)
                         {
@@ -124,9 +124,9 @@ namespace Climb.Controllers
                     }
                 }
 
-                for(var i = 0; i < tournament.Losers.Count; i++)
+                foreach(var round in tournament.Losers)
                 {
-                    foreach(var game in tournament.Losers[i].Games)
+                    foreach(var game in round.Games)
                     {
                         if(game.P2 == null || game.P1 != null && random.NextDouble() < 0.5)
                         {

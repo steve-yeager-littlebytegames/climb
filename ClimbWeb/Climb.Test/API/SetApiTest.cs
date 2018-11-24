@@ -35,7 +35,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task Get_HasSet_Ok()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = SetUtility.CreateWithSeason(dbContext);
 
             var result = await testObj.Get(set.ID);
             var resultObj = result.GetObject<SetDto>();
@@ -75,7 +75,7 @@ namespace Climb.Test.Api
 
         private (Set set, SubmitRequest request) CreateSet()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = SetUtility.CreateWithSeason(dbContext);
             set.Matches = new List<Match>();
             setService.Update(set.ID, Arg.Any<MatchForm[]>()).Returns(set);
             var request = new SubmitRequest

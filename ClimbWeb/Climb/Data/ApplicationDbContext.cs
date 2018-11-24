@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Climb.Models;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,30 +8,48 @@ namespace Climb.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public DbSet<Game> Games { get; set; }
-        public DbSet<League> Leagues { get; set; }
-        public DbSet<Season> Seasons { get; set; }
-        public DbSet<LeagueUser> LeagueUsers { get; set; }
-        public DbSet<SeasonLeagueUser> SeasonLeagueUsers { get; set; }
-        public DbSet<Set> Sets { get; set; }
-        public DbSet<Match> Matches { get; set; }
-        public DbSet<Character> Characters { get; set; }
-        public DbSet<Stage> Stages { get; set; }
-        public DbSet<MatchCharacter> MatchCharacters { get; set; }
-        public DbSet<RankSnapshot> RankSnapshots { get; set; }
-        public DbSet<SetRequest> SetRequests { get; set; }
-        public DbSet<Organization> Organizations { get; set; }
-        public DbSet<OrganizationUser> OrganizationUsers { get; set; }
-        public DbSet<Tournament> Tournaments { get; set; }
-        public DbSet<SetSlot> SetSlots { get; set; }
-        public DbSet<TournamentUser> TournamentUsers { get; set; }
-        public DbSet<Round> Rounds { get; set; }
+        [UsedImplicitly]
+        public DbSet<Character> Characters { get; private set; }
+        [UsedImplicitly]
+        public DbSet<Game> Games { get; private set; }
+        [UsedImplicitly]
+        public DbSet<League> Leagues { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<LeagueUser> LeagueUsers { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<Match> Matches { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<MatchCharacter> MatchCharacters { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<Organization> Organizations { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<OrganizationUser> OrganizationUsers { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<RankSnapshot> RankSnapshots { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<Round> Rounds { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<SeasonLeagueUser> SeasonLeagueUsers { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<Season> Seasons { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<SetRequest> SetRequests { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<Set> Sets { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<SetSlot> SetSlots { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<Stage> Stages { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<Tournament> Tournaments { get;  private set; }
+        [UsedImplicitly]
+        public DbSet<TournamentUser> TournamentUsers { get;  private set; }
 
         public ApplicationDbContext()
         {
         }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(DbContextOptions options)
             : base(options)
         {
         }

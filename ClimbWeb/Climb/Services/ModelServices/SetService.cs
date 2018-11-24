@@ -25,11 +25,12 @@ namespace Climb.Services.ModelServices
 
         public async Task<SetRequest> RequestSetAsync(int requesterID, int challengedID, string message)
         {
-            if (!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == requesterID))
+            if(!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == requesterID))
             {
                 throw new NotFoundException(typeof(LeagueUser), requesterID);
             }
-            if (!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == challengedID))
+
+            if(!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == challengedID))
             {
                 throw new NotFoundException(typeof(LeagueUser), challengedID);
             }
@@ -72,16 +73,13 @@ namespace Climb.Services.ModelServices
 
             if(accepted)
             {
-                var set = new Set
-                {
-                    LeagueID = setRequest.LeagueID,
-                    Player1ID = setRequest.RequesterID,
-                    Player2ID = setRequest.ChallengedID,
-                };
+                var dueDate = dateService.Now.AddDays(7);
+                var set = new Set(setRequest.LeagueID, setRequest.RequesterID, setRequest.ChallengedID, dueDate);
 
                 dbContext.Add(set);
                 setRequest.Set = set;
             }
+
             await dbContext.SaveChangesAsync();
 
             return setRequest;
@@ -142,7 +140,7 @@ namespace Climb.Services.ModelServices
 
             await dbContext.SaveChangesAsync();
 
-            if (set.SeasonID != null)
+            if(set.SeasonID != null)
             {
                 await seasonService.PlaySet(setID);
                 await seasonService.UpdateRanksAsync(set.SeasonID.Value);
@@ -152,10 +150,7 @@ namespace Climb.Services.ModelServices
 
             void AddCharacter(Match match, int characterID, int playerID, DateTime createdDate)
             {
-                var character = new MatchCharacter(match.ID, characterID, playerID)
-                {
-                    CreatedDate = createdDate,
-                };
+                var character = new MatchCharacter(match.ID, characterID, playerID, createdDate);
                 dbContext.MatchCharacters.Add(character);
             }
         }

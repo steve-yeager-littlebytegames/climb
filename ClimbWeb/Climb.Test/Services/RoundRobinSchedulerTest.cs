@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Climb.Data;
-using Climb.Models;
 using Climb.Services;
 using Climb.Test.Utilities;
 using NUnit.Framework;
@@ -59,12 +57,11 @@ namespace Climb.Test.Services
         [TestCase(5, 6)]
         public void GenerateSchedule_Valid_SpacesOutDueDates(int userCount, int days)
         {
-            DateTime startDate = DateTime.MinValue;
+            var startDate = DateTime.MinValue;
             var season = SeasonUtility.CreateSeason(dbContext, userCount, s =>
             {
                 s.StartDate = startDate;
                 s.EndDate = startDate.AddDays(days);
-                s.Sets = new List<Set>();
             }).season;
 
             var sets = testObj.GenerateSchedule(season.StartDate, season.EndDate, season.Participants);
@@ -72,10 +69,10 @@ namespace Climb.Test.Services
             var roundCount = userCount - 1;
             var setsPerRound = userCount / 2;
             var daysPerRound = days / roundCount;
-            for(int i = 0; i < roundCount; i++)
+            for(var i = 0; i < roundCount; i++)
             {
                 var dueDate = startDate.AddDays((i + 1) * daysPerRound);
-                for (int j = 0; j < setsPerRound; j++)
+                for(var j = 0; j < setsPerRound; j++)
                 {
                     var setIndex = i * setsPerRound + j;
                     Assert.AreEqual(dueDate, sets[setIndex].DueDate, $"Round {i + 1}");

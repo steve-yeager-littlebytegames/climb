@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Climb.Services;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 
 namespace Climb.Models
@@ -11,9 +12,12 @@ namespace Climb.Models
     {
         private const int ForfeitScore = -1;
 
-        public int ID { get; set; }
-        public int LeagueID { get; set; }
-        public int? SeasonID { get; set; }
+        [UsedImplicitly]
+        public int ID { get; private set; }
+        [UsedImplicitly]
+        public int LeagueID { get; private set; }
+        [UsedImplicitly]
+        public int? SeasonID { get; private set; }
         public int? TournamentID { get; set; }
         public int Player1ID { get; set; }
         public int Player2ID { get; set; }
@@ -55,7 +59,17 @@ namespace Climb.Models
         public int? SeasonLoserID => Player1Score > Player2Score ? SeasonPlayer2ID : Player1Score < Player2Score ? SeasonPlayer1ID : null;
 
         public Set()
+        {}
+
+        public Set(int leagueID, int leagueUser1, int leagueUser2, DateTime dueDate, int? seasonID = null, int? seasonUser1 = null, int? seasonUser2 = null)
         {
+            LeagueID = leagueID;
+            SeasonID = seasonID;
+            DueDate = dueDate;
+            Player1ID = leagueUser1;
+            Player2ID = leagueUser2;
+            SeasonPlayer1ID = seasonUser1;
+            SeasonPlayer2ID = seasonUser2;
         }
 
         public bool IsPlaying(int leagueUserID)

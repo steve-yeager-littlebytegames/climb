@@ -12,9 +12,12 @@ namespace Climb.Test.Utilities
             var league = LeagueUtility.CreateLeague(dbContext);
             var members = LeagueUtility.AddUsersToLeague(league, participants, dbContext);
 
-            preprocess += s => s.LeagueID = league.ID;
-            var season = DbContextUtility.AddNew(dbContext, preprocess);
-            DbContextUtility.AddNewRange<SeasonLeagueUser>(dbContext, participants, (slu, i) =>
+            var season = new Season(league.ID, 0, DateTime.MinValue, DateTime.MaxValue);
+            preprocess?.Invoke(season);
+            dbContext.Add(season);
+            dbContext.SaveChanges();
+
+            dbContext.AddNewRange<SeasonLeagueUser>(participants, (slu, i) =>
             {
                 slu.LeagueUserID = members[i].ID;
                 slu.SeasonID = season.ID;
@@ -39,7 +42,7 @@ namespace Climb.Test.Utilities
 
         public static List<SeasonLeagueUser> AddParticipants(ApplicationDbContext dbContext, Season season, params LeagueUser[] members)
         {
-            return DbContextUtility.AddNewRange<SeasonLeagueUser>(dbContext, members.Length, (slu, i) =>
+            return dbContext.AddNewRange<SeasonLeagueUser>(members.Length, (slu, i) =>
             {
                 slu.LeagueUserID = members[i].ID;
                 slu.SeasonID = season.ID;

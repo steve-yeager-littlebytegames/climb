@@ -10,7 +10,6 @@ namespace Climb.Core.TieBreakers
         public int LeaguePoints { get; }
         public DateTime LeagueJoinDate { get; }
         public int TotalWins { get; private set; }
-        public IReadOnlyDictionary<int, int> Wins => wins;
 
         public ParticipantRecord(int leaguePoints, DateTime leagueJoinDate)
         {

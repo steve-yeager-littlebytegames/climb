@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Climb.Test.Utilities
 {
-    internal static class DbContextUtility
+    public static class DbContextUtility
     {
         public static ApplicationDbContext CreateMockDb()
         {
@@ -21,7 +21,7 @@ namespace Climb.Test.Utilities
             return context;
         }
 
-        public static T AddNew<T>(ApplicationDbContext dbContext, Action<T> preprocess = null) where T : class, new()
+        public static T AddNew<T>(this ApplicationDbContext dbContext, Action<T> preprocess = null) where T : class, new()
         {
             var entry = new T();
             preprocess?.Invoke(entry);
@@ -30,7 +30,7 @@ namespace Climb.Test.Utilities
             return model.Entity;
         }
 
-        public static List<T> AddNewRange<T>(ApplicationDbContext dbContext, int count, Action<T, int> preprocess = null) where T : class, new()
+        public static List<T> AddNewRange<T>(this ApplicationDbContext dbContext, int count, Action<T, int> preprocess = null) where T : class, new()
         {
             var entries = new List<T>();
 
@@ -47,14 +47,21 @@ namespace Climb.Test.Utilities
             return entries;
         }
 
-        public static void UpdateAndSave<T>(ApplicationDbContext dbContext, T entity, Action update) where T : class
+        public static T AddAndSave<T>(this ApplicationDbContext dbContext, T entity)
+        {
+            dbContext.Add(entity);
+            dbContext.SaveChanges();
+            return entity;
+        }
+
+        public static void UpdateAndSave<T>(this ApplicationDbContext dbContext, T entity, Action update) where T : class
         {
             dbContext.Update(entity);
             update();
             dbContext.SaveChanges();
         }
 
-        public static void UpdateAndSave<T>(ApplicationDbContext dbContext, T entity, Action<T> update) where T : class
+        public static void UpdateAndSave<T>(this ApplicationDbContext dbContext, T entity, Action<T> update) where T : class
         {
             dbContext.Update(entity);
             update(entity);
