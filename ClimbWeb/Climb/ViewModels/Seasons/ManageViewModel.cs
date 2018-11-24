@@ -1,6 +1,7 @@
 ﻿using Climb.Data;
+using Climb.Extensions;
 using Climb.Models;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -8,12 +9,12 @@ namespace Climb.ViewModels.Seasons
     {
         public bool CanStartSeason { get; }
 
-        public ManageViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
-            : base(user, season, environment)
+        public ManageViewModel(ApplicationUser user, Season season, IConfiguration configuration)
+            : base(user, season, configuration)
         {
             if(!season.IsActive && !season.IsComplete)
             {
-                if(environment.IsDevelopment())
+                if(configuration.IsDevMode(DevModes.Admin))
                 {
                     CanStartSeason = true;
                 }

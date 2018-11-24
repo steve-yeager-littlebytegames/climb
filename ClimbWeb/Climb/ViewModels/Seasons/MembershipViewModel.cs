@@ -1,6 +1,6 @@
 ﻿using Climb.Data;
 using Climb.Models;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -8,8 +8,8 @@ namespace Climb.ViewModels.Seasons
     {
         public bool CanLeave => Participant != null && !Participant.HasLeft && !Season.IsComplete;
 
-        public MembershipViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
-            : base(user, season, environment)
+        public MembershipViewModel(ApplicationUser user, Season season, IConfiguration configuration)
+            : base(user, season, configuration)
         {
         }
     }

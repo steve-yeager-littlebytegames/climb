@@ -7,6 +7,7 @@ using Climb.Services.ModelServices;
 using Climb.ViewModels.Leagues;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -14,11 +15,13 @@ namespace Climb.Controllers
     public class LeagueController : BaseController<LeagueController>
     {
         private readonly ILeagueService leagueService;
+        private readonly IConfiguration configuration;
 
-        public LeagueController(ILeagueService leagueService, ApplicationDbContext dbContext, ILogger<LeagueController> logger, IUserManager userManager)
+        public LeagueController(ILeagueService leagueService, ApplicationDbContext dbContext, ILogger<LeagueController> logger, IUserManager userManager, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.leagueService = leagueService;
+            this.configuration = configuration;
         }
 
         [HttpGet("leagues")]
@@ -32,7 +35,7 @@ namespace Climb.Controllers
                 .ToArrayAsync();
             var games = await dbContext.Games.ToArrayAsync();
 
-            var viewModel = new IndexViewModel(user, leagues, games);
+            var viewModel = new IndexViewModel(user, leagues, games, configuration);
             return View(viewModel);
         }
 
@@ -46,7 +49,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
-            var viewModel = new HomeViewModel(user, league);
+            var viewModel = new HomeViewModel(user, league, configuration);
 
             return View(viewModel);
         }
@@ -61,7 +64,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
-            var viewModel = new MembershipViewModel(user, league);
+            var viewModel = new MembershipViewModel(user, league, configuration);
             return View(viewModel);
         }
 
@@ -70,7 +73,7 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
             
-            var viewModel = await DataViewModel.Create(user, leagueID, dbContext);
+            var viewModel = await DataViewModel.Create(user, leagueID, dbContext, configuration);
 
             return View(viewModel);
         }
@@ -86,7 +89,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
-            var viewModel = new SeasonsViewModel(user, league);
+            var viewModel = new SeasonsViewModel(user, league, configuration);
 
             return View(viewModel);
         }
@@ -101,7 +104,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
-            var viewModel = new ManageViewModel(user, league);
+            var viewModel = new ManageViewModel(user, league, configuration);
 
             return View(viewModel);
         }

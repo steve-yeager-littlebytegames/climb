@@ -9,7 +9,7 @@ namespace Climb.ViewModels.Site
         public string SwaggerPath { get; }
 
         public AboutViewModel(ApplicationUser user, IConfiguration configuration, string baseUrl)
-            : base(user)
+            : base(user, configuration)
         {
             BuildVersion = configuration["BUILD_VERSION"] ?? "Local";
             SwaggerPath = baseUrl + "/swagger";

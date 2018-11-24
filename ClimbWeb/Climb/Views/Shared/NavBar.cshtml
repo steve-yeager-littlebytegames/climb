@@ -4,9 +4,16 @@
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" asp-controller="Site" asp-action="Home">
-        <img src="~/images/logo/logo-32x32.png" width="30" height="30" class="d-inline-block align-top"/>
+        <img src="~/images/logo/logo-32x32.png" width="30" height="30" class="d-inline-block align-top" />
         Climb
     </a>
+
+    <!--Admin Mode-->
+    @if (Model.IsAdminMode)
+    {
+        <div style="color: red; font-weight: bold">ADMIN</div>
+    }
+
     <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -81,11 +88,11 @@
         </ul>
     </div>
 
-    @if(Model.IsLoggedIn)
+    @if (Model.IsLoggedIn)
     {
         <div class="ml-2">
             <a asp-controller="User" asp-action="Home" asp-route-userID="">
-                <img src="@Model.GetProfilePic(cdnService)" width="30" height="30"/>
+                <img src="@Model.GetProfilePic(cdnService)" width="30" height="30" />
             </a>
         </div>
     }

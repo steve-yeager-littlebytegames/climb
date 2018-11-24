@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Leagues
 {
@@ -25,13 +26,13 @@ namespace Climb.ViewModels.Leagues
 
         public IOrderedEnumerable<KeyValuePair<Character, CharacterData>> AllCharacterData { get; }
 
-        private DataViewModel(ApplicationUser user, League league, IReadOnlyDictionary<Character, CharacterData> allCharacterData)
-            : base(user, league)
+        private DataViewModel(ApplicationUser user, League league, IReadOnlyDictionary<Character, CharacterData> allCharacterData, IConfiguration configuration)
+            : base(user, league, configuration)
         {
             AllCharacterData = allCharacterData.OrderBy(x => x.Key.Name);
         }
 
-        public static async Task<DataViewModel> Create(ApplicationUser user, int leagueID, ApplicationDbContext dbContext)
+        public static async Task<DataViewModel> Create(ApplicationUser user, int leagueID, ApplicationDbContext dbContext, IConfiguration configuration)
         {
             var league = await dbContext.Leagues
                 .Include(l => l.Members)
@@ -77,7 +78,7 @@ namespace Climb.ViewModels.Leagues
                 characterData.Value.totalSets = totalSets;
             }
 
-            return new DataViewModel(user, league, data);
+            return new DataViewModel(user, league, data, configuration);
         }
     }
 }
