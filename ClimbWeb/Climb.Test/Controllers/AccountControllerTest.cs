@@ -6,6 +6,7 @@ using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
@@ -29,8 +30,9 @@ namespace Climb.Test.Controllers
             var signInManager = Substitute.For<ISignInManager>();
             var cdnService = Substitute.For<ICdnService>();
             var emailSender = Substitute.For<IEmailSender>();
+            var configuration = Substitute.For<IConfiguration>();
 
-            testObj = new AccountController(logger, applicationUserService, userManager, dbContext, signInManager, cdnService, emailSender);
+            testObj = new AccountController(logger, applicationUserService, userManager, dbContext, signInManager, cdnService, emailSender, configuration);
         }
 
         [Test]

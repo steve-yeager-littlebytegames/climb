@@ -2,6 +2,7 @@
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Leagues
 {
@@ -11,8 +12,8 @@ namespace Climb.ViewModels.Leagues
         public Season NextSeason { get; }
         public IReadOnlyList<Season> CompletedSeasons { get; }
 
-        public SeasonsViewModel(ApplicationUser user, League league)
-            : base(user, league)
+        public SeasonsViewModel(ApplicationUser user, League league, IConfiguration configuration)
+            : base(user, league, configuration)
         {
             ActiveSeason = league.ActiveSeason;
             NextSeason = league.Seasons.FirstOrDefault(s => !s.IsComplete && !s.IsActive);

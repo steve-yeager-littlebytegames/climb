@@ -2,6 +2,7 @@
 using Climb.Models;
 using Climb.Requests.Games;
 using Climb.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Games
 {
@@ -13,21 +14,21 @@ namespace Climb.ViewModels.Games
 
         public string ActionName => Character == null ? "Add" : "Update";
 
-        private CharacterAddViewModel(ApplicationUser user, Game game, Character character, string imageUrl)
-            : base(user)
+        private CharacterAddViewModel(ApplicationUser user, Game game, Character character, string imageUrl, IConfiguration configuration)
+            : base(user, configuration)
         {
             Game = game;
             Character = character;
             ImageUrl = imageUrl;
         }
 
-        public static CharacterAddViewModel Create(ApplicationUser user, Game game, Character character, ICdnService cdnService)
+        public static CharacterAddViewModel Create(ApplicationUser user, Game game, Character character, ICdnService cdnService, IConfiguration configuration)
         {
             var imageKey = character != null
                 ? cdnService.GetImageUrl(character.ImageKey, ClimbImageRules.CharacterPic)
                 : "/images/NewCharacterIcon.png";
 
-            return new CharacterAddViewModel(user, game, character, imageKey);
+            return new CharacterAddViewModel(user, game, character, imageKey, configuration);
         }
     }
 }

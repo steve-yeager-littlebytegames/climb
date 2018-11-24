@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Tournaments
 {
@@ -10,8 +11,8 @@ namespace Climb.ViewModels.Tournaments
         public IReadOnlyList<Round> Losers { get; }
         public IReadOnlyList<Round> GrandFinals { get; }
 
-        public HomeViewModel(ApplicationUser user, Tournament tournament)
-            : base(user, tournament)
+        public HomeViewModel(ApplicationUser user, Tournament tournament, IConfiguration configuration)
+            : base(user, tournament, configuration)
         {
             var winners = new List<Round>();
             var losers = new List<Round>();

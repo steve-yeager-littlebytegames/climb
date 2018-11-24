@@ -5,6 +5,7 @@ using Climb.ViewModels.Users;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -13,12 +14,14 @@ namespace Climb.Controllers
     {
         private readonly ICdnService cdnService;
         private readonly IHostingEnvironment environment;
+        private readonly IConfiguration configuration;
 
-        public UserController(ApplicationDbContext dbContext, ILogger<UserController> logger, ICdnService cdnService, IUserManager userManager, IHostingEnvironment environment)
+        public UserController(ApplicationDbContext dbContext, ILogger<UserController> logger, ICdnService cdnService, IUserManager userManager, IHostingEnvironment environment, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.cdnService = cdnService;
             this.environment = environment;
+            this.configuration = configuration;
         }
 
         [HttpGet("users/home/{userID?}")]
@@ -49,7 +52,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = await HomeViewModel.CreateAsync(appUser, user, cdnService, dbContext, environment);
+            var viewModel = await HomeViewModel.CreateAsync(appUser, user, cdnService, dbContext, environment, configuration);
 
             return View(viewModel);
         }

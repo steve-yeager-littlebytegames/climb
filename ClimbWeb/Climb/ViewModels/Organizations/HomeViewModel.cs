@@ -2,6 +2,7 @@
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Organizations
 {
@@ -12,8 +13,8 @@ namespace Climb.ViewModels.Organizations
         public IReadOnlyList<OrganizationUser> Members { get; }
         public IReadOnlyList<League> AdminLeagues { get; }
 
-        public HomeViewModel(ApplicationUser user, Organization organization)
-            : base(user)
+        public HomeViewModel(ApplicationUser user, Organization organization, IConfiguration configuration)
+            : base(user, configuration)
         {
             Organization = organization;
 

@@ -6,6 +6,7 @@ using Climb.Models;
 using Climb.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Users
 {
@@ -31,8 +32,8 @@ namespace Climb.ViewModels.Users
         public IReadOnlyList<SharedLeagueUsers> SharedLeagues { get; }
         public IReadOnlyList<SetRequest> SetRequests { get; }
 
-        private HomeViewModel(ApplicationUser user, ApplicationUser homeUser, string profilePic, IReadOnlyList<Set> recentSets, IReadOnlyList<Set> availableSets, IReadOnlyList<SetRequest> setRequests)
-            : base(user)
+        private HomeViewModel(ApplicationUser user, ApplicationUser homeUser, string profilePic, IReadOnlyList<Set> recentSets, IReadOnlyList<Set> availableSets, IReadOnlyList<SetRequest> setRequests, IConfiguration configuration)
+            : base(user, configuration)
         {
             HomeUser = homeUser;
             ProfilePic = profilePic;
@@ -53,7 +54,7 @@ namespace Climb.ViewModels.Users
             SharedLeagues = sharedLeagues;
         }
 
-        public static async Task<HomeViewModel> CreateAsync(ApplicationUser user, ApplicationUser homeUser, ICdnService cdnService, ApplicationDbContext dbContext, IHostingEnvironment environment)
+        public static async Task<HomeViewModel> CreateAsync(ApplicationUser user, ApplicationUser homeUser, ICdnService cdnService, ApplicationDbContext dbContext, IHostingEnvironment environment, IConfiguration configuration)
         {
             var profilePic = cdnService.GetUserProfilePicUrl(homeUser.Id, homeUser.ProfilePicKey, ClimbImageRules.ProfilePic);
             var sets = homeUser.LeagueUsers.SelectMany(lu => lu.P1Sets.Union(lu.P2Sets)).ToArray();
@@ -74,7 +75,7 @@ namespace Climb.ViewModels.Users
                     .ToArrayAsync();
             }
 
-            return new HomeViewModel(user, homeUser, profilePic, recentSets, availableSets, setRequests);
+            return new HomeViewModel(user, homeUser, profilePic, recentSets, availableSets, setRequests, configuration);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using Climb.Data;
 using Climb.Models;
 using Climb.Services;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -37,8 +37,8 @@ namespace Climb.ViewModels.Seasons
         public string ProfilePic { get; }
         public int RemainingSets { get; }
 
-        public DetailsViewModel(ApplicationUser user, SeasonLeagueUser participant, Season season, IHostingEnvironment environment, ICdnService cdnService)
-            : base(user, season, environment)
+        public DetailsViewModel(ApplicationUser user, SeasonLeagueUser participant, Season season, IConfiguration configuration, ICdnService cdnService)
+            : base(user, season, configuration)
         {
             DetailsParticipant = participant;
 

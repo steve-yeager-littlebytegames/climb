@@ -6,9 +6,9 @@ using Climb.Requests.Seasons;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.ViewModels.Seasons;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -16,17 +16,17 @@ namespace Climb.Controllers
     public class SeasonController : BaseController<SeasonController>
     {
         private readonly ISeasonService seasonService;
-        private readonly IHostingEnvironment environment;
         private readonly IDateService dateService;
         private readonly ICdnService cdnService;
+        private readonly IConfiguration configuration;
 
-        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager, IHostingEnvironment environment, IDateService dateService, ICdnService cdnService)
+        public SeasonController(ISeasonService seasonService, ApplicationDbContext dbContext, ILogger<SeasonController> logger, IUserManager userManager, IDateService dateService, ICdnService cdnService, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.seasonService = seasonService;
-            this.environment = environment;
             this.dateService = dateService;
             this.cdnService = cdnService;
+            this.configuration = configuration;
         }
 
         [HttpGet("seasons/home/{seasonID:int}")]
@@ -46,7 +46,7 @@ namespace Climb.Controllers
                 return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new HomeViewModel(user, season, environment);
+            var viewModel = new HomeViewModel(user, season, configuration);
             return View(viewModel);
         }
 
@@ -68,7 +68,7 @@ namespace Climb.Controllers
                 return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new MembershipViewModel(user, season, environment);
+            var viewModel = new MembershipViewModel(user, season, configuration);
             return View(viewModel);
         }
 
@@ -89,7 +89,7 @@ namespace Climb.Controllers
                 return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new DataViewModel(user, season, environment, dateService);
+            var viewModel = new DataViewModel(user, season, configuration, dateService);
             return View(viewModel);
         }
 
@@ -110,7 +110,7 @@ namespace Climb.Controllers
                 return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new SetsViewModel(user, season, environment);
+            var viewModel = new SetsViewModel(user, season, configuration);
             return View(viewModel);
         }
 
@@ -131,7 +131,7 @@ namespace Climb.Controllers
                 return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new ManageViewModel(user, season, environment);
+            var viewModel = new ManageViewModel(user, season, configuration);
             return View(viewModel);
         }
 
@@ -221,7 +221,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = new DetailsViewModel(user, participant, participant.Season, environment, cdnService);
+            var viewModel = new DetailsViewModel(user, participant, participant.Season, configuration, cdnService);
             return View(viewModel);
         }
     }

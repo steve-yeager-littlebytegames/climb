@@ -6,6 +6,7 @@ using Climb.Services;
 using Climb.ViewModels.Tournaments;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -13,11 +14,13 @@ namespace Climb.Controllers
     public class TournamentController : BaseController<TournamentController>
     {
         private readonly ITournamentService tournamentService;
+        private readonly IConfiguration configuration;
 
-        public TournamentController(ILogger<TournamentController> logger, IUserManager userManager, ApplicationDbContext dbContext, ITournamentService tournamentService)
+        public TournamentController(ILogger<TournamentController> logger, IUserManager userManager, ApplicationDbContext dbContext, ITournamentService tournamentService, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.tournamentService = tournamentService;
+            this.configuration = configuration;
         }
 
         [HttpGet("tournaments/home/{id:int}")]
@@ -38,7 +41,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = new HomeViewModel(user, tournament);
+            var viewModel = new HomeViewModel(user, tournament, configuration);
             return View(viewModel);
         }
 
@@ -51,7 +54,7 @@ namespace Climb.Controllers
                 .Include(t => t.TournamentUsers).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .FirstOrDefaultAsync(t => t.ID == id);
 
-            var viewModel = new CompetitorsViewModel(user, tournament);
+            var viewModel = new CompetitorsViewModel(user, tournament, configuration);
             return View(viewModel);
         }
         
@@ -64,7 +67,7 @@ namespace Climb.Controllers
                 .Include(t => t.TournamentUsers).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .FirstOrDefaultAsync(t => t.ID == id);
 
-            var viewModel = new ManageViewModel(user, tournament);
+            var viewModel = new ManageViewModel(user, tournament, configuration);
             return View(viewModel);
         }
 

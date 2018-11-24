@@ -1,5 +1,6 @@
 ﻿using Climb.Data;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels
 {
@@ -9,8 +10,8 @@ namespace Climb.ViewModels
         [UsedImplicitly]
         public T Request { get; }
 
-        public RequestViewModel(ApplicationUser user)
-            : base(user)
+        public RequestViewModel(ApplicationUser user, IConfiguration configuration)
+            : base(user, configuration)
         {
         }
     }

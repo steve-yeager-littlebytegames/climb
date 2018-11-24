@@ -2,6 +2,7 @@
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Leagues
 {
@@ -10,8 +11,8 @@ namespace Climb.ViewModels.Leagues
         public IReadOnlyList<LeagueUser> Members { get; }
         public IReadOnlyList<LeagueUser> Newcomers { get; }
 
-        public HomeViewModel(ApplicationUser user, League league)
-            : base(user, league)
+        public HomeViewModel(ApplicationUser user, League league, IConfiguration configuration)
+            : base(user, league, configuration)
         {
             league.Members.Sort();
             Members = league.Members.Where(lu => !lu.IsNewcomer).ToList();

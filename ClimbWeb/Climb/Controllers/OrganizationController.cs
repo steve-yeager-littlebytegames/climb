@@ -8,6 +8,7 @@ using Climb.ViewModels.Organizations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -16,12 +17,14 @@ namespace Climb.Controllers
     {
         private readonly IOrganizationService organizationService;
         private readonly IDateService dateService;
+        private readonly IConfiguration configuration;
 
-        public OrganizationController(ILogger<OrganizationController> logger, IUserManager userManager, ApplicationDbContext dbContext, IOrganizationService organizationService, IDateService dateService)
+        public OrganizationController(ILogger<OrganizationController> logger, IUserManager userManager, ApplicationDbContext dbContext, IOrganizationService organizationService, IDateService dateService, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.organizationService = organizationService;
             this.dateService = dateService;
+            this.configuration = configuration;
         }
 
         [HttpGet("organizations")]
@@ -33,7 +36,7 @@ namespace Climb.Controllers
                 .Include(l => l.Leagues).ThenInclude(l => l.Members).AsNoTracking()
                 .ToArrayAsync();
 
-            var viewModel = new IndexViewModel(user, organizations);
+            var viewModel = new IndexViewModel(user, organizations, configuration);
             return View(viewModel);
         }
 
@@ -46,7 +49,7 @@ namespace Climb.Controllers
                 .Include(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == organizationID);
 
-            var viewModel = new HomeViewModel(user, organization);
+            var viewModel = new HomeViewModel(user, organization, configuration);
 
             return View(viewModel);
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Games
 {
@@ -8,8 +9,8 @@ namespace Climb.ViewModels.Games
     {
         public IReadOnlyList<Game> AllGames { get; }
 
-        public IndexViewModel(ApplicationUser user, IReadOnlyList<Game> allGames)
-            : base(user)
+        public IndexViewModel(ApplicationUser user, IReadOnlyList<Game> allGames, IConfiguration configuration)
+            : base(user, configuration)
         {
             AllGames = allGames;
         }

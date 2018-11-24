@@ -11,5 +11,12 @@ namespace Climb.Extensions
             var securityToken = configuration["SecurityKey"];
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityToken));
         }
+
+        public static bool IsDevMode(this IConfiguration configuration, DevModes devMode)
+        {
+            const string key = "DevMode";
+            var definedMode = configuration.GetValue<DevModes>(key);
+            return definedMode == devMode;
+        }
     }
 }
