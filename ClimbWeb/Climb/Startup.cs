@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Climb.Core.TieBreakers;
+﻿using Climb.Core.TieBreakers;
 using Climb.Data;
 using Climb.Services;
 using Climb.Services.ModelServices;
@@ -12,8 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NJsonSchema;
-using NSwag.AspNetCore;
 
 namespace Climb
 {
@@ -34,13 +31,13 @@ namespace Climb
             ConfigureDB(services);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-            })
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -53,7 +50,7 @@ namespace Climb
             ConfigureCdn(services);
             ConfigureTransient(services);
 
-            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            if(string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
             {
                 services.AddTransient<IDateService, DateService>();
             }
@@ -62,7 +59,7 @@ namespace Climb
                 services.AddTransient<IDateService, ControlledDateService>();
             }
 
-            if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
+            if(string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
             {
                 services.AddTransient<IEmailSender, NullEmailService>();
             }
@@ -134,13 +131,6 @@ namespace Climb
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-
-                //app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                //{
-                //    HotModuleReplacement = false,
-                //    ReactHotModuleReplacement = false,
-                //    EnvironmentVariables = new Dictionary<string, string> {{"mode", "development"}},
-                //});
             }
             else
             {
@@ -151,7 +141,7 @@ namespace Climb
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseSwaggerUi3(typeof(Startup).GetTypeInfo().Assembly, s => { });
+            app.UseSwaggerUi3(s => { });
 
             app.UseAuthentication();
 

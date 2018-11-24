@@ -22,7 +22,7 @@ namespace Climb.Test.Services.ModelServices
 
             testObj = new OrganizationService(dbContext);
 
-            userID = DbContextUtility.AddNew<ApplicationUser>(dbContext).Id;
+            userID = dbContext.AddNew<ApplicationUser>().Id;
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace Climb.Test.Services.ModelServices
 
             Assert.AreEqual(1, organization.Leagues.Count);
         }
-        
+
         [Test]
         public async Task AddLeague_LeagueInAnotherOrg_LeagueNotAdded()
         {
@@ -81,7 +81,7 @@ namespace Climb.Test.Services.ModelServices
         public void AddLeague_NotOwner_NotAuthorizedException()
         {
             var league = CreateLeagueWithAdmin();
-            var organization = DbContextUtility.AddNew<Organization>(dbContext);
+            var organization = dbContext.AddNew<Organization>();
 
             Assert.ThrowsAsync<NotAuthorizedException>(() => testObj.AddLeague(organization.ID, league.ID, userID));
         }
@@ -103,8 +103,8 @@ namespace Climb.Test.Services.ModelServices
 
         private Organization CreateOrgWithOwner()
         {
-            var organization = DbContextUtility.AddNew<Organization>(dbContext);
-            DbContextUtility.AddNew<OrganizationUser>(dbContext, ou =>
+            var organization = dbContext.AddNew<Organization>();
+            dbContext.AddNew<OrganizationUser>(ou =>
             {
                 ou.UserID = userID;
                 ou.OrganizationID = organization.ID;

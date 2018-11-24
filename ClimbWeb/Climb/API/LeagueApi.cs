@@ -57,7 +57,7 @@ namespace Climb.API
             return CodeResult(HttpStatusCode.OK, dto);
         }
 
-        [HttpPost("/api/v1/leagues/create")]
+        [HttpPost("/api/v1/leagues")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(LeagueDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Can't find game.")]
         [SwaggerResponse(HttpStatusCode.Conflict, typeof(string), "League name taken.")]

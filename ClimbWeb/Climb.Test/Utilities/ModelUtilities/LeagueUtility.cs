@@ -8,8 +8,8 @@ namespace Climb.Test.Utilities
     {
         public static League CreateLeague(ApplicationDbContext dbContext, int memberCount = 0, string adminID = null)
         {
-            var game = DbContextUtility.AddNew<Game>(dbContext);
-            var league = DbContextUtility.AddNew<League>(dbContext, l =>
+            var game = dbContext.AddNew<Game>();
+            var league = dbContext.AddNew<League>(l =>
             {
                 l.GameID = game.ID;
                 if(!string.IsNullOrWhiteSpace(adminID))
@@ -28,8 +28,8 @@ namespace Climb.Test.Utilities
 
         public static List<LeagueUser> AddUsersToLeague(League league, int count, ApplicationDbContext dbContext)
         {
-            var users = DbContextUtility.AddNewRange<ApplicationUser>(dbContext, count);
-            return DbContextUtility.AddNewRange<LeagueUser>(dbContext, count, (lu, i) =>
+            var users = dbContext.AddNewRange<ApplicationUser>(count);
+            return dbContext.AddNewRange<LeagueUser>(count, (lu, i) =>
             {
                 lu.UserID = users[i].Id;
                 lu.LeagueID = league.ID;

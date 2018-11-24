@@ -17,7 +17,7 @@ namespace Climb.Services
             var competitors = GetCompetitors(competitorCount);
             competitors = SortCompetitors(competitors);
 
-            var tournament = new TournamentData(competitors);
+            var tournament = new TournamentData();
 
             CreateFirstRounds(tournament, competitors);
             CreateMiddleRounds(tournament);

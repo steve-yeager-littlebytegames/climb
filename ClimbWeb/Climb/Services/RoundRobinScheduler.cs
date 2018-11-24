@@ -76,16 +76,7 @@ namespace Climb.Services
                 }
 
                 var season = player1.Season;
-                var set = new Set
-                {
-                    LeagueID = season.LeagueID,
-                    SeasonID = season.ID,
-                    DueDate = dueDate,
-                    Player1ID = player1.LeagueUserID,
-                    Player2ID = player2.LeagueUserID,
-                    SeasonPlayer1ID = player1.ID,
-                    SeasonPlayer2ID = player2.ID,
-                };
+                var set = new Set(season.LeagueID, player1.LeagueUserID, player2.LeagueUserID, dueDate, season.ID, player1.ID, player2.ID);
                 sets.Add(set);
             }
 

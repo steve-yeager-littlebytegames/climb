@@ -6,18 +6,12 @@ namespace Climb.Services
     {
         public class TournamentData
         {
-            public int GameCount { get; set; }
+            public int GameCount { get; private set; }
             public int RoundCount { get; set; }
-            public List<int?> Competitors { get; }
 
             public List<RoundData> Winners { get; } = new List<RoundData>();
             public List<RoundData> Losers { get; } = new List<RoundData>();
             public List<RoundData> GrandFinals { get; set; }
-
-            public TournamentData(List<int?> competitors)
-            {
-                Competitors = competitors;
-            }
 
             public RoundData AddRound(List<RoundData> bracket)
             {

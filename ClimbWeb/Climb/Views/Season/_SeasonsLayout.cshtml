@@ -19,16 +19,16 @@
     </div>
 
     <div class="home-menu d-flex justify-content-between">
-        <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-seasonID="@Model.Season.ID">Home</a>
+        <a class="@(Model.SubPageNavbarClass<HomeViewModel>())" asp-action="Home" asp-route-seasonID="@Model.Season.ID">Home</a>
         @if(Model.IsParticipant)
         {
-            <a class="@(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-seasonID="@Model.Season.ID">Membership</a>
+            <a class="@(Model.SubPageNavbarClass<MembershipViewModel>())" asp-action="Membership" asp-route-seasonID="@Model.Season.ID">Membership</a>
         }
-        <a class="@(Model.IsSubPageActive<DataViewModel>() ? "active" : "")" asp-action="Data" asp-route-seasonID="@Model.Season.ID">Data</a>
-        <a class="@(Model.IsSubPageActive<SetsViewModel>() ? "active" : "")" asp-action="Sets" asp-route-seasonID="@Model.Season.ID">Sets</a>
+        <a class="@(Model.SubPageNavbarClass<DataViewModel>())" asp-action="Data" asp-route-seasonID="@Model.Season.ID">Data</a>
+        <a class="@(Model.SubPageNavbarClass<SetsViewModel>())" asp-action="Sets" asp-route-seasonID="@Model.Season.ID">Sets</a>
         @if(Model.CanManage)
         {
-            <a class="@(Model.IsSubPageActive<ManageViewModel>() ? "active" : "")" asp-action="Manage" asp-route-seasonID="@Model.Season.ID">Manage</a>
+            <a class="@(Model.SubPageNavbarClass<ManageViewModel>())" asp-action="Manage" asp-route-seasonID="@Model.Season.ID">Manage</a>
         }
     </div>
 

@@ -51,7 +51,7 @@ namespace Climb.Test.Services.ModelServices
         {
             signInManager.PasswordSignInAsync("", "", false, false).ReturnsForAnyArgs(SignInResult.Failed);
             const string email = "user@test.com";
-            DbContextUtility.AddNew<ApplicationUser>(dbContext, u => u.Email = email);
+            dbContext.AddNew<ApplicationUser>(u => u.Email = email);
             var request = new LoginRequest {Email = email};
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.LogIn(request));
@@ -83,7 +83,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task UploadImage_Valid_SetsUserProfilePicKey()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             var file = PrepareCdnService();
 
             await testObj.UploadProfilePic(user.Id, file);
@@ -94,7 +94,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task UploadImage_Valid_ReturnImageUrl()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             var file = PrepareCdnService();
 
             var imageUrl = await testObj.UploadProfilePic(user.Id, file);
@@ -113,7 +113,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void UploadImage_NoFile_BadRequestException()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.UploadProfilePic(user.Id, null));
         }
@@ -121,7 +121,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task UpdateSettings_NewValues_ValuesUpdated()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             const string username = "bob";
             const string name = "ted";
             var file = Substitute.For<IFormFile>();
@@ -143,7 +143,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task UpdateSettings_ProfilePic_UpdatePicture()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             var file = Substitute.For<IFormFile>();
 
             await testObj.UpdateSettings(user.Id, "bob", "", file);
@@ -156,7 +156,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task UpdateSettings_NoProfilePic_DontUpdatePicture()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
 
             await testObj.UpdateSettings(user.Id, "bob", "", null);
 

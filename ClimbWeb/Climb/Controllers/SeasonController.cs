@@ -43,7 +43,7 @@ namespace Climb.Controllers
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if(season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
             var viewModel = new HomeViewModel(user, season, environment);
@@ -65,7 +65,7 @@ namespace Climb.Controllers
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
             var viewModel = new MembershipViewModel(user, season, environment);
@@ -86,7 +86,7 @@ namespace Climb.Controllers
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
             var viewModel = new DataViewModel(user, season, environment, dateService);
@@ -107,7 +107,7 @@ namespace Climb.Controllers
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
             var viewModel = new SetsViewModel(user, season, environment);
@@ -128,7 +128,7 @@ namespace Climb.Controllers
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
             if (season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
             var viewModel = new ManageViewModel(user, season, environment);

@@ -102,7 +102,7 @@ namespace Climb.API
             return CodeResult(HttpStatusCode.OK, dtos);
         }
 
-        [HttpPost("/api/v1/seasons/create")]
+        [HttpPost("/api/v1/seasons")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(SeasonDto))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(string), "Start and end date issues.")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Can't find league.")]
