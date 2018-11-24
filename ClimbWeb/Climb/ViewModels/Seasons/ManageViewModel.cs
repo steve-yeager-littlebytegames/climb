@@ -1,5 +1,4 @@
 ﻿using Climb.Data;
-using Climb.Extensions;
 using Climb.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -14,14 +13,7 @@ namespace Climb.ViewModels.Seasons
         {
             if(!season.IsActive && !season.IsComplete)
             {
-                if(configuration.IsDevMode(DevModes.Admin))
-                {
-                    CanStartSeason = true;
-                }
-                else
-                {
-                    CanStartSeason = season.League.AdminID == user?.Id;
-                }
+                CanStartSeason = IsAdminMode || season.League.AdminID == user?.Id;
             }
         }
     }
