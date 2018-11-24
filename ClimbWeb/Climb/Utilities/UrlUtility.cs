@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Climb.Utilities
@@ -8,12 +7,12 @@ namespace Climb.Utilities
     {
         public string EmailConfirmationLink(IUrlHelper urlHelper, string userID, string code, string scheme)
         {
-            return urlHelper.EmailConfirmationLink(userID, code, scheme);
+            return urlHelper.Page("/Account/ConfirmEmail", null, new {userID, code}, scheme);
         }
 
         public string ResetPasswordCallbackLink(UrlHelper urlHelper, string userID, string code, string scheme)
         {
-            throw new NotImplementedException();
+            return urlHelper.Page("/Account/ResetPassword", null, new {userID, code}, scheme);
         }
     }
 }

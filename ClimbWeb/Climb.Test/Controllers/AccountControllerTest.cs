@@ -7,7 +7,6 @@ using Climb.Test.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -37,7 +36,7 @@ namespace Climb.Test.Controllers
         [Test]
         public async Task ForgotPassword_SignedIn_RedirectToUserHome()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             userManager.GetUserAsync(null).ReturnsForAnyArgs(user);
 
             var result = await testObj.ForgotPassword();
@@ -48,7 +47,7 @@ namespace Climb.Test.Controllers
         [Test]
         public async Task ResetPassword_PasswordsDontMatch_BadRequest()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             const string password = "abc";
             const string token = "";
             userManager.ResetPasswordAsync(user, token, password).Returns(IdentityResult.Success);
@@ -57,11 +56,11 @@ namespace Climb.Test.Controllers
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
-        
+
         [Test]
         public async Task ResetPassword_PasswordsMatch_Redirect()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             const string password = "abc";
             const string token = "";
             userManager.ResetPasswordAsync(user, token, password).Returns(IdentityResult.Success);
@@ -74,7 +73,7 @@ namespace Climb.Test.Controllers
         [Test]
         public async Task ResetPassword_InvalidToken_BadRequest()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             const string password = "abc";
             const string token = "";
             userManager.ResetPasswordAsync(user, token, password).Returns(IdentityResult.Failed());

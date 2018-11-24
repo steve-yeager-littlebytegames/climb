@@ -14,11 +14,13 @@ namespace Climb.ViewModels.Tournaments
         public int P2Score { get; set; }
         public int? WinID { get; }
 
-        public GameViewModel(SetSlot setSlot)
+        private GameViewModel(SetSlot setSlot)
         {
             Identifier = setSlot.Identifier;
             IsBye = setSlot.IsBye;
             WinID = setSlot.WinSlotIdentifier;
         }
+
+        public static GameViewModel Create(SetSlot setSlot) => new GameViewModel(setSlot);
     }
 }

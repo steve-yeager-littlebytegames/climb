@@ -32,7 +32,7 @@ namespace Climb.Test.Api
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
-            var game = DbContextUtility.AddNew<Game>(dbContext);
+            var game = dbContext.AddNew<Game>();
             gameID = game.ID;
 
             seasonService = Substitute.For<ISeasonService>();
@@ -127,7 +127,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task ListForLeague_Valid_ReturnOk()
         {
-            var league = DbContextUtility.AddNew<League>(dbContext, l => l.GameID = gameID);
+            var league = dbContext.AddNew<League>(l => l.GameID = gameID);
 
             var result = await testObj.ListForLeague(league.ID);
 

@@ -24,13 +24,13 @@
     </div>
 
     <div class="home-menu d-flex justify-content-between">
-        <a class="@(Model.IsSubPageActive<HomeViewModel>() ? "active" : "")" asp-action="Home" asp-route-leagueID="@Model.League.ID">Home</a>
-        <a class="@(Model.IsSubPageActive<MembershipViewModel>() ? "active" : "")" asp-action="Membership" asp-route-leagueID="@Model.League.ID">Membership</a>
-        <a class="@(Model.IsSubPageActive<DataViewModel>() ? "active" : "")" asp-action="Data" asp-route-leagueID="@Model.League.ID">Data</a>
-        <a class="@(Model.IsSubPageActive<SeasonsViewModel>() ? "active" : "")" asp-action="Seasons" asp-route-leagueID="@Model.League.ID">Seasons</a>
+        <a class="@(Model.SubPageNavbarClass<HomeViewModel>())" asp-action="Home" asp-route-leagueID="@Model.League.ID">Home</a>
+        <a class="@(Model.SubPageNavbarClass<MembershipViewModel>())" asp-action="Membership" asp-route-leagueID="@Model.League.ID">Membership</a>
+        <a class="@(Model.SubPageNavbarClass<DataViewModel>())" asp-action="Data" asp-route-leagueID="@Model.League.ID">Data</a>
+        <a class="@(Model.SubPageNavbarClass<SeasonsViewModel>())" asp-action="Seasons" asp-route-leagueID="@Model.League.ID">Seasons</a>
         @if(Model.IsAdmin)
         {
-            <a class="@(Model.IsSubPageActive<ManageViewModel>() ? "active" : "")" asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
+            <a class="@(Model.SubPageNavbarClass<ManageViewModel>())" asp-action="Manage" asp-route-leagueID="@Model.League.ID">Manage</a>
         }
     </div>
 

@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
 using Climb.Data;
-using Climb.Models;
 using Climb.Responses.Models;
 using Climb.Services;
 using Microsoft.AspNetCore.Mvc;

@@ -35,7 +35,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task Get_Valid_Ok()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext, u => u.Email = "user@email.com");
+            var user = dbContext.AddNew<ApplicationUser>(u => u.Email = "user@email.com");
 
             var result = await testObj.Get(user.Id);
 
@@ -45,7 +45,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task Get_Valid_ReturnUser()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext, u => u.Email = "user@email.com");
+            var user = dbContext.AddNew<ApplicationUser>(u => u.Email = "user@email.com");
 
             var result = await testObj.Get(user.Id);
             var resultObj = result.GetObject<UserDto>();
@@ -64,7 +64,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task UploadProfilePic_Valid_Created()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             var file = Substitute.For<IFormFile>();
 
             var result = await testObj.UploadProfilePic(user.Id, file);
@@ -76,7 +76,7 @@ namespace Climb.Test.Api
         public async Task UploadProfilePic_Valid_ReturnUrl()
         {
             const string imageUrl = "www.image.com";
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
             var file = Substitute.For<IFormFile>();
             applicationUserService.UploadProfilePic(user.Id, file).Returns(imageUrl);
 

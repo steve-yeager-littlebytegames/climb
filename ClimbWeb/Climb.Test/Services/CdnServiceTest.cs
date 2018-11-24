@@ -49,7 +49,7 @@ namespace Climb.Test.Services
         public void GetImageUrl_MissingKey_ReturnMissingUrl(string key)
         {
             const string missingUrl = "missingURL";
-            var rules = new ImageRules(1, 1, 1, "folder", missingUrl);
+            var rules = new ImageRules(1, "folder", missingUrl);
 
             var url = testObj.GetImageUrl(key, rules);
 
@@ -60,7 +60,7 @@ namespace Climb.Test.Services
         public void GetImageUrl_HasKey_ReturnUrl()
         {
             const string missingUrl = "missingURL";
-            var rules = new ImageRules(1, 1, 1, "folder", missingUrl);
+            var rules = new ImageRules(1, "folder", missingUrl);
 
             var url = testObj.GetImageUrl("Key", rules);
 
@@ -72,7 +72,7 @@ namespace Climb.Test.Services
         {
             var image = Substitute.For<IFormFile>();
             image.Length.Returns(2);
-            var rules = new ImageRules(1, 0, 0, "", "");
+            var rules = new ImageRules(1, "", "");
 
             Assert.ThrowsAsync<ArgumentException>(() => testObj.UploadImageAsync(image, rules));
         }
@@ -81,7 +81,7 @@ namespace Climb.Test.Services
         public async Task ReplaceImage_HasOldKey_DeleteCalled()
         {
             var image = Substitute.For<IFormFile>();
-            var rules = new ImageRules(0, 0, 0, "", "");
+            var rules = new ImageRules(0, "", "");
 
             await testObj.ReplaceImageAsync("asdf", image, rules);
 
@@ -92,7 +92,7 @@ namespace Climb.Test.Services
         public async Task ReplaceImage_NoOldKey_DeleteNotCalled()
         {
             var image = Substitute.For<IFormFile>();
-            var rules = new ImageRules(0, 0, 0, "", "");
+            var rules = new ImageRules(0, "", "");
 
             await testObj.ReplaceImageAsync("", image, rules);
 
