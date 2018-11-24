@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Climb.Data;
-using Climb.Extensions;
 using Climb.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -22,13 +21,13 @@ namespace Climb.ViewModels.Seasons
         {
             Season = season;
 
-            if (user != null)
+            if(user != null)
             {
                 Participant = season.Participants.FirstOrDefault(slu => slu.UserID == user.Id);
                 Member = season.League.Members.FirstOrDefault(lu => lu.UserID == user.Id);
             }
 
-            CanManage = configuration.IsDevMode(DevModes.Admin) || Season.League.AdminID == Participant?.UserID;
+            CanManage = IsAdminMode || Season.League.AdminID == Participant?.UserID;
         }
     }
 }
