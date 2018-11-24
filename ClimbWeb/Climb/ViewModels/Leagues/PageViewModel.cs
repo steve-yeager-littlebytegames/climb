@@ -19,11 +19,7 @@ namespace Climb.ViewModels.Leagues
             League = league;
             Member = league.Members.FirstOrDefault(lu => lu.UserID == user?.Id);
 
-#if DEBUG
-            IsAdmin = true;
-#else
-            IsAdmin = user?.Id == league.AdminID;
-#endif
+            IsAdmin = IsAdminMode || user?.Id == league.AdminID;
         }
     }
 }
