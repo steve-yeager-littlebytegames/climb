@@ -71,5 +71,13 @@ namespace Climb.Data
             builder.Entity<SetRequest>().HasQueryFilter(lu => lu.IsOpen);
             builder.Entity<SetSlot>().HasKey(ss => new {ss.Identifier, ss.TournamentID});
         }
+
+        public void Clean()
+        {
+            foreach(var entry in ChangeTracker.Entries().ToArray())
+            {
+                entry.State = EntityState.Detached;
+            }
+        }
     }
 }
