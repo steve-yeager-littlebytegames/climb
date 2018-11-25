@@ -2,7 +2,7 @@
 using System.Linq;
 using Climb.Data;
 using Climb.Models;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -12,8 +12,8 @@ namespace Climb.ViewModels.Seasons
         public IReadOnlyList<Set> RecentSets { get; }
         public IEnumerable<Set> AvailableSets { get; }
 
-        public HomeViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
-            : base(user, season, environment)
+        public HomeViewModel(ApplicationUser user, Season season, IConfiguration configuration)
+            : base(user, season, configuration)
         {
             Participants = Season.Participants.OrderBy(p => p.Standing);
             RecentSets = Season.Sets.Where(s => s.IsComplete).OrderByDescending(s => s.UpdatedDate).Take(10).ToArray();

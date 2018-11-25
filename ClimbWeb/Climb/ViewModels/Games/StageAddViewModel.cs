@@ -1,5 +1,6 @@
 ﻿using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Games
 {
@@ -10,8 +11,8 @@ namespace Climb.ViewModels.Games
 
         public string ActionName => Stage == null ? "Add" : "Update";
 
-        public StageAddViewModel(ApplicationUser user, Game game, Stage stage)
-            : base(user)
+        public StageAddViewModel(ApplicationUser user, Game game, Stage stage, IConfiguration configuration)
+            : base(user, configuration)
         {
             Game = game;
             Stage = stage;

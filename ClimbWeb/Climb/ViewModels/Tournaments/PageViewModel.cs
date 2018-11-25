@@ -1,5 +1,6 @@
 ﻿using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Tournaments
 {
@@ -9,8 +10,8 @@ namespace Climb.ViewModels.Tournaments
 
         public string Name => Tournament.Name;
 
-        public PageViewModel(ApplicationUser user, Tournament tournament)
-            : base(user)
+        protected PageViewModel(ApplicationUser user, Tournament tournament, IConfiguration configuration)
+            : base(user, configuration)
         {
             Tournament = tournament;
         }

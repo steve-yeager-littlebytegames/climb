@@ -1,4 +1,5 @@
 ﻿using Climb.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels
 {
@@ -6,8 +7,8 @@ namespace Climb.ViewModels
     {
         public T Value { get; }
 
-        public GenericViewModel(ApplicationUser user, T value)
-            : base(user)
+        public GenericViewModel(ApplicationUser user, T value, IConfiguration configuration)
+            : base(user, configuration)
         {
             Value = value;
         }

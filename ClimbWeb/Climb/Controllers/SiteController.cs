@@ -32,7 +32,7 @@ namespace Climb.Controllers
         {
             var user = await GetViewUserAsync();
 
-            var viewModel = await HomeViewModel.Create(user, dbContext);
+            var viewModel = await HomeViewModel.Create(user, dbContext, configuration);
             return View(viewModel);
         }
 
@@ -64,7 +64,7 @@ namespace Climb.Controllers
                 ViewData["Success"] = success;
             }
 
-            var viewModel = new BaseViewModel(user);
+            var viewModel = new BaseViewModel(user, configuration);
             return View(viewModel);
         }
 
@@ -99,7 +99,7 @@ namespace Climb.Controllers
 
             if(string.IsNullOrWhiteSpace(search))
             {
-                return View(new SearchViewModel(user));
+                return View(new SearchViewModel(user, configuration));
             }
 
             var normalizedSearch = search.ToUpperInvariant();
@@ -117,7 +117,7 @@ namespace Climb.Controllers
                             || (!string.IsNullOrWhiteSpace(u.Name) && u.Name.ToUpperInvariant().Contains(normalizedSearch)))
                 .ToArrayAsync();
 
-            var viewModel = new SearchViewModel(user, search, gameResults, leagueResults, userResults);
+            var viewModel = new SearchViewModel(user, search, gameResults, leagueResults, userResults, configuration);
             return View(viewModel);
         }
 

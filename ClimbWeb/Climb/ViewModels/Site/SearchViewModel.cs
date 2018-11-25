@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Site
 {
@@ -15,8 +16,8 @@ namespace Climb.ViewModels.Site
         public int ResultCount => GameResults.Count + LeagueResults.Count + UserResults.Count;
         public bool NoResults => ResultCount == 0;
 
-        public SearchViewModel(ApplicationUser user)
-            : base(user)
+        public SearchViewModel(ApplicationUser user, IConfiguration configuration)
+            : base(user, configuration)
         {
             Search = string.Empty;
             GameResults = null;
@@ -24,8 +25,8 @@ namespace Climb.ViewModels.Site
             UserResults = null;
         }
 
-        public SearchViewModel(ApplicationUser user, string search, IReadOnlyList<Game> gameResults, IReadOnlyList<League> leagueResults, IReadOnlyList<ApplicationUser> userResults)
-            : base(user)
+        public SearchViewModel(ApplicationUser user, string search, IReadOnlyList<Game> gameResults, IReadOnlyList<League> leagueResults, IReadOnlyList<ApplicationUser> userResults, IConfiguration configuration)
+            : base(user, configuration)
         {
             Search = search;
             GameResults = gameResults;

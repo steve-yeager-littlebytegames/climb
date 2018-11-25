@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using Climb.Data;
-using Climb.Extensions;
 using Climb.Models;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Seasons
 {
@@ -17,18 +16,18 @@ namespace Climb.ViewModels.Seasons
         public bool IsParticipant => Participant != null;
         public bool CanJoin => Participant == null && User != null && Member != null && !Season.IsComplete;
 
-        protected PageViewModel(ApplicationUser user, Season season, IHostingEnvironment environment)
-            : base(user)
+        protected PageViewModel(ApplicationUser user, Season season, IConfiguration configuration)
+            : base(user, configuration)
         {
             Season = season;
 
-            if (user != null)
+            if(user != null)
             {
                 Participant = season.Participants.FirstOrDefault(slu => slu.UserID == user.Id);
                 Member = season.League.Members.FirstOrDefault(lu => lu.UserID == user.Id);
             }
 
-            CanManage = environment.IsSiteAdmin() || Season.League.AdminID == Participant?.UserID;
+            CanManage = IsAdminMode || Season.League.AdminID == Participant?.UserID;
         }
     }
 }

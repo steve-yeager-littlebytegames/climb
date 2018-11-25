@@ -5,15 +5,19 @@ using Climb.Services;
 using Climb.ViewModels.Sets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
 {
     public class SetController : BaseController<SetController>
     {
-        public SetController(ApplicationDbContext dbContext, ILogger<SetController> logger, IUserManager userManager)
+        private readonly IConfiguration configuration;
+
+        public SetController(ApplicationDbContext dbContext, ILogger<SetController> logger, IUserManager userManager, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
+            this.configuration = configuration;
         }
 
         [HttpGet("sets/fight/{setID:int}")]
@@ -27,7 +31,7 @@ namespace Climb.Controllers
                 .Include(s => s.Player2).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == setID);
 
-            var viewModel = new FightViewModel(user, set, referer);
+            var viewModel = new FightViewModel(user, set, referer, configuration);
             return View(viewModel);
         }
     }

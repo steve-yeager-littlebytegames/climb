@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Climb.Data;
+using Climb.Extensions;
 using Climb.Models;
 using Climb.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels
 {
@@ -11,12 +13,14 @@ namespace Climb.ViewModels
         public ApplicationUser User { get; }
         public IReadOnlyList<League> UserActiveLeagues { get; }
         public IReadOnlyList<Season> UserSeasons { get; }
+        public bool IsAdminMode { get; }
 
         public bool IsLoggedIn => User != null;
 
-        public BaseViewModel(ApplicationUser user)
+        public BaseViewModel(ApplicationUser user, IConfiguration configuration)
         {
             User = user;
+            IsAdminMode = configuration.IsDevMode(DevModes.Admin);
 
             if(user == null)
             {

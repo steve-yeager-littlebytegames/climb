@@ -10,6 +10,7 @@ using Climb.ViewModels.Games;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -19,12 +20,14 @@ namespace Climb.Controllers
         private const string AddCharacterErrorKey = "AddCharacterErrors";
         private readonly IGameService gameService;
         private readonly ICdnService cdnService;
+        private readonly IConfiguration configuration;
 
-        public GameController(IGameService gameService, ApplicationDbContext dbContext, ILogger<GameController> logger, IUserManager userManager, ICdnService cdnService)
+        public GameController(IGameService gameService, ApplicationDbContext dbContext, ILogger<GameController> logger, IUserManager userManager, ICdnService cdnService, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.gameService = gameService;
             this.cdnService = cdnService;
+            this.configuration = configuration;
         }
 
         [HttpGet("games")]
@@ -33,7 +36,7 @@ namespace Climb.Controllers
             var user = await GetViewUserAsync();
             var games = await dbContext.Games.Include(g => g.Leagues).ThenInclude(l => l.Members).AsNoTracking().ToArrayAsync();
 
-            var viewModel = new IndexViewModel(user, games);
+            var viewModel = new IndexViewModel(user, games, configuration);
             return View(viewModel);
         }
 
@@ -47,7 +50,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = HomeViewModel.Create(user, game, cdnService);
+            var viewModel = HomeViewModel.Create(user, game, cdnService, configuration);
             return View(viewModel);
         }
 
@@ -78,7 +81,7 @@ namespace Climb.Controllers
                 modelErrors.AssignErrors(ModelState);
             }
 
-            var viewModel = CharacterAddViewModel.Create(user, game, character, cdnService);
+            var viewModel = CharacterAddViewModel.Create(user, game, character, cdnService, configuration);
             return View(viewModel);
         }
 
@@ -123,7 +126,7 @@ namespace Climb.Controllers
                 }
             }
 
-            var viewModel = new StageAddViewModel(user, game, stage);
+            var viewModel = new StageAddViewModel(user, game, stage, configuration);
             return View(viewModel);
         }
 
@@ -153,7 +156,7 @@ namespace Climb.Controllers
                 modelErrors.AssignErrors(ModelState);
             }
 
-            var viewModel = new UpdateViewModel(user, null, cdnService);
+            var viewModel = new UpdateViewModel(user, null, cdnService, configuration);
             return View("Update", viewModel);
         }
 
@@ -169,7 +172,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = new UpdateViewModel(user, game, cdnService);
+            var viewModel = new UpdateViewModel(user, game, cdnService, configuration);
             return View(viewModel);
         }
 

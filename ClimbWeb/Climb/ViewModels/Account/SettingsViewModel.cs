@@ -1,6 +1,7 @@
 ﻿using Climb.Data;
 using Climb.Requests.Account;
 using Climb.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Account
 {
@@ -8,16 +9,16 @@ namespace Climb.ViewModels.Account
     {
         public string ProfilePic { get; }
 
-        private SettingsViewModel(ApplicationUser user, string profilePic)
-            : base(user)
+        private SettingsViewModel(ApplicationUser user, string profilePic, IConfiguration configuration)
+            : base(user, configuration)
         {
             ProfilePic = profilePic;
         }
 
-        public static SettingsViewModel Create(ApplicationUser user, ICdnService cdnService)
+        public static SettingsViewModel Create(ApplicationUser user, ICdnService cdnService, IConfiguration configuration)
         {
             var profilePic = cdnService.GetImageUrl(user.ProfilePicKey, ClimbImageRules.ProfilePic);
-            return new SettingsViewModel(user, profilePic);
+            return new SettingsViewModel(user, profilePic, configuration);
         }
     }
 }

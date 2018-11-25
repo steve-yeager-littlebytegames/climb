@@ -12,6 +12,7 @@ using Climb.ViewModels;
 using Climb.ViewModels.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
@@ -24,14 +25,16 @@ namespace Climb.Controllers
         private readonly ISignInManager signInManager;
         private readonly ICdnService cdnService;
         private readonly IEmailSender emailSender;
+        private readonly IConfiguration configuration;
 
-        public AccountController(ILogger<AccountController> logger, IApplicationUserService applicationUserService, IUserManager userManager, ApplicationDbContext dbContext, ISignInManager signInManager, ICdnService cdnService, IEmailSender emailSender)
+        public AccountController(ILogger<AccountController> logger, IApplicationUserService applicationUserService, IUserManager userManager, ApplicationDbContext dbContext, ISignInManager signInManager, ICdnService cdnService, IEmailSender emailSender, IConfiguration configuration)
             : base(logger, userManager, dbContext)
         {
             this.applicationUserService = applicationUserService;
             this.signInManager = signInManager;
             this.cdnService = cdnService;
             this.emailSender = emailSender;
+            this.configuration = configuration;
         }
 
         [HttpGet("account/register")]
@@ -43,7 +46,7 @@ namespace Climb.Controllers
                 return RedirectToAction("Home", "User", new {userID = user.Id});
             }
 
-            var viewModel = new RequestViewModel<RegisterRequest>(null);
+            var viewModel = new RequestViewModel<RegisterRequest>(null, configuration);
             return View(viewModel);
         }
 
@@ -84,7 +87,7 @@ namespace Climb.Controllers
                 return RedirectToAction("Home", "User", new {userID = user.Id});
             }
 
-            var viewModel = new BaseViewModel(null);
+            var viewModel = new BaseViewModel(null, configuration);
             return View(viewModel);
         }
 
@@ -124,7 +127,7 @@ namespace Climb.Controllers
                 modelErrors.AssignErrors(ModelState);
             }
 
-            var viewModel = SettingsViewModel.Create(user, cdnService);
+            var viewModel = SettingsViewModel.Create(user, cdnService, configuration);
             return View(viewModel);
         }
 
@@ -166,7 +169,7 @@ namespace Climb.Controllers
                 ViewData[EmailKey] = TempData[EmailKey];
             }
 
-            var viewModel = new BaseViewModel(null);
+            var viewModel = new BaseViewModel(null, configuration);
             return View(viewModel);
         }
 
@@ -197,7 +200,7 @@ namespace Climb.Controllers
         {
             ViewData["User"] = userID;
             ViewData["Code"] = code;
-            var viewModel = new BaseViewModel(null);
+            var viewModel = new BaseViewModel(null, configuration);
             return View(viewModel);
         }
 

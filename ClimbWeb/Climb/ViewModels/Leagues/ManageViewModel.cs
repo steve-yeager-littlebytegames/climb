@@ -1,5 +1,6 @@
 ﻿using Climb.Data;
 using Climb.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Leagues
 {
@@ -7,8 +8,8 @@ namespace Climb.ViewModels.Leagues
     {
         public bool CanStartSeason { get; }
 
-        public ManageViewModel(ApplicationUser user, League league)
-            : base(user, league)
+        public ManageViewModel(ApplicationUser user, League league, IConfiguration configuration)
+            : base(user, league, configuration)
         {
 #if DEBUG
             CanStartSeason = true;
