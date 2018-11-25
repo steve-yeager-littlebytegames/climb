@@ -20,26 +20,24 @@
         <!-- Members -->
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Members</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @if (Model.Members.Count + Model.Newcomers.Count > 0)
                 {
-                    <div class="page-section-content">
-                        @foreach (var member in Model.Members)
-                        {
-                            <partial name="./Partials/LeagueUser" model="@await LeagueUserViewModel.Create(member, cdnService, true, Url, leagueService)" />
-                        }
-                        @if (Model.Newcomers.Count > 0)
-                        {
-                            <div class="section-divider">
-                                <h5>Newcomers</h5>
-                            </div>
+                    foreach (var member in Model.Members)
+                    {
+                        <partial name="./Partials/LeagueUser" model="await LeagueUserViewModel.Create(member, cdnService, true, Url, leagueService)" />
+                    }
+                    if (Model.Newcomers.Count > 0)
+                    {
+                        <div class="section-divider">
+                            <h5>Newcomers</h5>
+                        </div>
 
-                            foreach (var newcomer in Model.Newcomers)
-                            {
-                                <partial name="./Partials/LeagueUser" model="@await LeagueUserViewModel.Create(newcomer, cdnService, true, Url, leagueService)" />
-                            }
+                        foreach (var newcomer in Model.Newcomers)
+                        {
+                            <partial name="./Partials/LeagueUser" model="await LeagueUserViewModel.Create(newcomer, cdnService, true, Url, leagueService)" />
                         }
-                    </div>
+                    }
                 }
                 else
                 {
@@ -52,7 +50,7 @@
         <!-- Activity -->
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Activity</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @*@if (Model.RecentSets.Count == 0)
                     {*@
                 <div class="text-darker">
@@ -73,7 +71,7 @@
         <!-- Sets -->
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Sets</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @*@foreach (var set in Model.AvailableSets)
                     {
                         <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)" />

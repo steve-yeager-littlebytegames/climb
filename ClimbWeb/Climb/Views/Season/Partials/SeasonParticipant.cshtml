@@ -2,24 +2,28 @@
 
 <link rel="stylesheet" href="~/dist/styles/league/leagueuser.css" />
 
-<div class="seasonparticipant-container d-flex align-items-start filterable" data-filter-keys="@Model.Participant.LeagueUser.DisplayName">
-    <img class="profile-pic" src="@Model.ProfilePic" width="64" height="64"/>
-    <div class="d-flex flex-column flex-grow-1 justify-content-center text-center">
-        <b class="name p-1"><a asp-controller="User" asp-action="Home" asp-route-userid="@Model.Participant.UserID">@Model.Participant.LeagueUser.DisplayName</a></b>
-        <div class="d-flex flex-grow-1 justify-content-around align-content-center">
-            <div class="d-flex">
-                @foreach (var character in Model.Characters)
-                {
-                    <img src="@character" width="20" height="20" />
-                }
-                @for (int i = 0; i < Model.EmptyCharacterCount; i++)
-                {
-                    <div style="width: 20px; height: 20px;"></div>
-                }
+<div class="d-flex justify-content-start">
+    <div class="rank-text mr-3 d-flex align-items-center">@Model.Participant.Standing</div>
+    <div class="seasonparticipant-container d-flex justify-content-between align-items-center flex-grow-1 filterable" data-filter-keys="@Model.Participant.LeagueUser.DisplayName">
+        <div class="d-flex align-items-center flex-grow-1">
+            <img src="@Model.ProfilePic" width="64" height="64"/>
+            <div>
+                <strong class="p-1 w-50 align-items-center"><a asp-controller="User" asp-action="Home" asp-route-userid="@Model.Participant.UserID">@Model.Participant.LeagueUser.DisplayName</a></strong>
+                <div class="d-flex">
+                    @foreach (var character in Model.Characters)
+                    {
+                        <img src="@character" width="20" height="20"/>
+                    }
+                    @for (int i = 0; i < Model.EmptyCharacterCount; i++)
+                    {
+                        <div style="width: 20px; height: 20px;"></div>
+                    }
+                </div>
             </div>
-            <div class="points-text-small">@($"P={Model.Participant.Points} TB={Model.Participant.TieBreakerPoints}")</div>
-            <div class="rank-text-small">@Model.Participant.Standing</div>
         </div>
+        <div class="points-text-small mr-3">
+            @($"{Model.Participant.Points}")
+        </div>
+        <a class="m-1 align-self-start" role="button" asp-action="Details" asp-route-participantID="@Model.Participant.ID"><i class="fas fa-info-circle"></i></a>
     </div>
-    <a class="btn btn-sm btn-cstm-secondary ml-1" role="button" asp-action="Details" asp-route-participantID="@Model.Participant.ID">Details</a>
 </div>

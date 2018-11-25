@@ -37,33 +37,30 @@
     <!-- Columns -->
     <div class="row">
         <!-- Participants -->
-        <div class="col-xl-6 page-section pb-2 mt-4">
+        <div class="col-xl-4 page-section mt-4">
             <h3>Participants</h3>
-            <div class="page-section-child">
-                <div class="page-section-content">
-                    @if(Model.Participants.Any())
+            <div class="page-section-content">
+                @if(Model.Participants.Any())
+                {
+                    foreach(var participant in Model.Participants)
                     {
-                        foreach(var participant in Model.Participants)
-                        {
-                            //To Do: style Season Participant partial like league member partial
-                            <partial name="./Partials/SeasonParticipant" model="@await SeasonParticipantViewModel.Create(participant, cdnService, leagueService)"/>
-                        }
+                        //To Do: style Season Participant partial like league member partial
+                        <partial name="./Partials/SeasonParticipant" model="@await SeasonParticipantViewModel.Create(participant, cdnService, leagueService)"/>
                     }
-                    else
-                    {
-                        <div class="text-darker">
-                            <em>No participants</em>
-                        </div>
-                    }
-
-                </div>
+                }
+                else
+                {
+                    <div class="text-darker">
+                        <em>No participants</em>
+                    </div>
+                }
             </div>
         </div>
 
         <!-- Activity -->
-        <div class="col-xl-4 page-section pb-2 mt-4">
+        <div class="col-xl-4 page-section mt-4">
             <h3>Activity</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @if(Model.RecentSets.Count == 0)
                 {
                     <div class="text-darker">
@@ -81,19 +78,17 @@
         </div>
 
         <!-- Sets -->
-        <div class="col-xl-6 page-section pb-2 mt-4">
+        <div class="col-xl-4 page-section mt-4">
             <h3>Sets</h3>
-            <div class="page-section-child">
-                <div class="page-section-content">
-                    @if(Model.Season.Sets.Count > 0)
+            <div class="page-section-content">
+                @if(Model.Season.Sets.Count > 0)
+                {
+                    foreach(var set in Model.AvailableSets)
                     {
-                        foreach(var set in Model.AvailableSets)
-                        {
-                            //To Do Style set details
-                            <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
-                        }
+                        //To Do Style set details
+                        <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
                     }
-                </div>
+                }
             </div>
         </div>
     </div>}

@@ -6,14 +6,20 @@ namespace Climb.ViewModels.Sets
 {
     public class DetailsViewModel
     {
+        public enum Actions
+        {
+            Details,
+            Edit,
+            Fight,
+        }
+
         public Set Set { get; }
         public string P1ProfilePic { get; }
         public string P2ProfilePic { get; }
         public bool UserIsPlaying { get; }
         public string OpponentProfilePic { get; }
         public string SetType { get; }
-        public string ActionName { get; }
-        public string ActionButtonClass { get; }
+        public Actions Action { get; }
         public string VersusLabel => Set.IsComplete ? "-" : "vs";
 
         private DetailsViewModel(Set set, string p1ProfilePic, string p2ProfilePic, bool userIsPlaying, string opponentProfilePic)
@@ -27,18 +33,15 @@ namespace Climb.ViewModels.Sets
 
             if(set.IsLocked)
             {
-                ActionName = "Details";
-                ActionButtonClass = "btn-cstm-secondary";
+                Action = Actions.Details;
             }
             else if(set.IsComplete)
             {
-                ActionName = "Edit";
-                ActionButtonClass = "btn-cstm-secondary";
+                Action = Actions.Edit;
             }
             else
             {
-                ActionName = "Fight";
-                ActionButtonClass = "btn-cstm-primary";
+                Action = Actions.Fight;
             }
         }
 

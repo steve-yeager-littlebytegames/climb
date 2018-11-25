@@ -107,7 +107,7 @@
         <!-- Leagues -->
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Leagues</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @foreach(var leagueUser in Model.HomeUser.LeagueUsers)
                 {
                     <partial name="../League/Partials/LeagueUser" model="@await LeagueUserViewModel.Create(leagueUser, cdnService, false, Url, leagueService)"/>
@@ -118,7 +118,7 @@
         <!-- Sets -->
         <div class="col-xl-4 order-xl-2 page-section pb-2 mt-4">
             <h3>Sets</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @foreach(var set in Model.AvailableSets)
                 {
                     <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
@@ -129,7 +129,7 @@
         <!-- Activity -->
         <div class="col-xl-4 order-xl-1 page-section pb-2 mt-4">
             <h3>Activity</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @if(Model.RecentSets.Count == 0)
                 {
                     <div class="text-darker">
