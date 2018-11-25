@@ -44,7 +44,7 @@ namespace Climb.Services
                 if(seasonID != null)
                 {
                     var season = await dbContext.Seasons
-                        .Include(s => s.Participants)
+                        .Include(s => s.Participants).AsNoTracking()
                         .FirstOrDefaultAsync(s => s.ID == seasonID.Value);
                     if(season == null)
                     {
