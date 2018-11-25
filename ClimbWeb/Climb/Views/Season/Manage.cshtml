@@ -7,6 +7,11 @@
     Layout = "_SeasonsLayout";
 }
 
+@section Scripts
+{
+    <script src="~/dist/scripts/Seasons/Manage.js" type="module"></script>
+}
+
 @section SeasonsBody
 {
     @if(Model.CanStartSeason)
@@ -18,10 +23,10 @@
     }
 
     <h3>Create Tournament</h3>
-    <form id="create-tournament">
-        <input type="hidden" name="LeagueID" value="@Model.Season.LeagueID"/>
-        <input type="hidden" name="SeasonID" value="@Model.Season.ID"/>
-        <input type="text" name="Name"/>
-        <button class="btn btn-primary">Create</button>
-    </form>
+    <div>
+        <input id="tournament-league-id" type="hidden" value="@Model.Season.LeagueID"/>
+        <input id="tournament-season-id" type="hidden" value="@Model.Season.ID"/>
+        <input id="tournament-name" type="text"/>
+        <button id="tournament-button" class="btn btn-primary">Create</button>
+    </div>
 }
