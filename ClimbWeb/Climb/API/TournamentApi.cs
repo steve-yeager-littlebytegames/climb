@@ -62,6 +62,9 @@ namespace Climb.API
             try
             {
                 var tournament = await tournamentService.Create(request.LeagueID, request.SeasonID, request.Name);
+                dbContext.Clean();
+                await tournamentService.GenerateBracket(tournament.ID);
+
                 var dto = new TournamentDto(tournament);
                 return CreatedAtAction("Home", "Tournament", null, dto);
             }
