@@ -30,8 +30,6 @@ namespace Climb.Test.Api
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
-            var game = dbContext.AddNew<Game>();
-            gameID = game.ID;
 
             seasonService = Substitute.For<ISeasonService>();
             var logger = Substitute.For<ILogger<SeasonApi>>();
