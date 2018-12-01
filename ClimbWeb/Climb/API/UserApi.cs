@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Climb.API
 {
+    [Route("api/v1/users")]
     public class UserApi : BaseApi<UserApi>
     {
         private readonly ApplicationDbContext dbContext;
@@ -27,34 +28,34 @@ namespace Climb.API
             this.applicationUserService = applicationUserService;
         }
 
-        [HttpGet("/api/v1/users/{userID}")]
+        [HttpGet("{id:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(UserDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Could not find user.")]
-        public async Task<IActionResult> Get(string userID)
+        public async Task<IActionResult> Get(string id)
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userID);
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
             if(user == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find user with ID '{userID}'.");
+                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find user with ID '{id}'.");
             }
 
             var response = UserDto.Create(user, cdnService);
             return CodeResult(HttpStatusCode.OK, response);
         }
 
-        [HttpPost("/api/v1/users/uploadProfilePic")]
+        [HttpPost("{id:int}/uploadProfilePic")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(string), "Profile picture URL.")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Couldn't find user.")]
-        public async Task<IActionResult> UploadProfilePic(string userID, IFormFile image)
+        public async Task<IActionResult> UploadProfilePic(string id, IFormFile image)
         {
             try
             {
-                var imageUrl = await applicationUserService.UploadProfilePic(userID, image);
-                return CodeResultAndLog(HttpStatusCode.Created, imageUrl, $"Uploaded new profile pic for {userID}.");
+                var imageUrl = await applicationUserService.UploadProfilePic(id, image);
+                return CodeResultAndLog(HttpStatusCode.Created, imageUrl, $"Uploaded new profile pic for {id}.");
             }
             catch(Exception exception)
             {
-                return GetExceptionResult(exception, new {id = userID, image});
+                return GetExceptionResult(exception, new {id, image});
             }
         }
     }

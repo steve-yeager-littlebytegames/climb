@@ -26,14 +26,10 @@ namespace Climb.Test.Api
         private ISeasonService seasonService;
         private ApplicationDbContext dbContext;
 
-        private int gameID;
-
         [SetUp]
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
-            var game = DbContextUtility.AddNew<Game>(dbContext);
-            gameID = game.ID;
 
             seasonService = Substitute.For<ISeasonService>();
             var logger = Substitute.For<ILogger<SeasonApi>>();
@@ -114,24 +110,6 @@ namespace Climb.Test.Api
             var result = await testObj.Participants(0);
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
-        }
-
-        [Test]
-        public async Task ListForLeague_NoLeague_NotFound()
-        {
-            var result = await testObj.ListForLeague(0);
-
-            ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
-        }
-
-        [Test]
-        public async Task ListForLeague_Valid_ReturnOk()
-        {
-            var league = DbContextUtility.AddNew<League>(dbContext, l => l.GameID = gameID);
-
-            var result = await testObj.ListForLeague(league.ID);
-
-            ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
         }
 
         [Test]
