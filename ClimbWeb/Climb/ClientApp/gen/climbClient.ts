@@ -850,11 +850,11 @@ export class SeasonApi extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
-    get(seasonID: number): Promise<SeasonDto> {
-        let url_ = this.baseUrl + "/api/v1/seasons/{seasonID}";
-        if (seasonID === undefined || seasonID === null)
-            throw new Error("The parameter 'seasonID' must be defined.");
-        url_ = url_.replace("{seasonID}", encodeURIComponent("" + seasonID)); 
+    get(id: number): Promise<SeasonDto> {
+        let url_ = this.baseUrl + "/api/v1/seasons/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -894,153 +894,8 @@ export class SeasonApi extends BaseClass {
         return Promise.resolve<SeasonDto>(<any>null);
     }
 
-    sets(seasonID: number): Promise<SetDto[]> {
-        let url_ = this.baseUrl + "/api/v1/seasons/sets/{seasonID}";
-        if (seasonID === undefined || seasonID === null)
-            throw new Error("The parameter 'seasonID' must be defined.");
-        url_ = url_.replace("{seasonID}", encodeURIComponent("" + seasonID)); 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSets(_response);
-        });
-    }
-
-    protected processSets(response: Response): Promise<SetDto[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (resultData200 && resultData200.constructor === Array) {
-                result200 = [];
-                for (let item of resultData200)
-                    result200.push(SetDto.fromJS(item));
-            }
-            return result200;
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = resultData404 !== undefined ? resultData404 : <any>null;
-            return throwException("A server error occurred.", status, _responseText, _headers, result404);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SetDto[]>(<any>null);
-    }
-
-    participants(seasonID: number): Promise<SeasonLeagueUserDto[]> {
-        let url_ = this.baseUrl + "/api/v1/seasons/participants/{seasonID}";
-        if (seasonID === undefined || seasonID === null)
-            throw new Error("The parameter 'seasonID' must be defined.");
-        url_ = url_.replace("{seasonID}", encodeURIComponent("" + seasonID)); 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processParticipants(_response);
-        });
-    }
-
-    protected processParticipants(response: Response): Promise<SeasonLeagueUserDto[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (resultData200 && resultData200.constructor === Array) {
-                result200 = [];
-                for (let item of resultData200)
-                    result200.push(SeasonLeagueUserDto.fromJS(item));
-            }
-            return result200;
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = resultData404 !== undefined ? resultData404 : <any>null;
-            return throwException("A server error occurred.", status, _responseText, _headers, result404);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SeasonLeagueUserDto[]>(<any>null);
-    }
-
-    listForLeague(leagueID: number | undefined): Promise<SeasonDto[]> {
-        let url_ = this.baseUrl + "/api/v1/seasons?";
-        if (leagueID === null)
-            throw new Error("The parameter 'leagueID' cannot be null.");
-        else if (leagueID !== undefined)
-            url_ += "leagueID=" + encodeURIComponent("" + leagueID) + "&"; 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processListForLeague(_response);
-        });
-    }
-
-    protected processListForLeague(response: Response): Promise<SeasonDto[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (resultData200 && resultData200.constructor === Array) {
-                result200 = [];
-                for (let item of resultData200)
-                    result200.push(SeasonDto.fromJS(item));
-            }
-            return result200;
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = resultData404 !== undefined ? resultData404 : <any>null;
-            return throwException("A server error occurred.", status, _responseText, _headers, result404);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SeasonDto[]>(<any>null);
-    }
-
     create(leagueID: number | undefined, startDate: Date | undefined, endDate: Date | undefined): Promise<SeasonDto> {
-        let url_ = this.baseUrl + "/api/v1/seasons/create?";
+        let url_ = this.baseUrl + "/api/v1/seasons?";
         if (leagueID === null)
             throw new Error("The parameter 'leagueID' cannot be null.");
         else if (leagueID !== undefined)
@@ -1099,12 +954,107 @@ export class SeasonApi extends BaseClass {
         return Promise.resolve<SeasonDto>(<any>null);
     }
 
-    start(seasonID: number | undefined): Promise<SetDto[]> {
-        let url_ = this.baseUrl + "/api/v1/seasons/start?";
-        if (seasonID === null)
-            throw new Error("The parameter 'seasonID' cannot be null.");
-        else if (seasonID !== undefined)
-            url_ += "seasonID=" + encodeURIComponent("" + seasonID) + "&"; 
+    sets(id: number): Promise<SetDto[]> {
+        let url_ = this.baseUrl + "/api/v1/seasons/{id}/sets";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSets(_response);
+        });
+    }
+
+    protected processSets(response: Response): Promise<SetDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(SetDto.fromJS(item));
+            }
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SetDto[]>(<any>null);
+    }
+
+    participants(id: number): Promise<SeasonLeagueUserDto[]> {
+        let url_ = this.baseUrl + "/api/v1/seasons/{id}/participants";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processParticipants(_response);
+        });
+    }
+
+    protected processParticipants(response: Response): Promise<SeasonLeagueUserDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(SeasonLeagueUserDto.fromJS(item));
+            }
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SeasonLeagueUserDto[]>(<any>null);
+    }
+
+    start(id: number): Promise<SetDto[]> {
+        let url_ = this.baseUrl + "/api/v1/seasons/{id}/start";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -1141,12 +1091,11 @@ export class SeasonApi extends BaseClass {
         return Promise.resolve<SetDto[]>(<any>null);
     }
 
-    end(seasonID: number | undefined): Promise<SeasonDto> {
-        let url_ = this.baseUrl + "/api/v1/seasons/end?";
-        if (seasonID === null)
-            throw new Error("The parameter 'seasonID' cannot be null.");
-        else if (seasonID !== undefined)
-            url_ += "seasonID=" + encodeURIComponent("" + seasonID) + "&"; 
+    end(id: number): Promise<SeasonDto> {
+        let url_ = this.baseUrl + "/api/v1/seasons/{id}/end";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -1179,12 +1128,46 @@ export class SeasonApi extends BaseClass {
         return Promise.resolve<SeasonDto>(<any>null);
     }
 
-    leave(participantID: number | undefined): Promise<SeasonDto> {
-        let url_ = this.baseUrl + "/api/v1/seasons/leave?";
-        if (participantID === null)
-            throw new Error("The parameter 'participantID' cannot be null.");
-        else if (participantID !== undefined)
-            url_ += "participantID=" + encodeURIComponent("" + participantID) + "&"; 
+    updateStandings(id: number): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/v1/seasons/{id}/update-ranks";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateStandings(_response);
+        });
+    }
+
+    protected processUpdateStandings(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(<any>null);
+    }
+
+    leave(participantID: number): Promise<SeasonDto> {
+        let url_ = this.baseUrl + "/api/v1/seasons/leave/{participantID}";
+        if (participantID === undefined || participantID === null)
+            throw new Error("The parameter 'participantID' must be defined.");
+        url_ = url_.replace("{participantID}", encodeURIComponent("" + participantID)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -1215,42 +1198,6 @@ export class SeasonApi extends BaseClass {
             });
         }
         return Promise.resolve<SeasonDto>(<any>null);
-    }
-
-    updateStandings(seasonID: number | undefined): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/v1/seasons/update-ranks?";
-        if (seasonID === null)
-            throw new Error("The parameter 'seasonID' cannot be null.");
-        else if (seasonID !== undefined)
-            url_ += "seasonID=" + encodeURIComponent("" + seasonID) + "&"; 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "POST",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateStandings(_response);
-        });
-    }
-
-    protected processUpdateStandings(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(<any>null);
     }
 }
 
