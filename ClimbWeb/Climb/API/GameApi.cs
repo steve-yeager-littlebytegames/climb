@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
 using Climb.Data;
-using Climb.Models;
 using Climb.Responses.Models;
 using Climb.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Climb.API
 {
+    [Route("api/v1/games")]
     public class GameApi : BaseApi<GameApi>
     {
         private readonly ApplicationDbContext dbContext;
@@ -25,30 +25,29 @@ namespace Climb.API
             this.cdnService = cdnService;
         }
 
-        [HttpGet("/api/v1/games/{gameID:int}")]
+        [HttpGet("{id:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(GameDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
-        public async Task<IActionResult> Get(int gameID)
+        public async Task<IActionResult> Get(int id)
         {
             var game = await dbContext.Games
                 .Include(g => g.Characters).AsNoTracking()
                 .Include(g => g.Stages).AsNoTracking()
-                .FirstOrDefaultAsync(g => g.ID == gameID);
+                .FirstOrDefaultAsync(g => g.ID == id);
             if(game == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Game with ID '{gameID}'.");
+                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Game with ID '{id}'.");
             }
 
             var dto = GameDto.Create(game, cdnService);
             return CodeResult(HttpStatusCode.OK, dto);
         }
 
-        [HttpGet("/api/v1/games")]
+        [HttpGet("")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<GameDto>))]
         public async Task<IActionResult> ListAll()
         {
             var games = await dbContext.Games.ToListAsync();
-
             var dtos = games.Select(g => GameDto.Create(g, cdnService));
             return CodeResult(HttpStatusCode.OK, dtos);
         }
