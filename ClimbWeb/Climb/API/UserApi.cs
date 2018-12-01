@@ -36,7 +36,7 @@ namespace Climb.API
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
             if(user == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find user with ID '{id}'.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"Could not find user with ID '{id}'.");
             }
 
             var response = UserDto.Create(user, cdnService);
@@ -51,7 +51,7 @@ namespace Climb.API
             try
             {
                 var imageUrl = await applicationUserService.UploadProfilePic(id, image);
-                return CodeResultAndLog(HttpStatusCode.Created, imageUrl, $"Uploaded new profile pic for {id}.");
+                return GetCodeResult(HttpStatusCode.Created, imageUrl, $"Uploaded new profile pic for {id}.");
             }
             catch(Exception exception)
             {

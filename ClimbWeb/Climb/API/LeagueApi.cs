@@ -51,7 +51,7 @@ namespace Climb.API
             var league = await dbContext.Leagues.FirstOrDefaultAsync(l => l.ID == id);
             if(league == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No League with ID '{id}' found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No League with ID '{id}' found.");
             }
 
             var dto = new LeagueDto(league);
@@ -86,7 +86,7 @@ namespace Climb.API
             {
                 var leagueUser = await leagueService.Join(request.LeagueID, request.UserID);
                 var dto = new LeagueUserDto(leagueUser, cdnService);
-                return CodeResultAndLog(HttpStatusCode.Created, dto, "User joined league.");
+                return GetCodeResult(HttpStatusCode.Created, dto, "User joined league.");
             }
             catch(Exception exception)
             {
@@ -102,7 +102,7 @@ namespace Climb.API
             var league = await dbContext.Leagues.Include(l => l.Seasons).AsNoTracking().FirstOrDefaultAsync(l => l.ID == leagueID);
             if(league == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No League with ID '{leagueID}' found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No League with ID '{leagueID}' found.");
             }
 
             var dtos = league.Seasons.Select(s => new SeasonDto(s));
@@ -161,7 +161,7 @@ namespace Climb.API
             var leagueUser = await dbContext.LeagueUsers.Include(lu => lu.User).AsNoTracking().FirstOrDefaultAsync(lu => lu.ID == userID);
             if(leagueUser == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find League User with ID '{userID}'.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"Could not find League User with ID '{userID}'.");
             }
 
             var response = new LeagueUserDto(leagueUser, cdnService);
@@ -177,7 +177,7 @@ namespace Climb.API
             {
                 var leagueUser = await leagueService.Leave(leagueUserID);
                 var dto = new LeagueUserDto(leagueUser, cdnService);
-                return CodeResultAndLog(HttpStatusCode.OK, dto, "User left league.");
+                return GetCodeResult(HttpStatusCode.OK, dto, "User left league.");
             }
             catch(Exception exception)
             {

@@ -36,7 +36,7 @@ namespace Climb.API
                 .FirstOrDefaultAsync(g => g.ID == id);
             if(game == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Game with ID '{id}'.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"Could not find Game with ID '{id}'.");
             }
 
             var dto = GameDto.Create(game, cdnService);

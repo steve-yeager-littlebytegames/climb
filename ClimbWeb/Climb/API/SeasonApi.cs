@@ -43,7 +43,7 @@ namespace Climb.API
                 .FirstOrDefaultAsync(s => s.ID == id);
             if(season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No Season with ID '{id}' found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No Season with ID '{id}' found.");
             }
 
             var dto = new SeasonDto(season);
@@ -60,7 +60,7 @@ namespace Climb.API
             {
                 var season = await seasonService.Create(request.LeagueID, request.StartDate, request.EndDate);
                 var dto = new SeasonDto(season);
-                return CodeResultAndLog(HttpStatusCode.Created, dto, "Season created.");
+                return GetCodeResult(HttpStatusCode.Created, dto, "Season created.");
             }
             catch(Exception exception)
             {
@@ -80,7 +80,7 @@ namespace Climb.API
                 .FirstOrDefaultAsync(s => s.ID == id);
             if(season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No Season with ID '{id}' found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No Season with ID '{id}' found.");
             }
 
             var dtos = season.Sets.Select(s => SetDto.Create(s, season.League.GameID));
@@ -97,7 +97,7 @@ namespace Climb.API
                 .FirstOrDefaultAsync(s => s.ID == id);
             if(season == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"No Season with ID '{id}' found.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"No Season with ID '{id}' found.");
             }
 
             var dtos = season.Participants.Select(slu => new SeasonLeagueUserDto(slu, cdnService));
@@ -112,7 +112,7 @@ namespace Climb.API
             {
                 var season = await seasonService.GenerateSchedule(id);
                 var dtos = season.Sets.Select(s => SetDto.Create(s, season.League.GameID));
-                return CodeResultAndLog(HttpStatusCode.Created, dtos, "Schedule created.");
+                return GetCodeResult(HttpStatusCode.Created, dtos, "Schedule created.");
             }
             catch(Exception exception)
             {
@@ -128,7 +128,7 @@ namespace Climb.API
             {
                 var season = await seasonService.End(id);
                 var dto = new SeasonDto(season);
-                return CodeResultAndLog(HttpStatusCode.OK, dto, "Season ended.");
+                return GetCodeResult(HttpStatusCode.OK, dto, "Season ended.");
             }
             catch(Exception exception)
             {
@@ -142,7 +142,7 @@ namespace Climb.API
             try
             {
                 var season = await seasonService.UpdateRanksAsync(id);
-                return CodeResultAndLog(HttpStatusCode.OK, season.Participants, $"Season {id} standings updated.");
+                return GetCodeResult(HttpStatusCode.OK, season.Participants, $"Season {id} standings updated.");
             }
             catch(Exception exception)
             {
@@ -158,7 +158,7 @@ namespace Climb.API
             {
                 var season = await seasonService.LeaveAsync(participantID);
                 var dto = new SeasonDto(season);
-                return CodeResultAndLog(HttpStatusCode.OK, dto, "Left season.");
+                return GetCodeResult(HttpStatusCode.OK, dto, "Left season.");
             }
             catch(Exception exception)
             {

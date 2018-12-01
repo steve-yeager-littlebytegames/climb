@@ -36,7 +36,7 @@ namespace Climb.API
                 var set = await setService.Update(request.SetID, request.Matches);
                 dbContext.Entry(set).Reference(s => s.League).Load();
                 var response = SetDto.Create(set, set.League.GameID);
-                return CodeResultAndLog(HttpStatusCode.OK, response, $"Set {set.ID} updated.");
+                return GetCodeResult(HttpStatusCode.OK, response, $"Set {set.ID} updated.");
             }
             catch(Exception exception)
             {
@@ -55,7 +55,7 @@ namespace Climb.API
                 .FirstOrDefaultAsync(s => s.ID == id);
             if(set == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Set with ID '{id}'.");
+                return GetCodeResult(HttpStatusCode.NotFound, $"Could not find Set with ID '{id}'.");
             }
 
             var dto = SetDto.Create(set, set.League.GameID);
@@ -71,7 +71,7 @@ namespace Climb.API
             {
                 var request = await setService.RequestSetAsync(requesterID, challengedID, message);
                 var dto = new SetRequestDto(request);
-                return CodeResultAndLog(HttpStatusCode.Created, dto, $"Member {requesterID} challenged {challengedID}.");
+                return GetCodeResult(HttpStatusCode.Created, dto, $"Member {requesterID} challenged {challengedID}.");
             }
             catch(Exception exception)
             {

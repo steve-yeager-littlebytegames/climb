@@ -19,9 +19,9 @@ namespace Climb.API
         {
             switch(exception)
             {
-                case NotFoundException _: return CodeResultAndLog(HttpStatusCode.NotFound, exception.Message);
-                case BadRequestException _: return CodeResultAndLog(HttpStatusCode.BadRequest, exception.Message);
-                case ConflictException _: return CodeResultAndLog(HttpStatusCode.Conflict, exception.Message);
+                case NotFoundException _: return GetCodeResult(HttpStatusCode.NotFound, exception.Message);
+                case BadRequestException _: return GetCodeResult(HttpStatusCode.BadRequest, exception.Message);
+                case ConflictException _: return GetCodeResult(HttpStatusCode.Conflict, exception.Message);
                 default:
                     logger.LogError(exception, $"Error handling request\n{request}");
                     return CodeResult(HttpStatusCode.InternalServerError, "Server Error");
@@ -33,13 +33,13 @@ namespace Climb.API
             return new ObjectResult(value) {StatusCode = (int)code};
         }
 
-        protected ObjectResult CodeResultAndLog(HttpStatusCode code, object value, string message)
+        protected ObjectResult GetCodeResult(HttpStatusCode code, object value, string message)
         {
             logger.LogInformation(message);
             return new ObjectResult(value) {StatusCode = (int)code};
         }
 
-        protected ObjectResult CodeResultAndLog(HttpStatusCode code, string value)
+        protected ObjectResult GetCodeResult(HttpStatusCode code, string value)
         {
             logger.LogInformation(value);
             return new ObjectResult(value) {StatusCode = (int)code};

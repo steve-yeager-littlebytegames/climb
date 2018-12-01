@@ -38,7 +38,7 @@ namespace Climb.API
             {
                 var user = await applicationUserService.Register(request, Url, Request.Scheme);
                 var dto = UserDto.Create(user, cdnService);
-                return CodeResultAndLog(HttpStatusCode.Created, dto, "Created user.");
+                return GetCodeResult(HttpStatusCode.Created, dto, "Created user.");
             }
             catch(Exception exception)
             {
@@ -55,7 +55,7 @@ namespace Climb.API
             try
             {
                 var token = await applicationUserService.LogIn(request);
-                return CodeResultAndLog(HttpStatusCode.OK, token, "User logged in.");
+                return GetCodeResult(HttpStatusCode.OK, token, "User logged in.");
             }
             catch(Exception exception)
             {
