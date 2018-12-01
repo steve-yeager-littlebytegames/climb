@@ -1406,11 +1406,11 @@ export class UserApi extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
-    get(userID: string | null): Promise<UserDto> {
-        let url_ = this.baseUrl + "/api/v1/users/{userID}";
-        if (userID === undefined || userID === null)
-            throw new Error("The parameter 'userID' must be defined.");
-        url_ = url_.replace("{userID}", encodeURIComponent("" + userID)); 
+    get(id: string | null): Promise<UserDto> {
+        let url_ = this.baseUrl + "/api/v1/users/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -1451,14 +1451,14 @@ export class UserApi extends BaseClass {
     }
 
     /**
-     * @param userID (optional) 
      * @param image (optional) 
      * @return Profile picture URL.
      */
-    uploadProfilePic(userID: string | null | undefined, image: FileParameter | null | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/v1/users/uploadProfilePic?";
-        if (userID !== undefined)
-            url_ += "userID=" + encodeURIComponent("" + userID) + "&"; 
+    uploadProfilePic(id: string | null, image: FileParameter | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/v1/users/{id}/uploadProfilePic";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
