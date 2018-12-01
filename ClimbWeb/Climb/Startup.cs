@@ -67,6 +67,8 @@ namespace Climb
             {
                 services.AddTransient<IEmailSender, SendGridService>();
             }
+
+            services.AddSwaggerDocument();
         }
 
         private static void ConfigureTransient(IServiceCollection services)
@@ -141,7 +143,8 @@ namespace Climb
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseSwaggerUi3(s => { });
+            app.UseSwagger();
+            app.UseSwaggerUi3();
 
             app.UseAuthentication();
 
