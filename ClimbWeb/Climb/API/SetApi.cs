@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Climb.API
 {
+    [Route("/api/v1/sets")]
     public class SetApi : BaseApi<SetApi>
     {
         private readonly ApplicationDbContext dbContext;
@@ -24,7 +25,7 @@ namespace Climb.API
             this.setService = setService;
         }
 
-        [HttpPost("/api/v1/sets/submit")]
+        [HttpPost("submit")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(SetDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(string))]
@@ -43,18 +44,18 @@ namespace Climb.API
             }
         }
 
-        [HttpGet("/api/v1/sets/{setID:int}")]
+        [HttpGet("{id:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(SetDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
-        public async Task<IActionResult> Get(int setID)
+        public async Task<IActionResult> Get(int id)
         {
             var set = await dbContext.Sets
                 .Include(s => s.Matches).ThenInclude(m => m.MatchCharacters).AsNoTracking()
                 .Include(s => s.League).AsNoTracking()
-                .FirstOrDefaultAsync(s => s.ID == setID);
+                .FirstOrDefaultAsync(s => s.ID == id);
             if(set == null)
             {
-                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Set with ID '{setID}'.");
+                return CodeResultAndLog(HttpStatusCode.NotFound, $"Could not find Set with ID '{id}'.");
             }
 
             var dto = SetDto.Create(set, set.League.GameID);
@@ -62,7 +63,7 @@ namespace Climb.API
             return CodeResult(HttpStatusCode.OK, dto);
         }
         
-        [HttpPost("api/v1/sets/challenge")]
+        [HttpPost("challenge")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(SetRequestDto))]
         public async Task<IActionResult> ChallengeUser(int requesterID, int challengedID, string message)
         {
@@ -78,7 +79,7 @@ namespace Climb.API
             }
         }
 
-        [HttpPost("api/v1/sets/respondToChallenge")]
+        [HttpPost("respondToChallenge")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(SetRequestDto))]
         public async Task<IActionResult> RespondToChallenge(int requestID, bool accept)
         {

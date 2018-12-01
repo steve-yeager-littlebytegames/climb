@@ -1264,11 +1264,11 @@ export class SetApi extends BaseClass {
         return Promise.resolve<SetDto>(<any>null);
     }
 
-    get(setID: number): Promise<SetDto> {
-        let url_ = this.baseUrl + "/api/v1/sets/{setID}";
-        if (setID === undefined || setID === null)
-            throw new Error("The parameter 'setID' must be defined.");
-        url_ = url_.replace("{setID}", encodeURIComponent("" + setID)); 
+    get(id: number): Promise<SetDto> {
+        let url_ = this.baseUrl + "/api/v1/sets/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
