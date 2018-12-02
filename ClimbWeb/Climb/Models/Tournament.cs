@@ -16,5 +16,14 @@ namespace Climb.Models
         public List<SetSlot> SetSlots { get; set; }
         public List<Set> Sets { get; set; }
         public List<TournamentUser> TournamentUsers { get; set; }
+
+        public Tournament()
+        {
+        }
+
+        public Tournament(int leagueID)
+        {
+            LeagueID = leagueID;
+        }
     }
 }

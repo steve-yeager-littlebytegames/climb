@@ -20,11 +20,12 @@ namespace Climb.Models
         {
         }
 
-        public TournamentUser(SeasonLeagueUser seasonUser)
+        public TournamentUser(Tournament tournament, string userID, int leagueUserID, int? seasonUserID = null)
         {
-            UserID = seasonUser.UserID;
-            LeagueUserID = seasonUser.LeagueUserID;
-            SeasonLeagueUserID = seasonUser.ID;
+            Tournament = tournament;
+            UserID = userID;
+            LeagueUserID = leagueUserID;
+            SeasonLeagueUserID = seasonUserID;
         }
     }
 }

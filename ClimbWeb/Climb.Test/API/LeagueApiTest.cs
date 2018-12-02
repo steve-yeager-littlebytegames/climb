@@ -97,7 +97,7 @@ namespace Climb.Test.Api
         public async Task GetUser_HasUser_Ok()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
+            var leagueUser = LeagueUtility.AddUsersToLeague(dbContext, league, 1)[0];
 
             var result = await testObj.GetUser(leagueUser.ID);
             var resultObj = result.GetObject<LeagueUserDto>();

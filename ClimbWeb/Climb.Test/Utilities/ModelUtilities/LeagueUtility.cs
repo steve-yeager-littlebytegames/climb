@@ -6,7 +6,7 @@ namespace Climb.Test.Utilities
 {
     public static class LeagueUtility
     {
-        public static League CreateLeague(ApplicationDbContext dbContext, int memberCount = 0, string adminID = null)
+        public static League CreateLeague(this ApplicationDbContext dbContext, int memberCount = 0, string adminID = null)
         {
             var game = dbContext.AddNew<Game>();
             var league = dbContext.AddNew<League>(l =>
@@ -20,13 +20,13 @@ namespace Climb.Test.Utilities
 
             if(memberCount > 0)
             {
-                AddUsersToLeague(league, memberCount, dbContext);
+                AddUsersToLeague(dbContext, league, memberCount);
             }
 
             return league;
         }
 
-        public static List<LeagueUser> AddUsersToLeague(League league, int count, ApplicationDbContext dbContext)
+        public static List<LeagueUser> AddUsersToLeague(this ApplicationDbContext dbContext, League league, int count)
         {
             var users = dbContext.AddNewRange<ApplicationUser>(count);
             return dbContext.AddNewRange<LeagueUser>(count, (lu, i) =>

@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace Climb.Test.Services.ModelServices
 {
+    // TODO: league and season don't match
     [TestFixture]
     public class TournamentServiceTest
     {
@@ -58,7 +59,32 @@ namespace Climb.Test.Services.ModelServices
                 Assert.AreEqual(participant.Standing, seed);
             }
         }
-        
-        // TODO: league and season don't match
+
+        [Test]
+        public void Join_NoTournament_NotFoundException()
+        {
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.Join(-1, ""));
+        }
+
+        [Test]
+        public void Join_NoLeagueUser_NotFoundException()
+        {
+            var tournament = dbContext.CreateTournament();
+
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.Join(tournament.ID, ""));
+        }
+
+        [Test]
+        public async Task Join_NewUser_AddTournamentUser()
+        {
+            var tournament = dbContext.CreateTournament();
+            var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
+
+            var competitor = await testObj.Join(tournament.ID, member.UserID);
+
+            Assert.IsNotNull(competitor);
+        }
+
+        // TODO: Get season leagueuser
     }
 }

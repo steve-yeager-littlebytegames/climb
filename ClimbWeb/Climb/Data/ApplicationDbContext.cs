@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Climb.Models;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -78,6 +79,12 @@ namespace Climb.Data
             {
                 entry.State = EntityState.Detached;
             }
+        }
+
+        public async Task AddAndSaveAsync(object entity)
+        {
+            Add(entity);
+            await SaveChangesAsync();
         }
     }
 }

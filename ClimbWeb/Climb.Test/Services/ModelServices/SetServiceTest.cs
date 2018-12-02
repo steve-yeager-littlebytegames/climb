@@ -168,7 +168,7 @@ namespace Climb.Test.Services.ModelServices
         public void RequestSet_NoRequester_NotFoundException()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            var challenged = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
+            var challenged = LeagueUtility.AddUsersToLeague(dbContext, league, 1)[0];
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.RequestSetAsync(0, challenged.ID, null));
         }
@@ -177,7 +177,7 @@ namespace Climb.Test.Services.ModelServices
         public void RequestSet_NoChallenged_NotFoundException()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            var requester = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
+            var requester = LeagueUtility.AddUsersToLeague(dbContext, league, 1)[0];
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.RequestSetAsync(requester.ID, 0, null));
         }
@@ -186,7 +186,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task RequestSet_Valid_DateSet()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            LeagueUtility.AddUsersToLeague(dbContext, league, 2);
             var requester = league.Members[0];
             var challenged = league.Members[1];
             dateService.Now.Returns(DateTime.Today);
@@ -200,7 +200,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task RequestSet_Valid_SetLeague()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            LeagueUtility.AddUsersToLeague(dbContext, league, 2);
             var requester = league.Members[0];
             var challenged = league.Members[1];
 
@@ -295,7 +295,7 @@ namespace Climb.Test.Services.ModelServices
         private SetRequest CreateSetRequest(bool isOpen)
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            var members = LeagueUtility.AddUsersToLeague(dbContext, league, 2);
             var setRequest = dbContext.AddNew<SetRequest>(sr =>
             {
                 sr.LeagueID = league.ID;

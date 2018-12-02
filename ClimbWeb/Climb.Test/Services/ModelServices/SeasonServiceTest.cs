@@ -76,7 +76,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task Create_Valid_AddsMembers()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            LeagueUtility.AddUsersToLeague(league, 1, dbContext);
+            LeagueUtility.AddUsersToLeague(dbContext, league, 1);
 
             var season = await testObj.Create(league.ID, StartDate, EndDate);
 
@@ -390,7 +390,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task Join_SeasonNotStarted_CreateParticipant()
         {
             var season = CreateSeason((0, 0, 0));
-            var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
+            var leagueUser = LeagueUtility.AddUsersToLeague(dbContext, season.League, 1)[0];
 
             await testObj.JoinAsync(season.ID, leagueUser.UserID);
 
@@ -443,7 +443,7 @@ namespace Climb.Test.Services.ModelServices
             scheduler.GenerateSchedule(default, default, default).ReturnsForAnyArgs(new List<Set>());
             var season = CreateSeason();
             dbContext.UpdateAndSave(season, s => s.IsActive = true);
-            var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
+            var leagueUser = LeagueUtility.AddUsersToLeague(dbContext, season.League, 1)[0];
 
             await testObj.JoinAsync(season.ID, leagueUser.UserID);
 

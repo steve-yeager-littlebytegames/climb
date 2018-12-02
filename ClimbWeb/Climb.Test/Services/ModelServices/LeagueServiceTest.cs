@@ -459,7 +459,7 @@ namespace Climb.Test.Services.ModelServices
             const int deltaRank = 4;
             const int deltaPoints = -50;
             var league = LeagueUtility.CreateLeague(dbContext);
-            var member = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
+            var member = LeagueUtility.AddUsersToLeague(dbContext, league, 1)[0];
             member.Rank = 14;
             member.Points = 2000;
 
@@ -489,7 +489,7 @@ namespace Climb.Test.Services.ModelServices
         public void GetUsersRecentCharacters_CountTooSmall_BadRequestException(int characterCount)
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
+            var leagueUser = LeagueUtility.AddUsersToLeague(dbContext, league, 1)[0];
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.GetUsersRecentCharactersAsync(leagueUser.ID, characterCount));
         }
@@ -500,7 +500,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task GetUsersRecentCharacters_HasSets_ReturnsCharacters(int characterCount)
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            var members = LeagueUtility.AddUsersToLeague(dbContext, league, 2);
             var leagueUser = members[0];
 
             var characters = GameUtility.Create(dbContext, characterCount + 1, 0).Characters;
@@ -533,7 +533,7 @@ namespace Climb.Test.Services.ModelServices
             const int matchCharacterCount = 3;
 
             var league = LeagueUtility.CreateLeague(dbContext);
-            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            var members = LeagueUtility.AddUsersToLeague(dbContext, league, 2);
             var leagueUser = members[0];
 
             var characters = GameUtility.Create(dbContext, matchCharacterCount, 0).Characters;
@@ -557,7 +557,7 @@ namespace Climb.Test.Services.ModelServices
             const int matchCharacterCount = 3;
 
             var league = LeagueUtility.CreateLeague(dbContext);
-            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
+            var members = LeagueUtility.AddUsersToLeague(dbContext, league, 2);
             var leagueUser = members[0];
 
             var characters = GameUtility.Create(dbContext, matchCharacterCount, 0).Characters;
@@ -592,7 +592,7 @@ namespace Climb.Test.Services.ModelServices
         private League CreateLeague(int memberCount)
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            LeagueUtility.AddUsersToLeague(league, memberCount, dbContext);
+            LeagueUtility.AddUsersToLeague(dbContext, league, memberCount);
             return league;
         }
 

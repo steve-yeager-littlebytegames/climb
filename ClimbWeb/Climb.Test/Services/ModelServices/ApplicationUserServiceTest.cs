@@ -169,7 +169,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task UpdateSettings_HasLeagueUsers_PropogateDisplayName()
         {
             var league = LeagueUtility.CreateLeague(dbContext);
-            var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
+            var leagueUser = LeagueUtility.AddUsersToLeague(dbContext, league, 1)[0];
             const string newDisplayName = "bob";
 
             await testObj.UpdateSettings(leagueUser.UserID, newDisplayName, "", null);
