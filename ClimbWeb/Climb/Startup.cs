@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Climb.Core.TieBreakers;
+﻿using Climb.Core.TieBreakers;
 using Climb.Data;
 using Climb.Services;
 using Climb.Services.ModelServices;
@@ -12,8 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NJsonSchema;
-using NSwag.AspNetCore;
 
 namespace Climb
 {
@@ -84,6 +81,8 @@ namespace Climb
             {
                 services.AddTransient<IEmailSender, SendGridService>();
             }
+
+            services.AddSwaggerDocument();
         }
 
         private void ConfigureCdn(IServiceCollection services)
@@ -128,13 +127,6 @@ namespace Climb
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-
-                //app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                //{
-                //    HotModuleReplacement = false,
-                //    ReactHotModuleReplacement = false,
-                //    EnvironmentVariables = new Dictionary<string, string> {{"mode", "development"}},
-                //});
             }
             else
             {
@@ -145,11 +137,8 @@ namespace Climb
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-#pragma warning disable 618
-            // Need this to register middlewares until NSwag problem is fixed.
-            app.UseSwaggerUi3(typeof(Startup).GetTypeInfo().Assembly, s => { });
-#pragma warning restore 618
-            app.UseSwaggerUi3WithApiExplorer(settings => settings.GeneratorSettings.DefaultPropertyNameHandling = PropertyNameHandling.CamelCase);
+            app.UseSwagger();
+            app.UseSwaggerUi3();
 
             app.UseAuthentication();
 
