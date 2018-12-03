@@ -4,9 +4,9 @@
 
 <div class="d-flex cstm-card set-container">
     <div class="d-flex flex-column filterable w-100" data-filter-keys="@Html.FilterKeys(Model.Set.Player1.DisplayName, Model.Set.Player2.DisplayName, Model.Set.League.Name)">
-        <div class="set-details py-1 px-2 d-flex justify-content-between">
-            <strong class="m-1">@Model.Set.DueDate.ToString("MM/dd/yy")</strong>
-            <em class="m-1">@Model.Set.League.Name</em>
+        <div class="set-details d-flex justify-content-between">
+            <strong>@Model.Set.DueDate.ToString("MM/dd/yy")</strong>
+            <em>@Model.Set.League.Name</em>
         </div>
         <div class="d-flex justify-content-between align-items-end p-3">
             <div class="d-flex flex-column align-items-start w-40">
