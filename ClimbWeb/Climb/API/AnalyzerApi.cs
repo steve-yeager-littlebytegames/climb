@@ -5,7 +5,10 @@ using Climb.Attributes;
 using Climb.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+<<<<<<< master
 using Newtonsoft.Json;
+=======
+>>>>>>> Setup class and start API tests
 
 namespace Climb.API
 {
@@ -21,7 +24,11 @@ namespace Climb.API
         }
 
         [HttpGet("analyze")]
+<<<<<<< master
         [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
+=======
+        [SwaggerResponse(HttpStatusCode.OK, typeof(AnalyzerDataCollection))]
+>>>>>>> Setup class and start API tests
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Analyze(int player1ID, int player2ID)
         {
@@ -33,7 +40,11 @@ namespace Climb.API
             try
             {
                 var result = await analyzerService.Calculate(player1ID, player2ID);
+<<<<<<< master
                 return CodeResult(HttpStatusCode.OK, JsonConvert.SerializeObject(result));
+=======
+                return CodeResult(HttpStatusCode.OK, result);
+>>>>>>> Setup class and start API tests
             }
             catch (Exception exception)
             {
