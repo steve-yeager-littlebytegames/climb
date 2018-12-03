@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Climb.API;
 using Climb.Exceptions;
@@ -46,18 +45,6 @@ namespace Climb.Test.API
             var result = await testObj.Analyze(-1, -1);
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.BadRequest);
-        }
-
-        [Test]
-        public async Task Get_Success_OkResult()
-        {
-            const int p1ID = 1;
-            const int p2ID = 2;
-            analyzerService.Calculate(p1ID, p2ID).Returns(new AnalyzerDataCollection(p1ID, p2ID, DateTime.MinValue));
-
-            var result = await testObj.Analyze(p1ID, p2ID);
-
-            ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
         }
     }
 }

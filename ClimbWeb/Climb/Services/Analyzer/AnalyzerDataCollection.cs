@@ -8,7 +8,7 @@ namespace Climb.Services
         public int Player1ID { get; }
         public int Player2ID { get; }
         public DateTime CreatedDate { get; }
-        public List<AnalyzerData> Data { get; } = new List<AnalyzerData>();
+        public IReadOnlyList<AnalyzerData> Data { get; } = new List<AnalyzerData>();
 
         public AnalyzerDataCollection(int player1ID, int player2ID, DateTime createdDate)
         {
