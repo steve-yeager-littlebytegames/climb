@@ -1,4 +1,4 @@
-﻿@using Climb.Models
+@using Climb.Models
 @model Climb.ViewModels.Games.UpdateViewModel
 
 @{
@@ -28,25 +28,25 @@
         <!--# Characters-->
         <div class="form-group row">
             <label class="col-md-4 col-form-label text-left">Characters per Match</label>
-            <input class="form-control col-md-2" asp-for="Request.CharactersPerMatch" min="1" value="@(Model.Game?.CharactersPerMatch ?? 1)" />
+            <input class="form-control col-md-2 m-w-60" asp-for="Request.CharactersPerMatch" min="1" value="@(Model.Game?.CharactersPerMatch ?? 1)" />
             <span asp-validation-for="Request.CharactersPerMatch" class="text-danger"></span>
         </div>
         <!--Max Points-->
         <div class="form-group row">
             <label class="col-md-4 col-form-label text-left">Max Match Points</label>
-            <input class="form-control col-md-2" asp-for="Request.MaxMatchPoints" min="1" value="@(Model.Game?.MaxMatchPoints ?? 1)" />
+            <input class="form-control col-md-2 m-w-60" asp-for="Request.MaxMatchPoints" min="1" value="@(Model.Game?.MaxMatchPoints ?? 1)" />
             <span asp-validation-for="Request.MaxMatchPoints" class="text-danger"></span>
         </div>
         <!--Score Name-->
         <div class="form-group row">
-            <label class="col-md-4 col-form-label text-left">Score Name</label>
-            <input class="form-control col-md-2" asp-for="Request.ScoreName" value="@(Model.Game?.ScoreName ?? Game.DefaultScoreName)" />
+            <label class="col-md-4 col-form-label text-left">Score Name <span class="optional">(Optional)</span></label>
+            <input class="form-control col-md-3" asp-for="Request.ScoreName" value="@(Model.Game?.ScoreName ?? Game.DefaultScoreName)" />
             <span asp-validation-for="Request.ScoreName" class="text-danger"></span>
         </div>
         <!--Match Name-->
         <div class="form-group row">
-            <label class="col-md-4 col-form-label text-left">Match Name</label>
-            <input class="form-control col-md-2" asp-for="Request.MatchName" value="@(Model.Game?.MatchName ?? Game.DefaultMatchName)" />
+            <label class="col-md-4 col-form-label text-left">Match Name <span class="optional">(Optional)</span></label>
+            <input class="form-control col-md-3" asp-for="Request.MatchName" value="@(Model.Game?.MatchName ?? Game.DefaultMatchName)" />
             <span asp-validation-for="Request.MatchName" class="text-danger"></span>
         </div>
         <button class="btn btn-cstm-primary mt-3 mx-auto" type="submit">@Model.Action</button>
