@@ -4,6 +4,10 @@
     {
         public string Name { get; }
 
+        public AnalyzerData()
+        {
+        }
+
         protected AnalyzerData(string name)
         {
             Name = name;
