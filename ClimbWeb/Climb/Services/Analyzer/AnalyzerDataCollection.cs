@@ -9,10 +9,14 @@ namespace Climb.Services
         public int Player2ID { get; }
         public DateTime CreatedDate { get; }
 <<<<<<< master
+<<<<<<< master
         public List<AnalyzerData> Data { get; } = new List<AnalyzerData>();
 =======
         public IReadOnlyList<AnalyzerData> Data { get; } = new List<AnalyzerData>();
 >>>>>>> Setup class and start API tests
+=======
+        public List<AnalyzerData> Data { get; } = new List<AnalyzerData>();
+>>>>>>> Implementing AnalyzerService
 
         public AnalyzerDataCollection(int player1ID, int player2ID, DateTime createdDate)
         {

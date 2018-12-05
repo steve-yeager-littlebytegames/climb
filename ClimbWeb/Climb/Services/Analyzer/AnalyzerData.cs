@@ -19,12 +19,18 @@
         public string Name { get; }
 
 <<<<<<< master
+<<<<<<< master
+=======
+>>>>>>> Implementing AnalyzerService
         public AnalyzerData()
         {
         }
 
+<<<<<<< master
 =======
 >>>>>>> Setup class and start API tests
+=======
+>>>>>>> Implementing AnalyzerService
         protected AnalyzerData(string name)
         {
             Name = name;

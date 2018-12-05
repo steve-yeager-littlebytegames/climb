@@ -1,11 +1,16 @@
+<<<<<<< master
 ﻿using System.Threading.Tasks;
 using Climb.Data;
 using Microsoft.EntityFrameworkCore;
+=======
+﻿using Climb.Data;
+>>>>>>> Implementing AnalyzerService
 
 namespace Climb.Services.DataAnalyzers
 {
     public class LeagueRecordAnalyzer : DataAnalyzer
     {
+<<<<<<< master
         private class Data
         {
             public int Rank { get; set; }
@@ -40,6 +45,11 @@ namespace Climb.Services.DataAnalyzers
             };
 
             return data;
+=======
+        public override AnalyzerData Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
+        {
+            throw new System.NotImplementedException();
+>>>>>>> Implementing AnalyzerService
         }
     }
 }
