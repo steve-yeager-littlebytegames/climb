@@ -21,17 +21,8 @@ namespace Climb.Services
 
         public async Task<AnalyzerDataCollection> Calculate(int player1ID, int player2ID)
         {
-            var player1 = await dbContext.LeagueUsers.FirstOrDefaultAsync(lu => lu.ID == player1ID);
-            if(player1 == null)
-            {
-                throw new NotFoundException(typeof(LeagueUser), player1ID);
-            }
-
-            var player2 = await dbContext.LeagueUsers.FirstOrDefaultAsync(lu => lu.ID == player2ID);
-            if(player2 == null)
-            {
-                throw new NotFoundException(typeof(LeagueUser), player2ID);
-            }
+            await VerifyPlayer(player1ID);
+            await VerifyPlayer(player2ID);
 
             var analyzers = analyzerFactory.CreateAnalyzers();
             var dataCollection = new AnalyzerDataCollection(player1ID, player2ID, dateService.Now);
@@ -46,6 +37,15 @@ namespace Climb.Services
             }
 
             return dataCollection;
+
+            async Task VerifyPlayer(int id)
+            {
+                var player = await dbContext.LeagueUsers.FirstOrDefaultAsync(lu => lu.ID == id);
+                if(player == null)
+                {
+                    throw new NotFoundException(typeof(LeagueUser), id);
+                }
+            }
         }
     }
 }
