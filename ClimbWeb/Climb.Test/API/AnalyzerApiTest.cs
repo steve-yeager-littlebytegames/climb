@@ -1,14 +1,5 @@
-<<<<<<< master
-<<<<<<< master
-﻿using System;
+using System;
 using System.Net;
-=======
-﻿using System.Net;
->>>>>>> Setup class and start API tests
-=======
-﻿using System;
-using System.Net;
->>>>>>> Successful test
 using System.Threading.Tasks;
 using Climb.API;
 using Climb.Exceptions;
@@ -46,7 +37,6 @@ namespace Climb.Test.API
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
         }
 
-        
         [Test]
         public async Task Get_SamePlayer_BadRequestResult()
         {
@@ -56,10 +46,6 @@ namespace Climb.Test.API
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.BadRequest);
         }
-<<<<<<< master
-<<<<<<< master
-=======
->>>>>>> Successful test
 
         [Test]
         public async Task Get_Success_OkResult()
@@ -72,10 +58,5 @@ namespace Climb.Test.API
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
         }
-<<<<<<< master
-=======
->>>>>>> Setup class and start API tests
-=======
->>>>>>> Successful test
     }
 }
