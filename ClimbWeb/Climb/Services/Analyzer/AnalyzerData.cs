@@ -1,6 +1,9 @@
 ﻿namespace Climb.Services
 {
 <<<<<<< master
+<<<<<<< master
+=======
+>>>>>>> Send data to WPF app
     public class PlayerData<T> : AnalyzerData
     {
         public T Player1Data { get; set; }
@@ -12,8 +15,11 @@
         }
     }
 
+<<<<<<< master
 =======
 >>>>>>> Setup class and start API tests
+=======
+>>>>>>> Send data to WPF app
     public abstract class AnalyzerData
     {
         public string Name { get; }
