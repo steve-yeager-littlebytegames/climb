@@ -6,6 +6,7 @@ using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
+using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using NSubstitute;
 using NUnit.Framework;
@@ -392,6 +393,29 @@ namespace Climb.Test.Services.ModelServices
             await testObj.UpdateStandings(league.ID);
 
             Assert.AreEqual(trend, member.RankTrend);
+        }
+
+        [Test]
+        public async Task UpdateStandings_MemberHasLeft_StillCalculated()
+        {
+            var league = CreateLeague(2);
+            var player1 = league.Members[0];
+            var player2 = league.Members[1];
+            player1.Points = 10;
+            player2.Points = 15;
+
+            var set = SetUtility.Create(dbContext, player1.ID, player2.ID, league.ID);
+            set.IsComplete = true;
+            player2.HasLeft = true;
+
+            dbContext.Update(league);
+            dbContext.SaveChanges();
+
+            dbContext.DetachEntries();
+
+            await testObj.UpdateStandings(league.ID);
+
+            pointService.Received(1).CalculatePointDeltas(10, 15, Arg.Any<bool>());
         }
 
         [Test]

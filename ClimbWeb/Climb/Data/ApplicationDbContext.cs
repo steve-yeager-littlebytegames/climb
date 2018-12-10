@@ -46,5 +46,16 @@ namespace Climb.Data
             builder.Entity<MatchCharacter>().HasKey(m => new {m.MatchID, m.CharacterID, m.LeagueUserID});
             builder.Entity<SetRequest>().HasQueryFilter(lu => lu.IsOpen);
         }
+
+        public void DetachEntries()
+        {
+            foreach(var entry in ChangeTracker.Entries().ToArray())
+            {
+                if(entry.Entity != null)
+                {
+                    entry.State = EntityState.Detached;
+                }
+            }
+        }
     }
 }

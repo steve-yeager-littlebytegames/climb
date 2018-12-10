@@ -155,7 +155,7 @@ namespace Climb.Services.ModelServices
         public async Task<League> UpdateStandings(int leagueID)
         {
             var league = await dbContext.Leagues
-                .Include(l => l.Members)
+                .Include(l => l.Members).IgnoreQueryFilters()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
             if(league == null)
             {
