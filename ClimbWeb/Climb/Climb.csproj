@@ -127,10 +127,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Climb.Core.TieBreakers\Climb.Core.TieBreakers.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="ClientApp\components\ReactApp.js">
       <DependentUpon>ReactApp.tsx</DependentUpon>
     </None>
