@@ -1,12 +1,13 @@
-﻿using Climb.Data;
+﻿using System.Threading.Tasks;
+using Climb.Data;
 
 namespace Climb.Services.DataAnalyzers
 {
     public class SeasonRecordAnalyzer : DataAnalyzer
     {
-        public override AnalyzerData Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
+        public override Task<AnalyzerData> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
         {
-            throw new System.NotImplementedException();
+            return Task.FromResult<AnalyzerData>(null);
         }
     }
 }
