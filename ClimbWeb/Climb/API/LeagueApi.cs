@@ -153,10 +153,27 @@ namespace Climb.API
             return Ok(sets);
         }
 
-        [HttpGet("user/{userID:int}")]
+        [HttpGet("{id:int}/members")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(LeagueUserDto[]))]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
+        public async Task<IActionResult> GetMembers(int id)
+        {
+            var league = await dbContext.Leagues
+                .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
+                .FirstOrDefaultAsync(l => l.ID == id);
+            if(league == null)
+            {
+                return GetCodeResult(HttpStatusCode.NotFound, $"Could not find League with ID '{id}'.");
+            }
+
+            var response = league.Members.Select(lu => new LeagueUserDto(lu, cdnService));
+            return CodeResult(HttpStatusCode.OK, response);
+        }
+
+        [HttpGet("members/{userID:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(LeagueUserDto))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
-        public async Task<IActionResult> GetUser(int userID)
+        public async Task<IActionResult> GetMember(int userID)
         {
             var leagueUser = await dbContext.LeagueUsers.Include(lu => lu.User).AsNoTracking().FirstOrDefaultAsync(lu => lu.ID == userID);
             if(leagueUser == null)

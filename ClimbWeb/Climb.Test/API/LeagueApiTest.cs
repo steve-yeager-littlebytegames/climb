@@ -98,7 +98,7 @@ namespace Climb.Test.Api
             var league = LeagueUtility.CreateLeague(dbContext);
             var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
 
-            var result = await testObj.GetUser(leagueUser.ID);
+            var result = await testObj.GetMember(leagueUser.ID);
             var resultObj = result.GetObject<LeagueUserDto>();
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
@@ -108,7 +108,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task GetUser_NoUser_NotFound()
         {
-            var result = await testObj.GetUser(0);
+            var result = await testObj.GetMember(0);
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
         }
