@@ -17,7 +17,6 @@ namespace Climb.Services
             return new List<DataAnalyzer>
             {
                 new LeagueRecordAnalyzer(dateService),
-                new LeagueRecordAnalyzer(dateService),
                 new SeasonRecordAnalyzer(),
                 new WinStreakAnalyzer(),
             };
