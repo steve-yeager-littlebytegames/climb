@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
 ﻿using System;
@@ -10,10 +9,6 @@ using System.Net;
 ﻿using System;
 using System.Net;
 >>>>>>> Successful test
-=======
-﻿using System;
-using System.Net;
->>>>>>> data-analyzer
 using System.Threading.Tasks;
 using Climb.API;
 using Climb.Exceptions;
@@ -61,13 +56,10 @@ namespace Climb.Test.API
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.BadRequest);
         }
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
 =======
 >>>>>>> Successful test
-=======
->>>>>>> data-analyzer
 
         [Test]
         public async Task Get_Success_OkResult()
@@ -80,13 +72,10 @@ namespace Climb.Test.API
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
         }
-<<<<<<< HEAD
 <<<<<<< master
 =======
 >>>>>>> Setup class and start API tests
 =======
 >>>>>>> Successful test
-=======
->>>>>>> data-analyzer
     }
 }

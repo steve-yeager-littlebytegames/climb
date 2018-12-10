@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
 ﻿using System.Threading.Tasks;
@@ -10,16 +9,11 @@ using Climb.Data;
 ﻿using System.Threading.Tasks;
 using Climb.Data;
 >>>>>>> Send data to WPF app
-=======
-﻿using System.Threading.Tasks;
-using Climb.Data;
->>>>>>> data-analyzer
 
 namespace Climb.Services
 {
     public abstract class DataAnalyzer
     {
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
         public abstract Task<AnalyzerData> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext);
@@ -29,8 +23,5 @@ namespace Climb.Services
 =======
         public abstract Task<AnalyzerData> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext);
 >>>>>>> Send data to WPF app
-=======
-        public abstract Task<AnalyzerData> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext);
->>>>>>> data-analyzer
     }
 }

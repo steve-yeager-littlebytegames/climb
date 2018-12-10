@@ -5,7 +5,6 @@ using Climb.Attributes;
 using Climb.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
 using Newtonsoft.Json;
@@ -14,9 +13,6 @@ using Newtonsoft.Json;
 =======
 using Newtonsoft.Json;
 >>>>>>> Send data to WPF app
-=======
-using Newtonsoft.Json;
->>>>>>> data-analyzer
 
 namespace Climb.API
 {
@@ -32,7 +28,6 @@ namespace Climb.API
         }
 
         [HttpGet("analyze")]
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
         [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
@@ -42,9 +37,6 @@ namespace Climb.API
 =======
         [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
 >>>>>>> Send data to WPF app
-=======
-        [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
->>>>>>> data-analyzer
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Analyze(int player1ID, int player2ID)
         {
@@ -56,7 +48,6 @@ namespace Climb.API
             try
             {
                 var result = await analyzerService.Calculate(player1ID, player2ID);
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
                 return CodeResult(HttpStatusCode.OK, JsonConvert.SerializeObject(result));
@@ -66,9 +57,6 @@ namespace Climb.API
 =======
                 return CodeResult(HttpStatusCode.OK, JsonConvert.SerializeObject(result));
 >>>>>>> Send data to WPF app
-=======
-                return CodeResult(HttpStatusCode.OK, JsonConvert.SerializeObject(result));
->>>>>>> data-analyzer
             }
             catch (Exception exception)
             {

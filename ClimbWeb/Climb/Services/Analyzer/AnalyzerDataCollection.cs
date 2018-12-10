@@ -8,7 +8,6 @@ namespace Climb.Services
         public int Player1ID { get; }
         public int Player2ID { get; }
         public DateTime CreatedDate { get; }
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
         public List<AnalyzerData> Data { get; } = new List<AnalyzerData>();
@@ -18,9 +17,6 @@ namespace Climb.Services
 =======
         public List<AnalyzerData> Data { get; } = new List<AnalyzerData>();
 >>>>>>> Implementing AnalyzerService
-=======
-        public List<AnalyzerData> Data { get; } = new List<AnalyzerData>();
->>>>>>> data-analyzer
 
         public AnalyzerDataCollection(int player1ID, int player2ID, DateTime createdDate)
         {

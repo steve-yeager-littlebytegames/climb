@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
 ﻿using System.Threading.Tasks;
@@ -12,17 +11,11 @@ using Microsoft.EntityFrameworkCore;
 using Climb.Data;
 using Microsoft.EntityFrameworkCore;
 >>>>>>> Send data to WPF app
-=======
-﻿using System.Threading.Tasks;
-using Climb.Data;
-using Microsoft.EntityFrameworkCore;
->>>>>>> data-analyzer
 
 namespace Climb.Services.DataAnalyzers
 {
     public class LeagueRecordAnalyzer : DataAnalyzer
     {
-<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
         private class Data
@@ -65,8 +58,6 @@ namespace Climb.Services.DataAnalyzers
             throw new System.NotImplementedException();
 >>>>>>> Implementing AnalyzerService
 =======
-=======
->>>>>>> data-analyzer
         private class Data
         {
             public int Rank { get; set; }
@@ -101,10 +92,7 @@ namespace Climb.Services.DataAnalyzers
             };
 
             return data;
-<<<<<<< HEAD
 >>>>>>> Send data to WPF app
-=======
->>>>>>> data-analyzer
         }
     }
 }
