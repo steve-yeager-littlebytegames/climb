@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Climb.Data;
+<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
 using Climb.Exceptions;
@@ -12,14 +13,22 @@ using Climb.Exceptions;
 using Climb.Models;
 using Microsoft.EntityFrameworkCore;
 >>>>>>> Implementing AnalyzerService
+=======
+using Climb.Exceptions;
+using Climb.Models;
+using Microsoft.EntityFrameworkCore;
+>>>>>>> data-analyzer
 
 namespace Climb.Services
 {
     public class AnalyzerService : IAnalyzerService
     {
         private readonly ApplicationDbContext dbContext;
+<<<<<<< HEAD
 <<<<<<< master
 <<<<<<< master
+=======
+>>>>>>> data-analyzer
         private readonly IDateService dateService;
         private readonly IAnalyzerFactory analyzerFactory;
 
@@ -57,6 +66,7 @@ namespace Climb.Services
                     throw new NotFoundException(typeof(LeagueUser), id);
                 }
             }
+<<<<<<< HEAD
 =======
 =======
         private readonly IDateService dateService;
@@ -119,6 +129,8 @@ namespace Climb.Services
                 }
             }
 >>>>>>> Extract local verify player method
+=======
+>>>>>>> data-analyzer
         }
     }
 }
