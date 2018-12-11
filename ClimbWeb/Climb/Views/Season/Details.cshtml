@@ -45,6 +45,7 @@
     <table class="table table-striped table-responsive-sm">
         <thead>
         <tr>
+            <th scope="col">Set ID</th>
             <th scope="col">Date</th>
             <th scope="col">VS</th>
             <th scope="col">VS Rank</th>
@@ -56,6 +57,9 @@
         @foreach(var set in Model.Sets)
         {
             <tr>
+                <td>
+                    <a asp-controller="Set" asp-action="Fight" asp-route-setID="@set.ID">@set.ID</a>
+                </td>
                 <td>@set.Date.ToShortDateString()</td>
                 <td>
                     <a asp-action="Details" asp-route-participantID="@set.OpponentID">@set.OpponentName</a>

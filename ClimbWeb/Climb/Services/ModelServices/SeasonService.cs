@@ -278,7 +278,7 @@ namespace Climb.Services.ModelServices
             var sets = new List<Set>(participant.P1Sets.Count + participant.P2Sets.Count);
             sets.AddRange(participant.P1Sets.Where(s => !s.IsComplete));
             sets.AddRange(participant.P2Sets.Where(s => !s.IsComplete));
-            sets.ForEach(s => s.Forfeit(participant.LeagueUserID));
+            sets.ForEach(s => s.Forfeit(participant.LeagueUserID, dateService));
 
             if(participant.Season.IsActive)
             {

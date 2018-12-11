@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Climb.API
 {
+    [Route("api/v1/account")]
     public class AccountApi : BaseApi<AccountApi>
     {
         private readonly ISignInManager signInManager;
@@ -28,7 +29,7 @@ namespace Climb.API
             this.cdnService = cdnService;
         }
 
-        [HttpPost("/api/v1/account/register")]
+        [HttpPost("register")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(UserDto))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(string), "Email or password is not valid.")]
         public async Task<IActionResult> Register(RegisterRequest request)
@@ -37,7 +38,7 @@ namespace Climb.API
             {
                 var user = await applicationUserService.Register(request, Url, Request.Scheme);
                 var dto = UserDto.Create(user, cdnService);
-                return CodeResultAndLog(HttpStatusCode.Created, dto, "Created user.");
+                return GetCodeResult(HttpStatusCode.Created, dto, "Created user.");
             }
             catch(Exception exception)
             {
@@ -45,7 +46,7 @@ namespace Climb.API
             }
         }
 
-        [HttpPost("/api/v1/account/logIn")]
+        [HttpPost("logIn")]
         [AllowAnonymous]
         [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(string), "Email or password is incorrect.")]
@@ -54,7 +55,7 @@ namespace Climb.API
             try
             {
                 var token = await applicationUserService.LogIn(request);
-                return CodeResultAndLog(HttpStatusCode.OK, token, "User logged in.");
+                return GetCodeResult(HttpStatusCode.OK, token, "User logged in.");
             }
             catch(Exception exception)
             {
@@ -62,7 +63,16 @@ namespace Climb.API
             }
         }
 
-        [HttpGet("/api/v1/account/test")]
+        [HttpPost("logOut")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
+        public async Task<IActionResult> Logout([UserToken] string auth)
+        {
+            await signInManager.SignOutAsync();
+            logger.LogInformation("User logged out.");
+            return RedirectToPage("/Index");
+        }
+
+        [HttpGet("test")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
         public async Task<IActionResult> Test([UserToken] string auth, string userID)
@@ -75,15 +85,6 @@ namespace Climb.API
             }
 
             return BadRequest("Not the same user!");
-        }
-
-        [HttpPost("/api/v1/account/logOut")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
-        public async Task<IActionResult> Logout([UserToken] string auth)
-        {
-            await signInManager.SignOutAsync();
-            logger.LogInformation("User logged out.");
-            return RedirectToPage("/Index");
         }
     }
 }

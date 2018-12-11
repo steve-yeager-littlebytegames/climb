@@ -22,6 +22,10 @@ namespace Climb.Data
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationUser> OrganizationUsers { get; set; }
 
+        public ApplicationDbContext()
+        {
+        }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -41,6 +45,17 @@ namespace Climb.Data
             builder.Entity<SeasonLeagueUser>().HasQueryFilter(slu => !slu.HasLeft);
             builder.Entity<MatchCharacter>().HasKey(m => new {m.MatchID, m.CharacterID, m.LeagueUserID});
             builder.Entity<SetRequest>().HasQueryFilter(lu => lu.IsOpen);
+        }
+
+        public void DetachEntries()
+        {
+            foreach(var entry in ChangeTracker.Entries().ToArray())
+            {
+                if(entry.Entity != null)
+                {
+                    entry.State = EntityState.Detached;
+                }
+            }
         }
     }
 }

@@ -3,14 +3,12 @@ using System.Linq;
 using Climb.Data;
 using Climb.Models;
 using Climb.Services;
-using MoreLinq;
 
 namespace Climb.ViewModels
 {
     public class BaseViewModel
     {
         public ApplicationUser User { get; }
-        public IReadOnlyList<Game> Games { get; }
         public IReadOnlyList<League> UserActiveLeagues { get; }
         public IReadOnlyList<Season> UserSeasons { get; }
 
@@ -36,11 +34,6 @@ namespace Climb.ViewModels
                 UserSeasons = user.Seasons
                     .Where(slu => !slu.Season.IsComplete)
                     .Select(slu => slu.Season).ToArray();
-
-                Games = leagues
-                    .DistinctBy(l => l.GameID)
-                    .Select(l => l.Game)
-                    .ToArray();
             }
         }
 

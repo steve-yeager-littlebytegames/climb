@@ -1,8 +1,7 @@
-﻿using System;
-using System.Reflection;
-using Climb.Core.TieBreakers;
+﻿using Climb.Core.TieBreakers;
 using Climb.Data;
 using Climb.Services;
+using Climb.Services.HealthChecks;
 using Climb.Services.ModelServices;
 using Climb.Utilities;
 using Microsoft.AspNetCore.Builder;
@@ -12,34 +11,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NJsonSchema;
-using NSwag.AspNetCore;
+using Microsoft.Extensions.Logging;
 
 namespace Climb
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger<Startup> logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            this.logger = logger;
         }
 
         private IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureDB(services);
+            var healthChecks = services.AddHealthChecks();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-            })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            ConfigureDB(services, healthChecks);
+            ConfigureIdentity(services);
 
             services.AddAuthentication();
 
@@ -48,7 +41,11 @@ namespace Climb
                 .AddCookieTempDataProvider();
 
             ConfigureCdn(services);
+            AddTransient(services);
+        }
 
+        private void AddTransient(IServiceCollection services)
+        {
             services.AddTransient<IApplicationUserService, ApplicationUserService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<ILeagueService, LeagueService>();
@@ -81,12 +78,28 @@ namespace Climb
             {
                 services.AddTransient<IEmailSender, SendGridService>();
             }
+
+            services.AddSwaggerDocument();
+        }
+
+        private static void ConfigureIdentity(IServiceCollection services)
+        {
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
         }
 
         private void ConfigureCdn(IServiceCollection services)
         {
             var cdnType = Configuration["CDN"];
-            switch (cdnType)
+            switch(cdnType)
             {
                 case "S3":
                     services.AddSingleton<ICdnService, S3Cdn>();
@@ -95,20 +108,28 @@ namespace Climb
                     services.AddSingleton<ICdnService, FileStorageCdn>();
                     break;
                 default:
-                    throw new NotSupportedException("Need to set a CDN type.");
+                    logger.LogWarning("No CDN established");
+                    break;
             }
         }
 
-        private void ConfigureDB(IServiceCollection services)
+        private void ConfigureDB(IServiceCollection services, IHealthChecksBuilder healthChecks)
         {
-            var connectionString = Configuration.GetConnectionString("defaultConnection");
-            if(string.IsNullOrWhiteSpace(connectionString))
+            using(logger.BeginScope("Configuring DB"))
             {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("Test"));
-            }
-            else
-            {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+                var connectionString = Configuration.GetConnectionString("defaultConnection");
+                if(string.IsNullOrWhiteSpace(connectionString))
+                {
+                    logger.LogInformation("Using In Memory DB");
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("Test"));
+                }
+                else
+                {
+                    logger.LogInformation("Using SQL Server DB");
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+                }
+
+                healthChecks.AddCheck("Database", new SqlConnectionHealthCheck(connectionString));
             }
         }
 
@@ -119,13 +140,6 @@ namespace Climb
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-
-                //app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                //{
-                //    HotModuleReplacement = false,
-                //    ReactHotModuleReplacement = false,
-                //    EnvironmentVariables = new Dictionary<string, string> {{"mode", "development"}},
-                //});
             }
             else
             {
@@ -133,11 +147,12 @@ namespace Climb
                 app.UseHsts();
             }
 
+            app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseSwaggerUi(typeof(Startup).GetTypeInfo().Assembly,
-                settings => settings.GeneratorSettings.DefaultPropertyNameHandling = PropertyNameHandling.CamelCase);
+            app.UseSwagger();
+            app.UseSwaggerUi3();
 
             app.UseAuthentication();
 

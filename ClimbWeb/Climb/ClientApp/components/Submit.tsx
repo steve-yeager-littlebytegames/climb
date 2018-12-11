@@ -12,6 +12,8 @@ interface ISetSubmitState {
     game: ClimbClient.GameDto | null;
     player1: ClimbClient.LeagueUserDto | null;
     player2: ClimbClient.LeagueUserDto | null;
+    player1LastCharacters: ClimbClient.CharacterDto[] | null;
+    player2LastCharacters: ClimbClient.CharacterDto[] | null;
 }
 
 export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmitState> {
@@ -32,6 +34,8 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             game: null,
             player1: null,
             player2: null,
+            player1LastCharacters: null,
+            player2LastCharacters: null,
         };
 
         this.onSubmit = this.onSubmit.bind(this);
@@ -84,9 +88,9 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
                 {!set.isLocked &&
                     <div className="mt-4">
                         <div>
-                        <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add {game.matchName}</button>
+                            <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add {game.matchName}</button>
                         </div>
-                
+
                         <div className="d-flex justify-content-end">
                             <button id="submit-button" className="btn btn-danger mt-4" disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
                         </div>
@@ -103,20 +107,22 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
                     set.matches.sort((a: any, b: any) => a.index - b.index);
                 }
                 this.setState({ set: set });
-                this.loadGame(set.gameID);
-                this.loadPlayers(set.player1ID, set.player2ID);
+                this.loadGame(set.gameID)
+                    .then(game => {
+                        this.setState({ game: game });
+                        this.loadPlayers(set.player1ID, set.player2ID, game.charactersPerMatch);
+                    })
+                    .catch(reason => alert(`Can't load game\n${reason}`));
             })
             .catch(reason => `Could not load set\n${reason}`);
     }
 
-    private loadGame(gameId: number) {
+    private loadGame(gameId: number): Promise<ClimbClient.GameDto> {
         const gameClient = new ClimbClient.GameApi(window.location.origin);
-        gameClient.get(gameId)
-            .then(game => this.setState({ game: game }))
-            .catch(reason => alert(`Can't load game\n${reason}`));
+        return gameClient.get(gameId);
     }
 
-    private loadPlayers(p1: number, p2: number) {
+    private loadPlayers(p1: number, p2: number, characterCount: number) {
         const leagueClient = new ClimbClient.LeagueApi(window.location.origin);
         leagueClient.getUser(p1)
             .then(player1 => this.setState({ player1: player1 }))
@@ -124,6 +130,13 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
         leagueClient.getUser(p2)
             .then(player2 => this.setState({ player2: player2 }))
             .catch(reason => alert(`Could not load player 2\n${reason}`));
+
+        leagueClient.getRecentCharacters(p1, characterCount)
+            .then(characters => this.setState({ player1LastCharacters: characters }))
+            .catch(reason => alert(`Could not load player 1 recent characters\n${reason}`));
+        leagueClient.getRecentCharacters(p2, characterCount)
+            .then(characters => this.setState({ player2LastCharacters: characters }))
+            .catch(reason => alert(`Could not load player 2 recent characters\n${reason}`));
     }
 
     private onMatchCancelled() {
@@ -218,13 +231,24 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
             newMatch.player2Characters = prevMatch.player2Characters.slice(0);
         } else {
             const characters = game.characters;
-            
+
             newMatch.player1Characters = [];
             newMatch.player2Characters = [];
 
+            const lastCharacters1 = this.state.player1LastCharacters;
+            const lastCharacters2 = this.state.player2LastCharacters;
+
             for (let i = 0; i < game.charactersPerMatch; i++) {
-                newMatch.player1Characters.push(characters[i].id);
-                newMatch.player2Characters.push(characters[i].id);
+                if (lastCharacters1 && lastCharacters1.length > i) {
+                    newMatch.player1Characters.push(lastCharacters1[i].id);
+                } else {
+                    newMatch.player1Characters.push(characters[i].id);
+                }
+                if (lastCharacters2 && lastCharacters2.length > i) {
+                    newMatch.player2Characters.push(lastCharacters2[i].id);
+                } else {
+                    newMatch.player2Characters.push(characters[i].id);
+                }
             }
         }
 

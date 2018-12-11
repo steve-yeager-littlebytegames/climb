@@ -16,6 +16,7 @@ namespace Climb.Responses.Models
         public int Points { get; }
         public int Rank { get; }
         public string ProfilePicture { get; }
+        public RankTrends RankTrend { get; }
 
         public LeagueUserDto(LeagueUser leagueUser, ICdnService cdnService)
         {
@@ -26,6 +27,7 @@ namespace Climb.Responses.Models
             Username = leagueUser.DisplayName;
             Points = leagueUser.Points;
             Rank = leagueUser.Rank;
+            RankTrend = leagueUser.RankTrend;
 
             ProfilePicture = cdnService.GetUserProfilePicUrl(leagueUser.UserID, leagueUser.User?.ProfilePicKey, ClimbImageRules.ProfilePic);
         }

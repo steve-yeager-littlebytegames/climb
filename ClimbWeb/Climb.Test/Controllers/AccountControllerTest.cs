@@ -7,7 +7,6 @@ using Climb.Test.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using NSubstitute;
 using NUnit.Framework;
 
