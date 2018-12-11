@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Climb.Data;
 using Microsoft.EntityFrameworkCore;
@@ -29,22 +28,6 @@ namespace Climb.Services.DataAnalyzers
             };
 
             return data;
-        }
-
-        public override async Task<IEnumerable<string>> AnalyzeString(int player1ID, int player2ID, ApplicationDbContext dbContext)
-        {
-            var playerData = (PlayerData<Data>)await Analyze(player1ID, player2ID, dbContext);
-
-            return new[]
-            {
-                PrintPlayer(player1ID, playerData.Player1Data),
-                PrintPlayer(player2ID, playerData.Player2Data),
-            };
-
-            string PrintPlayer(int playerID, Data data)
-            {
-                return $"{playerID} Rank={data.Rank} Weeks in League={data.WeeksInLeague}";
-            }
         }
 
         private async Task<Data> GetDataForPlayerAsync(int playerID, ApplicationDbContext dbContext)

@@ -41,15 +41,10 @@ namespace Climb.Services
 
             foreach(var analyzer in analyzers)
             {
-                //var data = await analyzer.Analyze(player1ID, player2ID, dbContext);
-                //if(data != null)
-                //{
-                //    dataCollection.Data.Add(data.ToString());
-                //}
-                var data = await analyzer.AnalyzeString(player1ID, player2ID, dbContext);
+                var data = await analyzer.Analyze(player1ID, player2ID, dbContext);
                 if(data != null)
                 {
-                    dataCollection.Data.AddRange(data);
+                    dataCollection.Data.Add(data);
                 }
             }
 

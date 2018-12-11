@@ -21,7 +21,7 @@ namespace Climb.API
         }
 
         [HttpGet("analyze")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(AnalyzerDataCollection))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Analyze(int player1ID, int player2ID)
         {
@@ -33,7 +33,7 @@ namespace Climb.API
             try
             {
                 var result = await analyzerService.Calculate(player1ID, player2ID);
-                return CodeResult(HttpStatusCode.OK, result);
+                return CodeResult(HttpStatusCode.OK, JsonConvert.SerializeObject(result));
             }
             catch(Exception exception)
             {
