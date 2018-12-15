@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using Climb.API;
@@ -52,7 +51,7 @@ namespace Climb.Test.API
         {
             const int p1ID = 1;
             const int p2ID = 2;
-            analyzerService.Calculate(p1ID, p2ID).Returns(new AnalyzerDataCollection(p1ID, p2ID, DateTime.MinValue));
+            analyzerService.Calculate(p1ID, p2ID).Returns(new string[0]);
 
             var result = await testObj.Analyze(p1ID, p2ID);
 

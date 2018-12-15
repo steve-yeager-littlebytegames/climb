@@ -48,7 +48,9 @@ namespace Climb.Test.Services
             Assert.IsNotNull(dataCollection);
             foreach(var analyzer in analyzers)
             {
+#pragma warning disable 4014
                 analyzer.Received(1).Analyze(members[0].ID, members[1].ID, dbContext);
+#pragma warning restore 4014
             }
         }
         
@@ -56,15 +58,15 @@ namespace Climb.Test.Services
         public async Task Calculate_NullAnalyzerData_DontCollectNullData()
         {
             var analyzers = CreateAnalyzers(3);
-            analyzers[0].Analyze(0, 0, null).ReturnsForAnyArgs(Substitute.For<AnalyzerData>());
-            analyzers[2].Analyze(0, 0, null).ReturnsForAnyArgs(Substitute.For<AnalyzerData>());
+            analyzers[0].Analyze(0, 0, null).ReturnsForAnyArgs(new string[1]);
+            analyzers[2].Analyze(0, 0, null).ReturnsForAnyArgs(new string[1]);
 
             analyzerFactory.CreateAnalyzers().Returns(analyzers);
             var members = dbContext.CreateLeague(2).Members;
 
             var dataCollection = await testObj.Calculate(members[0].ID, members[1].ID);
 
-            Assert.AreEqual(2, dataCollection.Data.Count);
+            Assert.AreEqual(2, dataCollection.Count);
         }
 
         private static List<DataAnalyzer> CreateAnalyzers(int count)

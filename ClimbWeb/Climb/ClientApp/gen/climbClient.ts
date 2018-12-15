@@ -261,7 +261,7 @@ export class AnalyzerApi extends BaseClass {
         this.baseUrl = baseUrl ? baseUrl : this.getBaseUrl("http://localhost:44320");
     }
 
-    analyze(player1ID: number | undefined, player2ID: number | undefined): Promise<string> {
+    analyze(player1ID: number | undefined, player2ID: number | undefined): Promise<string[]> {
         let url_ = this.baseUrl + "/api/v1/data/analyze?";
         if (player1ID === null)
             throw new Error("The parameter 'player1ID' cannot be null.");
@@ -285,14 +285,18 @@ export class AnalyzerApi extends BaseClass {
         });
     }
 
-    protected processAnalyze(response: Response): Promise<string> {
+    protected processAnalyze(response: Response): Promise<string[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(item);
+            }
             return result200;
             });
         } else if (status === 404) {
@@ -307,7 +311,7 @@ export class AnalyzerApi extends BaseClass {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(<any>null);
+        return Promise.resolve<string[]>(<any>null);
     }
 }
 

@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Climb.Services
 {
     public interface IAnalyzerService
     {
-        Task<AnalyzerDataCollection> Calculate(int player1ID, int player2ID);
+        Task<IReadOnlyList<string>> Calculate(int player1ID, int player2ID);
     }
 }
