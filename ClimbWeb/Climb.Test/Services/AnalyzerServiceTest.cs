@@ -20,10 +20,9 @@ namespace Climb.Test.Services
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
-            var dateService = Substitute.For<IDateService>();
             analyzerFactory = Substitute.For<IAnalyzerFactory>();
 
-            testObj = new AnalyzerService(dbContext, dateService, analyzerFactory);
+            testObj = new AnalyzerService(dbContext, analyzerFactory);
         }
 
         [TestCase(0, 1)]

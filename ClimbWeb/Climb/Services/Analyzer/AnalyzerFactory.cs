@@ -19,6 +19,7 @@ namespace Climb.Services
                 new LeagueRecordAnalyzer(dateService),
                 new SeasonRecordAnalyzer(),
                 new WinStreakAnalyzer(),
+                new MatchAnalyzer(),
             };
         }
     }

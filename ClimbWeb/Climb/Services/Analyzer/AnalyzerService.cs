@@ -10,13 +10,11 @@ namespace Climb.Services
     public class AnalyzerService : IAnalyzerService
     {
         private readonly ApplicationDbContext dbContext;
-        private readonly IDateService dateService;
         private readonly IAnalyzerFactory analyzerFactory;
 
-        public AnalyzerService(ApplicationDbContext dbContext, IDateService dateService, IAnalyzerFactory analyzerFactory)
+        public AnalyzerService(ApplicationDbContext dbContext, IAnalyzerFactory analyzerFactory)
         {
             this.dbContext = dbContext;
-            this.dateService = dateService;
             this.analyzerFactory = analyzerFactory;
         }
 
