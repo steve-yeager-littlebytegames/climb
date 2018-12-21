@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Climb.Data;
-using Newtonsoft.Json;
 
 namespace Climb.Models
 {
@@ -22,22 +21,13 @@ namespace Climb.Models
         public bool IsNewcomer { get; set; } = true;
         public RankTrends RankTrend { get; set; }
 
-        [JsonIgnore]
         public League League { get; set; }
-        [JsonIgnore]
         public ApplicationUser User { get; set; }
-        [JsonIgnore]
         [InverseProperty("LeagueUser")]
         public HashSet<SeasonLeagueUser> Seasons { get; set; }
-        [JsonIgnore]
         public List<RankSnapshot> RankSnapshots { get; set; }
-
-        #region For DB
-        [JsonIgnore]
         public HashSet<Set> P1Sets { get; set; }
-        [JsonIgnore]
         public HashSet<Set> P2Sets { get; set; }
-        #endregion
 
         public LeagueUser()
         {

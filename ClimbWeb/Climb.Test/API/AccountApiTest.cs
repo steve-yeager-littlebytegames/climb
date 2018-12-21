@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using Climb.API;
-using Climb.Data;
+using Climb.Models;
 using Climb.Requests.Account;
 using Climb.Services;
 using Climb.Services.ModelServices;

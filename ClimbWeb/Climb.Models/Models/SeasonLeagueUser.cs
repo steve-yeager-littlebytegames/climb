@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Climb.Core.TieBreakers;
-using Climb.Data;
 
 namespace Climb.Models
 {

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
+using Climb.Models;
 using Climb.Requests.Account;
 using Climb.Services;
 using Climb.Services.ModelServices;

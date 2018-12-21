@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Climb.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Climb.Data
+namespace Climb.Models
 {
     public class ApplicationUser : IdentityUser
     {

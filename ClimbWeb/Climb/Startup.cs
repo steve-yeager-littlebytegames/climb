@@ -1,5 +1,6 @@
 ﻿using Climb.Core.TieBreakers;
 using Climb.Data;
+using Climb.Models;
 using Climb.Services;
 using Climb.Services.HealthChecks;
 using Climb.Services.ModelServices;

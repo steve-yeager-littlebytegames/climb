@@ -129,6 +129,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Climb.Models\Climb.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="ClientApp\components\ReactApp.js">
       <DependentUpon>ReactApp.tsx</DependentUpon>
     </None>

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Climb.Data;
+using Climb.Models;
 using Climb.Services;
 
 namespace Climb.Responses

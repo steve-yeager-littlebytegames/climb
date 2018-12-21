@@ -2,6 +2,7 @@
 using Climb.Data;
 using Climb.Exceptions;
 using Climb.Extensions;
+using Climb.Models;
 using Climb.Requests.Account;
 using Climb.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -87,7 +88,7 @@ namespace Climb.Services.ModelServices
             }
 
             dbContext.Update(user);
-            
+
             var imageKey = await cdnService.ReplaceImageAsync(user.ProfilePicKey, image, ClimbImageRules.ProfilePic);
             var imageUrl = cdnService.GetImageUrl(imageKey, ClimbImageRules.ProfilePic);
             user.ProfilePicKey = imageKey;

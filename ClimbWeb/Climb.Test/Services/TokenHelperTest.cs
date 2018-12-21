@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Climb.Data;
+using Climb.Models;
 using Climb.Services;
 using Climb.Test.Utilities;
 using NUnit.Framework;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Climb.Data;
 
 namespace Climb.Models
 {
@@ -13,7 +11,6 @@ namespace Climb.Models
         public int ID { get; set; }
         public int GameID { get; set; }
         public int? OrganizationID { get; set; }
-        [Required]
         public string Name { get; set; } = "";
         public int SetsTillRank { get; set; } = 4;
         public DateTime DateCreated { get; set; }

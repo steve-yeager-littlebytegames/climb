@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using Climb.Data;
+using Climb.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Climb.Services

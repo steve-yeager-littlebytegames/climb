@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Climb.Data;
+using Climb.Models;
 using Climb.Requests.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

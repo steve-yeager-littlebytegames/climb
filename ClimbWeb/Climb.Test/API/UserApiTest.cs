@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Climb.API;
 using Climb.Data;
 using Climb.Extensions;
+using Climb.Models;
 using Climb.Responses;
 using Climb.Services;
 using Climb.Services.ModelServices;
