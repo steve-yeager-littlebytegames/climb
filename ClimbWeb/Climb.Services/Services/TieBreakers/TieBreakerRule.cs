@@ -2,11 +2,11 @@
 
 namespace Climb.Core.TieBreakers
 {
-    internal abstract class TieBreakerRule
+    public abstract class TieBreakerRule
     {
         protected abstract int GetParticipantScore((IParticipant participant, ParticipantRecord record) participant, IReadOnlyDictionary<IParticipant, ParticipantRecord> tiedParticipants);
 
-        internal List<(IParticipant participant, int score)> Evaluate(IReadOnlyDictionary<IParticipant, ParticipantRecord> tiedParticipants)
+        public List<(IParticipant participant, int score)> Evaluate(IReadOnlyDictionary<IParticipant, ParticipantRecord> tiedParticipants)
         {
             var scores = new List<(IParticipant participant, int score)>();
 

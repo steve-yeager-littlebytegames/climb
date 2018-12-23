@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Climb.Core.TieBreakers
 {
-    internal class TiedWinsRule : TieBreakerRule
+    public class TiedWinsRule : TieBreakerRule
     {
         protected override int GetParticipantScore((IParticipant participant, ParticipantRecord record) participant, IReadOnlyDictionary<IParticipant, ParticipantRecord> tiedParticipants)
         {

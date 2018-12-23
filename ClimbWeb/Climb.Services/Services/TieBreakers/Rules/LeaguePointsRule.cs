@@ -2,7 +2,7 @@
 
 namespace Climb.Core.TieBreakers
 {
-    internal class LeaguePointsRule : TieBreakerRule
+    public class LeaguePointsRule : TieBreakerRule
     {
         protected override int GetParticipantScore((IParticipant participant, ParticipantRecord record) participant, IReadOnlyDictionary<IParticipant, ParticipantRecord> tiedParticipants)
         {

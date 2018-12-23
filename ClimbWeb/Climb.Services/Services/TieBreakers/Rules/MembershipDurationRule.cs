@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Climb.Core.TieBreakers
 {
-    internal class MembershipDurationRule : TieBreakerRule
+    public class MembershipDurationRule : TieBreakerRule
     {
         private readonly DateTime now;
 

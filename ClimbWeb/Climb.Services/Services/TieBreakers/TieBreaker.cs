@@ -8,7 +8,7 @@ namespace Climb.Core.TieBreakers
     {
         private readonly List<TieBreakerRule> rules = new List<TieBreakerRule>();
 
-        internal TieBreaker AddRule(TieBreakerRule rule)
+        public TieBreaker AddRule(TieBreakerRule rule)
         {
             if(rule == null)
             {
