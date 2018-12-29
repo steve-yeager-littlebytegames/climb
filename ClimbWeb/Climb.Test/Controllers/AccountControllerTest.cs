@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Climb.Controllers;
 using Climb.Data;
+using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
