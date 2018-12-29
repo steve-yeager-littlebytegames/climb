@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Climb.Data;
 using Climb.Models;
 
 namespace Climb.ViewModels.Leagues
@@ -24,7 +23,7 @@ namespace Climb.ViewModels.Leagues
             IsAdmin = user?.Id == league.AdminID;
 #endif
         }
-        
+
         public bool IsSubPageActive<T>() where T : PageViewModel
         {
             return this is T;
