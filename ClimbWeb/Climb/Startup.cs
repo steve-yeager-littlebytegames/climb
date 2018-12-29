@@ -61,6 +61,8 @@ namespace Climb
             services.AddTransient<ITieBreakerFactory, TieBreakerFactory>();
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
+            services.AddTransient<IAnalyzerService, AnalyzerService>();
+            services.AddTransient<IAnalyzerFactory, AnalyzerFactory>();
 
             if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
             {
