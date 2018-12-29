@@ -1,5 +1,4 @@
-﻿using Climb.Data;
-using Climb.Models;
+﻿using Climb.Models;
 using Climb.Requests.Games;
 using Climb.Services;
 
@@ -16,9 +15,9 @@ namespace Climb.ViewModels.Games
             : base(user)
         {
             Game = game;
-            if (game != null)
+            if(game != null)
             {
-                LogoImage = cdnService.GetImageUrl(game.LogoImageKey, ClimbImageRules.GameLogo); 
+                LogoImage = cdnService.GetImageUrl(game.LogoImageKey, ClimbImageRules.GameLogo);
             }
         }
     }

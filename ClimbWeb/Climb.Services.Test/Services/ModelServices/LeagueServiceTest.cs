@@ -6,7 +6,6 @@ using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
-using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using NSubstitute;
 using NUnit.Framework;

@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Microsoft.AspNetCore.Mvc
 {
     public static class UrlHelperExtensions
     {
         public static string GetLocalUrl(this IUrlHelper urlHelper, string localUrl)
         {
-            if (!urlHelper.IsLocalUrl(localUrl))
+            if(!urlHelper.IsLocalUrl(localUrl))
             {
                 return urlHelper.Page("/Index");
             }
@@ -23,7 +17,7 @@ namespace Microsoft.AspNetCore.Mvc
             return urlHelper.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
-                values: new { userId, code },
+                values: new {userId, code},
                 protocol: scheme);
         }
 
@@ -32,7 +26,7 @@ namespace Microsoft.AspNetCore.Mvc
             return urlHelper.Page(
                 "/Account/ResetPassword",
                 pageHandler: null,
-                values: new { userId, code },
+                values: new {userId, code},
                 protocol: scheme);
         }
     }

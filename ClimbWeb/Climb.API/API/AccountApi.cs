@@ -49,7 +49,7 @@ namespace Climb.API
         [HttpPost("logIn")]
         [AllowAnonymous]
         [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
-        [Attributes.SwaggerResponse(HttpStatusCode.BadRequest, typeof(string), "Email or password is incorrect.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(string), "Email or password is incorrect.")]
         public async Task<IActionResult> LogIn(LoginRequest request)
         {
             try

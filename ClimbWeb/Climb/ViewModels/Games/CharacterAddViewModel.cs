@@ -1,5 +1,4 @@
-﻿using Climb.Data;
-using Climb.Models;
+﻿using Climb.Models;
 using Climb.Requests.Games;
 using Climb.Services;
 

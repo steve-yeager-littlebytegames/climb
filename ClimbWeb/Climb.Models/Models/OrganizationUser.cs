@@ -1,5 +1,4 @@
 ﻿using System;
-using Climb.Data;
 
 namespace Climb.Models
 {
