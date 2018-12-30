@@ -141,7 +141,7 @@ namespace Climb.Test.Services.ModelServices
             Assert.AreEqual(1, set.Player1.SetCount);
             Assert.AreEqual(1, set.Player2.SetCount);
         }
-        
+
         [Test]
         public async Task Update_OldSet_LeagueUserSetCountNotChanged()
         {
@@ -168,7 +168,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void RequestSet_NoRequester_NotFoundException()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var challenged = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.RequestSetAsync(0, challenged.ID, null));
@@ -177,7 +177,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void RequestSet_NoChallenged_NotFoundException()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var requester = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.RequestSetAsync(requester.ID, 0, null));
@@ -186,7 +186,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task RequestSet_Valid_DateSet()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var requester = league.Members[0];
             var challenged = league.Members[1];
@@ -200,7 +200,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task RequestSet_Valid_SetLeague()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var requester = league.Members[0];
             var challenged = league.Members[1];
@@ -295,7 +295,7 @@ namespace Climb.Test.Services.ModelServices
 
         private SetRequest CreateSetRequest(bool isOpen)
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var setRequest = DbContextUtility.AddNew<SetRequest>(dbContext, sr =>
             {

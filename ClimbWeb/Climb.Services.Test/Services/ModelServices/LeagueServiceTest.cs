@@ -72,7 +72,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void Create_NameTaken_Conflict()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             Assert.ThrowsAsync<ConflictException>(() => testObj.Create(league.Name, league.GameID, ""));
         }
@@ -81,8 +81,8 @@ namespace Climb.Test.Services.ModelServices
         public async Task Join_NewUser_CreateLeagueUser()
         {
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
-            var league1 = LeagueUtility.CreateLeague(dbContext);
-            var league2 = LeagueUtility.CreateLeague(dbContext);
+            var league1 = dbContext.CreateLeague();
+            var league2 = dbContext.CreateLeague();
 
             await testObj.Join(league1.ID, user.Id);
             var leagueUser = await testObj.Join(league2.ID, user.Id);
@@ -94,7 +94,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Join_OldUser_HasLeftFalse()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
             var oldLeagueUser = CreateOldLeagueUser(league, user);
 
@@ -107,7 +107,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Join_NewUser_UpdateDisplayName()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext, u => u.UserName = "bob");
 
             var leagueUser = await testObj.Join(league.ID, user.Id);
@@ -118,7 +118,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Join_OldUser_UpdateDisplayName()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext, u => u.UserName = "bob");
             CreateOldLeagueUser(league, user);
             user.UserName = "bob";
@@ -140,7 +140,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void Join_NoUser_NotFound()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.Join(league.ID, ""));
         }
@@ -149,7 +149,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task Join_NewUser_GetStartingPoints()
         {
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             var leagueUser = await testObj.Join(league.ID, user.Id);
 
@@ -162,7 +162,7 @@ namespace Climb.Test.Services.ModelServices
             const int userPoints = League.StartingPoints - 1;
 
             var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             var leagueUser = await testObj.Join(league.ID, user.Id);
             DbContextUtility.UpdateAndSave(dbContext, leagueUser, lu =>
@@ -178,7 +178,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Leave_IsMember_HasLeftTrue()
         {
-            var league = LeagueUtility.CreateLeague(dbContext, 1);
+            var league = dbContext.CreateLeague(1);
             var member = league.Members[0];
 
             member = await testObj.Leave(member.ID);
@@ -189,7 +189,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Leave_HasLeft_NoException()
         {
-            var league = LeagueUtility.CreateLeague(dbContext, 1);
+            var league = dbContext.CreateLeague(1);
             var member = league.Members[0];
             DbContextUtility.UpdateAndSave(dbContext, member, lu => lu.HasLeft = true);
 
@@ -207,7 +207,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Leave_InSeasons_LeaveSeason()
         {
-            var league = LeagueUtility.CreateLeague(dbContext, 1);
+            var league = dbContext.CreateLeague(1);
             var member = league.Members[0];
 
             var season = SeasonUtility.CreateSeason(dbContext, 0).season;
@@ -227,7 +227,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Leave_IsChallenged_RequestDeclined()
         {
-            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var league = dbContext.CreateLeague(2);
             var member = league.Members[0];
             var opponent = league.Members[1];
             var request = DbContextUtility.AddNew<SetRequest>(dbContext, sr =>
@@ -247,7 +247,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Leave_IsRequester_RequestDeleted()
         {
-            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var league = dbContext.CreateLeague(2);
             var member = league.Members[0];
             var opponent = league.Members[1];
             DbContextUtility.AddNew<SetRequest>(dbContext, sr =>
@@ -265,7 +265,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Leave_HasNonSeasonSet_SetDeleted()
         {
-            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var league = dbContext.CreateLeague(2);
             var member = league.Members[0];
             var opponent = league.Members[1];
             SetUtility.Create(dbContext, member.ID, opponent.ID, league.ID);
@@ -480,7 +480,7 @@ namespace Climb.Test.Services.ModelServices
         {
             const int deltaRank = 4;
             const int deltaPoints = -50;
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var member = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
             member.Rank = 14;
             member.Points = 2000;
@@ -510,7 +510,7 @@ namespace Climb.Test.Services.ModelServices
         [TestCase(0)]
         public void GetUsersRecentCharacters_CountTooSmall_BadRequestException(int characterCount)
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.GetUsersRecentCharactersAsync(leagueUser.ID, characterCount));
@@ -521,7 +521,7 @@ namespace Climb.Test.Services.ModelServices
         [TestCase(3)]
         public async Task GetUsersRecentCharacters_HasSets_ReturnsCharacters(int characterCount)
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
 
@@ -558,7 +558,7 @@ namespace Climb.Test.Services.ModelServices
             const int requestCount = 5;
             const int matchCharacterCount = 3;
 
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
 
@@ -584,7 +584,7 @@ namespace Climb.Test.Services.ModelServices
             const int requestCount = 5;
             const int matchCharacterCount = 3;
 
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
 
@@ -621,7 +621,7 @@ namespace Climb.Test.Services.ModelServices
 
         private League CreateLeague(int memberCount)
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             LeagueUtility.AddUsersToLeague(league, memberCount, dbContext);
             return league;
         }

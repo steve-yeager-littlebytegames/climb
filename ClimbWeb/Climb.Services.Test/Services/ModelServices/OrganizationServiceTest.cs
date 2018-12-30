@@ -63,7 +63,7 @@ namespace Climb.Test.Services.ModelServices
 
             Assert.AreEqual(1, organization.Leagues.Count);
         }
-        
+
         [Test]
         public async Task AddLeague_LeagueInAnotherOrg_LeagueNotAdded()
         {
@@ -89,7 +89,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void AddLeague_NotAdmin_NotAuthorizedException()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var organization = CreateOrgWithOwner();
 
             Assert.ThrowsAsync<NotAuthorizedException>(() => testObj.AddLeague(organization.ID, league.ID, userID));
@@ -98,7 +98,7 @@ namespace Climb.Test.Services.ModelServices
         #region Helpers
         private League CreateLeagueWithAdmin()
         {
-            return LeagueUtility.CreateLeague(dbContext, 0, userID);
+            return dbContext.CreateLeague(0, userID);
         }
 
         private Organization CreateOrgWithOwner()

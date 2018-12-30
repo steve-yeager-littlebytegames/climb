@@ -75,7 +75,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task Get_Valid_Ok()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             var result = await testObj.Get(league.ID);
             var resultLeague = result.GetObject<LeagueDto>();
@@ -95,7 +95,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task GetUser_HasUser_Ok()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var leagueUser = LeagueUtility.AddUsersToLeague(league, 1, dbContext)[0];
 
             var result = await testObj.GetMember(leagueUser.ID);
@@ -116,7 +116,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task GetSeasons_Valid_Ok()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             var result = await testObj.GetSeasons(league.ID);
 
@@ -126,7 +126,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task GetSeasons_Valid_ReturnsSeasons()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             DbContextUtility.AddNew<Season>(dbContext, s => s.LeagueID = league.ID);
             DbContextUtility.AddNew<Season>(dbContext, s => s.LeagueID = league.ID);
 
@@ -142,50 +142,6 @@ namespace Climb.Test.Api
             var result = await testObj.GetSeasons(0);
 
             ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
-        }
-
-        //[Test]
-        //public async Task GetSets_NoLeagueUser_NotFound()
-        //{
-        //    var result = await testObj.GetSets(0);
-
-        //    ControllerUtility.AssertStatusCode(result, HttpStatusCode.NotFound);
-        //}
-
-        //[Test]
-        //public async Task GetSets_HasSets_Ok()
-        //{
-        //    var members = CreateMembersWithSets(2);
-
-        //    var result = await testObj.GetSets(members[0].ID);
-
-        //    ControllerUtility.AssertStatusCode(result, HttpStatusCode.OK);
-        //}
-
-        //[TestCase(0)]
-        //[TestCase(1)]
-        //[TestCase(10)]
-        //public async Task GetSets_HasSets_ReturnSets(int setCount)
-        //{
-        //    var members = CreateMembersWithSets(setCount);
-
-        //    var result = await testObj.GetSets(members[0].ID);
-        //    var resultObj = result.GetObject<SetDto[]>();
-
-        //    Assert.AreEqual(setCount, resultObj.Length);
-        //}
-
-        private List<LeagueUser> CreateMembersWithSets(int setCount)
-        {
-            var league = LeagueUtility.CreateLeague(dbContext);
-            var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
-
-            for(var i = 0; i < setCount; ++i)
-            {
-                SetUtility.Create(dbContext, members[0].ID, members[1].ID, league.ID);
-            }
-
-            return members;
         }
     }
 }
