@@ -114,7 +114,6 @@ namespace Climb.Services.ModelServices
                 .ToArray();
 
             var rank = 1;
-            var lastPoints = -1;
             foreach(var participant in sortedParticipants)
             {
                 if(participant.HasLeft)
@@ -124,11 +123,6 @@ namespace Climb.Services.ModelServices
                 }
 
                 participant.Standing = rank;
-                if(participant.Points != lastPoints)
-                {
-                    lastPoints = participant.Points;
-                }
-
                 ++rank;
             }
 
@@ -233,7 +227,7 @@ namespace Climb.Services.ModelServices
             for(var i = season.Sets.Count - 1; i >= 0; i--)
             {
                 var set = season.Sets[i];
-                if (set.IsComplete)
+                if(set.IsComplete)
                 {
                     if(!set.IsLocked)
                     {
