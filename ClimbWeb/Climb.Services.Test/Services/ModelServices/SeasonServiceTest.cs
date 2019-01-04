@@ -45,7 +45,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Create_Valid_NotNull()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             var season = await testObj.Create(league.ID, StartDate, EndDate);
 
@@ -75,7 +75,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Create_Valid_AddsMembers()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             LeagueUtility.AddUsersToLeague(league, 1, dbContext);
 
             var season = await testObj.Create(league.ID, StartDate, EndDate);
@@ -283,7 +283,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task End_Valid_RemoveLeagueActiveSeason()
         {
             var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
-            int seasonID = season.ID;
+            var seasonID = season.ID;
             DbContextUtility.UpdateAndSave(dbContext, season.League, l => l.ActiveSeasonID = seasonID);
 
             Assert.IsNotNull(season.League.ActiveSeasonID);
@@ -513,7 +513,7 @@ namespace Climb.Test.Services.ModelServices
             var opponent = season.Participants[1];
             SetUtility.Create(dbContext, participant, opponent, season.LeagueID);
             SetUtility.Create(dbContext, opponent, participant, season.LeagueID);
-        } 
+        }
         #endregion
     }
 }
