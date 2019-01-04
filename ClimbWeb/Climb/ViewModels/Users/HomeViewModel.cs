@@ -50,6 +50,7 @@ namespace Climb.ViewModels.Users
                     sharedLeagues.Add(new SharedLeagueUsers(requester, challenged));
                 }
             }
+
             SharedLeagues = sharedLeagues;
         }
 
@@ -64,7 +65,7 @@ namespace Climb.ViewModels.Users
             const bool showSetRequests = true;
 #else
             var showSetRequests = user.Id == homeUser.Id;
-#endif 
+#endif
 
             IReadOnlyList<SetRequest> setRequests = null;
             if(showSetRequests)

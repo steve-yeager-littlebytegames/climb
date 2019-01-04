@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Climb.Test.Utilities
 {
-    internal static class DbContextUtility
+    public static class DbContextUtility
     {
         public static ApplicationDbContext CreateMockDb()
         {

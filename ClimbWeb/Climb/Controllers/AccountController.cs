@@ -13,6 +13,7 @@ using Climb.ViewModels.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using IEmailSender = Climb.Services.IEmailSender;
 
 namespace Climb.Controllers
 {
