@@ -9,6 +9,12 @@ namespace Climb.Services.DataAnalyzers
 {
     public class MatchAnalyzer : DataAnalyzer
     {
+        private class Record
+        {
+            public int wins;
+            public int losses;
+        }
+
         public override async Task<IReadOnlyList<string>> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
         {
             var data = new List<string>();
@@ -33,8 +39,8 @@ namespace Climb.Services.DataAnalyzers
             var clearWinnerCount = 0;
             var clearLoserCount = 0;
 
-            var characters = new Dictionary<Character, (int wins, int losses)>();
-            var stages = new Dictionary<Stage, (int wins, int losses)>();
+            var characters = new Dictionary<Character, Record>();
+            var stages = new Dictionary<Stage, Record>();
 
             foreach(var set in sets)
             {
@@ -64,7 +70,7 @@ namespace Climb.Services.DataAnalyzers
                     {
                         if(!characters.TryGetValue(matchCharacter.Character, out var character))
                         {
-                            character = (0, 0);
+                            character = new Record();
                             characters[matchCharacter.Character] = character;
                         }
 
@@ -82,7 +88,7 @@ namespace Climb.Services.DataAnalyzers
                     {
                         if(!stages.TryGetValue(match.Stage, out var stage))
                         {
-                            stage = (0, 0);
+                            stage = new Record();
                             stages[match.Stage] = stage;
                         }
 
@@ -100,18 +106,18 @@ namespace Climb.Services.DataAnalyzers
 
             var username = player.DisplayName;
 
-            var (bestStage, (bestStageWins, bestStageLosses)) = stages.OrderByDescending(s => s.Value.wins).FirstOrDefault();
-            var (worstStage, (worstStageWins, worstStageLosses)) = stages.OrderByDescending(s => s.Value.losses).FirstOrDefault();
+            var (bestStage, bestStageRecord) = stages.OrderByDescending(s => s.Value.wins).FirstOrDefault();
+            var (worstStage, worstStageRecord) = stages.OrderByDescending(s => s.Value.losses).FirstOrDefault();
 
-            var (bestCharacter, (bestCharWins, bestCharLosses)) = characters.OrderByDescending(c => c.Value.wins).FirstOrDefault();
-            var (worstCharacter, (worstCharWins, worstCharLosses)) = characters.OrderByDescending(c => c.Value.losses).FirstOrDefault();
+            var (bestCharacter, bestCharRecord) = characters.OrderByDescending(c => c.Value.wins).FirstOrDefault();
+            var (worstCharacter, worstCharRecord) = characters.OrderByDescending(c => c.Value.losses).FirstOrDefault();
 
             data.Add($"{username} has forfeited '{forfeitCount}' sets.");
             data.Add($"{username} has dominated '{clearWinnerCount}' times and has been dominated '{clearLoserCount}' times.");
-            data.Add($"{username}'s best stage is '{bestStage.Name}' with a record of '{bestStageWins}-{bestStageLosses}'.");
-            data.Add($"{username}'s worst stage is '{worstStage.Name}' with a record of '{worstStageWins}-{worstStageLosses}'.");
-            data.Add($"{username}'s best against '{bestCharacter.Name}' with a record of '{bestCharWins}-{bestCharLosses}'.");
-            data.Add($"{username}'s worst against '{worstCharacter.Name}' with a record of '{worstCharWins}-{worstCharLosses}'.");
+            data.Add($"{username}'s best stage is '{bestStage.Name}' with a record of '{bestStageRecord.wins}-{bestStageRecord.losses}'.");
+            data.Add($"{username}'s worst stage is '{worstStage.Name}' with a record of '{worstStageRecord.wins}-{worstStageRecord.losses}'.");
+            data.Add($"{username}'s best against '{bestCharacter.Name}' with a record of '{bestCharRecord.wins}-{bestCharRecord.losses}'.");
+            data.Add($"{username}'s worst against '{worstCharacter.Name}' with a record of '{worstCharRecord.wins}-{worstCharRecord.losses}'.");
         }
     }
 }
