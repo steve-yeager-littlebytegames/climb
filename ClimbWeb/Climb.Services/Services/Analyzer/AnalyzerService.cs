@@ -18,7 +18,7 @@ namespace Climb.Services
             this.analyzerFactory = analyzerFactory;
         }
 
-        public async Task<IReadOnlyList<string>> Calculate(int player1ID, int player2ID)
+        public async Task<IReadOnlyList<AnalyzerData>> Calculate(int player1ID, int player2ID)
         {
             var player1 = await dbContext.LeagueUsers.FirstOrDefaultAsync(lu => lu.ID == player1ID);
             if(player1 == null)
@@ -36,7 +36,7 @@ namespace Climb.Services
             await VerifyPlayer(player2ID);
 
             var analyzers = analyzerFactory.CreateAnalyzers();
-            var dataCollection = new List<string>();
+            var dataCollection = new List<AnalyzerData>();
 
             foreach(var analyzer in analyzers)
             {

@@ -51,7 +51,7 @@ namespace Climb.Test.API
         {
             const int p1ID = 1;
             const int p2ID = 2;
-            analyzerService.Calculate(p1ID, p2ID).Returns(new string[0]);
+            analyzerService.Calculate(p1ID, p2ID).Returns(new AnalyzerData[0]);
 
             var result = await testObj.Analyze(p1ID, p2ID);
 

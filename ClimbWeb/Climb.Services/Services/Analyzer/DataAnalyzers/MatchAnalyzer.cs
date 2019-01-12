@@ -7,27 +7,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Climb.Services.DataAnalyzers
 {
+    // collect data in a new class for each player
+    // iterate data and create analyzerdatas
     public class MatchAnalyzer : DataAnalyzer
     {
         private class Record
         {
             public int wins;
             public int losses;
+
+            public decimal Ratio => (wins - losses) * (wins + losses);
         }
 
-        public override async Task<IReadOnlyList<string>> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
+        public override async Task<ICollection<AnalyzerData>> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
         {
-            var data = new List<string>();
-            await GetPlayerData(player1ID, dbContext, data);
-            await GetPlayerData(player2ID, dbContext, data);
+            var p1Data = await GetPlayerData(player1ID, dbContext);
+            var p2Data = await GetPlayerData(player2ID, dbContext);
+
+            var data = new List<AnalyzerData>(3);
+            for(int i = 0; i < p1Data.Count; i++)
+            {
+                var analyzerData = new A
+            }
 
             return data;
         }
 
-        private static async Task GetPlayerData(int playerID, ApplicationDbContext dbContext, List<string> data)
+        private static async Task<List<List<string>>> GetPlayerData(int playerID, ApplicationDbContext dbContext)
         {
-            var player = await dbContext.LeagueUsers.FirstAsync(lu => lu.ID == playerID);
-
             var sets = await dbContext.Sets
                 .IgnoreQueryFilters()
                 .Include(s => s.Matches).ThenInclude(m => m.MatchCharacters).ThenInclude(mc => mc.Character).AsNoTracking()
@@ -64,7 +71,8 @@ namespace Climb.Services.DataAnalyzers
 
                 foreach(var match in set.Matches)
                 {
-                    var won = match.Player1Score > match.Player2Score && set.Player1ID == playerID;
+                    var won = match.Player1Score > match.Player2Score && set.Player1ID == playerID
+                              || match.Player2Score > match.Player1Score && set.Player2ID == playerID;
 
                     foreach(var matchCharacter in match.MatchCharacters.Where(mc => mc.LeagueUserID != playerID))
                     {
@@ -104,20 +112,29 @@ namespace Climb.Services.DataAnalyzers
                 }
             }
 
-            var username = player.DisplayName;
+            const int recordLimit = 0;
 
-            var (bestStage, bestStageRecord) = stages.OrderByDescending(s => s.Value.wins).FirstOrDefault();
-            var (worstStage, worstStageRecord) = stages.OrderByDescending(s => s.Value.losses).FirstOrDefault();
+            var sortedStages = stages.OrderByDescending(s => s.Value.Ratio).ToArray();
+            var (_, bestStageRecord) = sortedStages.FirstOrDefault(s => s.Value.wins > recordLimit);
+            var (_, worstStageRecord) = sortedStages.LastOrDefault(s => s.Value.losses > recordLimit);
 
-            var (bestCharacter, bestCharRecord) = characters.OrderByDescending(c => c.Value.wins).FirstOrDefault();
-            var (worstCharacter, worstCharRecord) = characters.OrderByDescending(c => c.Value.losses).FirstOrDefault();
+            var bestStages = sortedStages.Where(s => s.Value.Ratio == bestStageRecord.Ratio).ToArray();
+            var worstStages = sortedStages.Where(s => s.Value.Ratio == worstStageRecord.Ratio).ToArray();
 
-            data.Add($"{username} has forfeited '{forfeitCount}' sets.");
-            data.Add($"{username} has dominated '{clearWinnerCount}' times and has been dominated '{clearLoserCount}' times.");
-            data.Add($"{username}'s best stage is '{bestStage.Name}' with a record of '{bestStageRecord.wins}-{bestStageRecord.losses}'.");
-            data.Add($"{username}'s worst stage is '{worstStage.Name}' with a record of '{worstStageRecord.wins}-{worstStageRecord.losses}'.");
-            data.Add($"{username}'s best against '{bestCharacter.Name}' with a record of '{bestCharRecord.wins}-{bestCharRecord.losses}'.");
-            data.Add($"{username}'s worst against '{worstCharacter.Name}' with a record of '{worstCharRecord.wins}-{worstCharRecord.losses}'.");
+            var sortedCharacters = characters.OrderByDescending(c => c.Value.Ratio).ToArray();
+            var (_, bestCharRecord) = sortedCharacters.FirstOrDefault(c => c.Value.wins > recordLimit);
+            var (_, worstCharRecord) = sortedCharacters.LastOrDefault(c => c.Value.losses > recordLimit);
+
+            var bestCharacters = sortedCharacters.Where(c => c.Value.Ratio == bestCharRecord.Ratio).ToArray();
+            var worstCharacters = sortedCharacters.Where(c => c.Value.Ratio == worstCharRecord.Ratio).ToArray();
+
+            data.Add($"Forfeited '{forfeitCount}' sets.");
+            data.Add($"Dominated '{clearWinnerCount}' times.");
+            data.Add($"Been dominated '{clearLoserCount}' times.");
+            data.Add($"Best on '{string.Join(", ", bestStages.Select(s => s.Key.Name))}' with a record of '{bestStageRecord.wins}-{bestStageRecord.losses}'.");
+            data.Add($"Worst on '{string.Join(", ", worstStages.Select(s => s.Key.Name))}' with a record of '{worstStageRecord.wins}-{worstStageRecord.losses}'.");
+            data.Add($"Best against '{string.Join(", ", bestCharacters.Select(s => s.Key.Name))}' with a record of '{bestCharRecord.wins}-{bestCharRecord.losses}'.");
+            data.Add($"Worst against '{string.Join(", ", worstCharacters.Select(s => s.Key.Name))}' with a record of '{worstCharRecord.wins}-{worstCharRecord.losses}'.");
         }
     }
 }
