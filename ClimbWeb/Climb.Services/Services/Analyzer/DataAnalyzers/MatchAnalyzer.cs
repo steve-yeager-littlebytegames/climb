@@ -62,7 +62,7 @@ namespace Climb.Services.DataAnalyzers
             var p1Data = await GetPlayerData(player1ID, dbContext);
             var p2Data = await GetPlayerData(player2ID, dbContext);
 
-            var data = new List<AnalyzerData>(3);   
+            var data = new List<AnalyzerData>(3);
             SetsForfeited(data, p1Data, p2Data);
             ClearSets(data, p1Data, p2Data);
             Stages(data, p1Data, p2Data);
@@ -93,20 +93,20 @@ namespace Climb.Services.DataAnalyzers
         {
             var analyzerData = new AnalyzerData("Stages");
             data.Add(analyzerData);
-            analyzerData.Player1Data.Add($"Best on '{string.Join(", ", p1Data.BestStages)}' with a record of '{p1Data.BestStageRecord.wins}-{p1Data.BestStageRecord.losses}'.");
-            analyzerData.Player1Data.Add($"Worst on '{string.Join(", ", p1Data.WorstStages)}' with a record of '{p1Data.WorstStageRecord.wins}-{p1Data.WorstStageRecord.losses}'.");
-            analyzerData.Player2Data.Add($"Best on '{string.Join(", ", p2Data.BestStages)}' with a record of '{p2Data.BestStageRecord.wins}-{p2Data.BestStageRecord.losses}'.");
-            analyzerData.Player2Data.Add($"Worst on '{string.Join(", ", p2Data.WorstStages)}' with a record of '{p2Data.WorstStageRecord.wins}-{p2Data.WorstStageRecord.losses}'.");
+            analyzerData.Player1Data.Add($"Best on {string.Join(", ", p1Data.BestStages)} with a record of {p1Data.BestStageRecord.wins}-{p1Data.BestStageRecord.losses}");
+            analyzerData.Player1Data.Add($"Worst on {string.Join(", ", p1Data.WorstStages)} with a record of {p1Data.WorstStageRecord.wins}-{p1Data.WorstStageRecord.losses}");
+            analyzerData.Player2Data.Add($"Best on {string.Join(", ", p2Data.BestStages)} with a record of {p2Data.BestStageRecord.wins}-{p2Data.BestStageRecord.losses}");
+            analyzerData.Player2Data.Add($"Worst on {string.Join(", ", p2Data.WorstStages)} with a record of {p2Data.WorstStageRecord.wins}-{p2Data.WorstStageRecord.losses}");
         }
 
         private static void Characters(ICollection<AnalyzerData> data, PlayerData p1Data, PlayerData p2Data)
         {
             var analyzerData = new AnalyzerData("Characters");
             data.Add(analyzerData);
-            analyzerData.Player1Data.Add($"Best against '{string.Join(", ", p1Data.BestChars)}' with a record of '{p1Data.BestCharRecord.wins}-{p1Data.BestCharRecord.losses}'.");
-            analyzerData.Player1Data.Add($"Worst against '{string.Join(", ", p1Data.WorstChars)}' with a record of '{p1Data.WorstCharRecord.wins}-{p1Data.WorstCharRecord.losses}'.");
-            analyzerData.Player2Data.Add($"Best against '{string.Join(", ", p2Data.BestChars)}' with a record of '{p2Data.BestCharRecord.wins}-{p2Data.BestCharRecord.losses}'.");
-            analyzerData.Player2Data.Add($"Worst against '{string.Join(", ", p2Data.WorstChars)}' with a record of '{p2Data.WorstCharRecord.wins}-{p2Data.WorstCharRecord.losses}'.");
+            analyzerData.Player1Data.Add($"Best against {string.Join(", ", p1Data.BestChars)}' with a record of {p1Data.BestCharRecord.wins}-{p1Data.BestCharRecord.losses}");
+            analyzerData.Player1Data.Add($"Worst against {string.Join(", ", p1Data.WorstChars)}' with a record of {p1Data.WorstCharRecord.wins}-{p1Data.WorstCharRecord.losses}");
+            analyzerData.Player2Data.Add($"Best against {string.Join(", ", p2Data.BestChars)}' with a record of {p2Data.BestCharRecord.wins}-{p2Data.BestCharRecord.losses}");
+            analyzerData.Player2Data.Add($"Worst against {string.Join(", ", p2Data.WorstChars)}' with a record of {p2Data.WorstCharRecord.wins}-{p2Data.WorstCharRecord.losses}");
         }
 
         private static async Task<PlayerData> GetPlayerData(int playerID, ApplicationDbContext dbContext)

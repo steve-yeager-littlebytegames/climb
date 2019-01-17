@@ -30,8 +30,8 @@ namespace Climb.Services.DataAnalyzers
 
             var weeksInLeague = Math.Floor((dateService.Now - player.JoinDate).TotalDays / 7);
 
-            data.Add($"Rank '{player.Rank}'");
-            data.Add($"Member for '{weeksInLeague}' weeks.");
+            data.Add($"Rank {player.Rank}");
+            data.Add($"Member for {weeksInLeague} weeks.");
         }
     }
 }

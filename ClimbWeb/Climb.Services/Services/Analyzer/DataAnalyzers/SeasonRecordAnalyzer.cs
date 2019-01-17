@@ -56,7 +56,7 @@ namespace Climb.Services.DataAnalyzers
             var losses = sets.Length - wins;
 
             data.Add($"Standing {participant.Standing}");
-            data.Add($"{participant.Points}' Points");
+            data.Add($"{participant.Points} Points");
             data.Add($"Record of {wins}-{losses}");
 
             return true;
