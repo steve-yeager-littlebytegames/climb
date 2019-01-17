@@ -57,8 +57,8 @@ namespace Climb.Test.Services
         public async Task Calculate_NullAnalyzerData_DontCollectNullData()
         {
             var analyzers = CreateAnalyzers(3);
-            analyzers[0].Analyze(0, 0, null).ReturnsForAnyArgs(new AnalyzerData(""));
-            analyzers[2].Analyze(0, 0, null).ReturnsForAnyArgs(new AnalyzerData(""));
+            analyzers[0].Analyze(0, 0, null).ReturnsForAnyArgs(new [] {new AnalyzerData("") });
+            analyzers[2].Analyze(0, 0, null).ReturnsForAnyArgs(new [] {new AnalyzerData("") });
 
             analyzerFactory.CreateAnalyzers().Returns(analyzers);
             var members = dbContext.CreateLeague(2).Members;
