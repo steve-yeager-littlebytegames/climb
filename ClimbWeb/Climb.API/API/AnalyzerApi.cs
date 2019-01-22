@@ -20,7 +20,7 @@ namespace Climb.API
         }
 
         [HttpGet("analyze")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(string[]))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(AnalyzerData[]))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Analyze(int player1ID, int player2ID)
         {

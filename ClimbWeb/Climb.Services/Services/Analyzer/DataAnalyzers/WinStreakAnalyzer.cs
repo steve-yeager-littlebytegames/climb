@@ -11,19 +11,17 @@ namespace Climb.Services.DataAnalyzers
 {
     public class WinStreakAnalyzer : DataAnalyzer
     {
-        public override async Task<IReadOnlyList<string>> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
+        public override async Task<ICollection<AnalyzerData>> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
         {
-            var data = new List<string>();
-            await GetPlayerData(player1ID, data, dbContext);
-            await GetPlayerData(player2ID, data, dbContext);
+            var data = new AnalyzerData("Win Streak");
+            await GetPlayerData(player1ID, data.Player1Data, dbContext);
+            await GetPlayerData(player2ID, data.Player2Data, dbContext);
 
-            return data;
+            return new[] {data};
         }
 
-        private static async Task GetPlayerData(int playerID, List<string> data, ApplicationDbContext dbContext)
+        private static async Task GetPlayerData(int playerID, ICollection<string> data, ApplicationDbContext dbContext)
         {
-            var player = await dbContext.LeagueUsers.FirstAsync(lu => lu.ID == playerID);
-
             var sets = await dbContext.Sets
                 .Include(s => s.Player1).AsNoTracking()
                 .Include(s => s.Player2).AsNoTracking()
@@ -84,21 +82,19 @@ namespace Climb.Services.DataAnalyzers
 
             var streakWeeks = Math.Floor((bestEnd - bestStart).TotalDays / 7);
 
-            var result = $"{player.DisplayName}'s best Win Streak is '{bestCount}' " +
-                         $"sets for '{streakWeeks}' weeks " +
-                         $"from '{bestStart.ToShortDateString()}-{bestEnd.ToShortDateString()}'.";
+            data.Add($"{bestCount} sets");
+            data.Add($"{streakWeeks} weeks");
+            data.Add($"from {bestStart.ToShortDateString()}-{bestEnd.ToShortDateString()}");
 
             if(isOngoing)
             {
-                result += " This is currently ongoing.";
+                data.Add("This is currently ongoing");
             }
             else
             {
                 Debug.Assert(streakBreaker != null, nameof(streakBreaker) + " != null");
-                result += $" This was broken by {streakBreaker.DisplayName}";
+                data.Add($"This was broken by {streakBreaker.DisplayName}");
             }
-
-            data.Add(result);
         }
     }
 }

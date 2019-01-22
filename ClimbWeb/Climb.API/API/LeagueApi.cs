@@ -218,5 +218,24 @@ namespace Climb.API
                 return GetExceptionResult(exception, new {leagueUserID, characterCount});
             }
         }
+
+        [HttpGet("sets/{leagueUserID:int}")]
+        public async Task<IActionResult> GetSets(int leagueUserID)
+        {
+            var leagueUser = await dbContext.LeagueUsers
+                .Include(lu => lu.League).AsNoTracking()
+                .FirstOrDefaultAsync(lu => lu.ID == leagueUserID);
+
+            var sets = await dbContext.Sets
+                .Include(s => s.League).AsNoTracking()
+                .Include(s => s.Matches).ThenInclude(m => m.MatchCharacters).AsNoTracking()
+                .Include(s => s.Player1).AsNoTracking()
+                .Include(s => s.Player2).AsNoTracking()
+                .Where(s => s.IsComplete && s.IsPlaying(leagueUserID))
+                .ToArrayAsync();
+
+            var dtos = sets.Select(s => SetDto.Create(s, leagueUser.League.GameID)).ToArray();
+            return CodeResult(HttpStatusCode.OK, dtos);
+        }
     }
 }
