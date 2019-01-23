@@ -9,9 +9,9 @@ namespace Climb.Services.DataAnalyzers
 {
     public class SeasonRecordAnalyzer : DataAnalyzer
     {
-        public override async Task<IReadOnlyList<string>> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
+        public override async Task<ICollection<AnalyzerData>> Analyze(int player1ID, int player2ID, ApplicationDbContext dbContext)
         {
-            var data = new List<string>();
+            var data = new AnalyzerData("Last Season");
 
             var seasons = await dbContext.Seasons
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser)
@@ -25,11 +25,11 @@ namespace Climb.Services.DataAnalyzers
             while(!hasP1 || !hasP2)
             {
                 var season = seasons[index++];
-                hasP1 = await GetPlayerData(hasP1, season, player1ID, dbContext, data);
-                hasP2 = await GetPlayerData(hasP2, season, player2ID, dbContext, data);
+                hasP1 = await GetPlayerData(hasP1, season, player1ID, dbContext, data.Player1Data);
+                hasP2 = await GetPlayerData(hasP2, season, player2ID, dbContext, data.Player2Data);
             }
 
-            return data;
+            return new[] {data};
         }
 
         private static async Task<bool> GetPlayerData(bool hasData, Season season, int playerID, ApplicationDbContext dbContext, List<string> data)
@@ -55,9 +55,9 @@ namespace Climb.Services.DataAnalyzers
             var wins = sets.Count(s => s.WinnerID == playerID);
             var losses = sets.Length - wins;
 
-            data.Add($"{participant.LeagueUser.DisplayName} ended Season {season.Index + 1}" +
-                     $" with a Standing '{participant.Standing}', '{participant.Points}' Points, " +
-                     $"and a record of {wins}-{losses}.");
+            data.Add($"Standing {participant.Standing}");
+            data.Add($"{participant.Points} Points");
+            data.Add($"Record of {wins}-{losses}");
 
             return true;
         }
