@@ -1,5 +1,4 @@
-﻿using Climb.Data;
-using Climb.Models;
+﻿using Climb.Models;
 using Climb.Services;
 using Microsoft.AspNetCore.Hosting;
 
@@ -24,7 +23,7 @@ namespace Climb.ViewModels.Seasons
             var today = dateService.Now;
 
             var targetSetsCompleted = 0;
-            foreach (var set in season.Sets)
+            foreach(var set in season.Sets)
             {
                 if(set.DueDate < today)
                 {

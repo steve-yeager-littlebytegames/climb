@@ -34,7 +34,7 @@ namespace Climb.Test.Models
 
         private Set CreateTestObj()
         {
-            var league = LeagueUtility.CreateLeague(dbContext, 2);
+            var league = dbContext.CreateLeague(2);
             return SetUtility.Create(dbContext, league.Members[0].ID, league.Members[1].ID, league.ID);
         }
     }
