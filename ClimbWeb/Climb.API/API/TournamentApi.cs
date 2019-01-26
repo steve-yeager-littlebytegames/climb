@@ -57,7 +57,7 @@ namespace Climb.API
 
         [HttpPost("")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(TournamentDto))]
-        public async Task<IActionResult> Post([FromBody]CreateRequest request)
+        public async Task<IActionResult> Post([FromBody] CreateRequest request)
         {
             try
             {
