@@ -1,6 +1,8 @@
 ﻿using Climb.Core.TieBreakers;
 using Climb.Data;
+using Climb.Models;
 using Climb.Services;
+using Climb.Services.HealthChecks;
 using Climb.Services.ModelServices;
 using Climb.Utilities;
 using Microsoft.AspNetCore.Builder;
@@ -28,18 +30,10 @@ namespace Climb
 
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureDB(services);
+            var healthChecks = services.AddHealthChecks();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            ConfigureDB(services, healthChecks);
+            ConfigureIdentity(services);
 
             services.AddAuthentication();
 
@@ -48,30 +42,10 @@ namespace Climb
                 .AddCookieTempDataProvider();
 
             ConfigureCdn(services);
-            ConfigureTransient(services);
-
-            if(string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
-            {
-                services.AddTransient<IDateService, DateService>();
-            }
-            else
-            {
-                services.AddTransient<IDateService, ControlledDateService>();
-            }
-
-            if(string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
-            {
-                services.AddTransient<IEmailSender, NullEmailService>();
-            }
-            else
-            {
-                services.AddTransient<IEmailSender, SendGridService>();
-            }
-
-            services.AddSwaggerDocument();
+            AddTransient(services);
         }
 
-        private static void ConfigureTransient(IServiceCollection services)
+        private void AddTransient(IServiceCollection services)
         {
             services.AddTransient<IApplicationUserService, ApplicationUserService>();
             services.AddTransient<IGameService, GameService>();
@@ -87,8 +61,42 @@ namespace Climb
             services.AddTransient<ITieBreakerFactory, TieBreakerFactory>();
             services.AddTransient<ISignInManager, SignInManager>();
             services.AddTransient<IUserManager, UserManager>();
-            services.AddTransient<ITournamentService, TournamentService>();
-            services.AddTransient<IBracketGenerator, BracketGenerator>();
+            services.AddTransient<IAnalyzerService, AnalyzerService>();
+            services.AddTransient<IAnalyzerFactory, AnalyzerFactory>();
+
+            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            {
+                services.AddTransient<IDateService, DateService>();
+            }
+            else
+            {
+                services.AddTransient<IDateService, ControlledDateService>();
+            }
+
+            if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
+            {
+                services.AddTransient<IEmailSender, NullEmailService>();
+            }
+            else
+            {
+                services.AddTransient<IEmailSender, SendGridService>();
+            }
+
+            services.AddSwaggerDocument();
+        }
+
+        private static void ConfigureIdentity(IServiceCollection services)
+        {
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
         }
 
         private void ConfigureCdn(IServiceCollection services)
@@ -108,7 +116,7 @@ namespace Climb
             }
         }
 
-        private void ConfigureDB(IServiceCollection services)
+        private void ConfigureDB(IServiceCollection services, IHealthChecksBuilder healthChecks)
         {
             using(logger.BeginScope("Configuring DB"))
             {
@@ -123,6 +131,8 @@ namespace Climb
                     logger.LogInformation("Using SQL Server DB");
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
                 }
+
+                healthChecks.AddCheck("Database", new SqlConnectionHealthCheck(connectionString));
             }
         }
 
@@ -140,6 +150,7 @@ namespace Climb
                 app.UseHsts();
             }
 
+            app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

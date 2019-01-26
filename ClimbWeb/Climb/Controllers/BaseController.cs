@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
+using Climb.Models;
 using Climb.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

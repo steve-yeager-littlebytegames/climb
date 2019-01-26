@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Climb.Data;
 using Climb.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -20,6 +19,11 @@ namespace Climb.ViewModels.Leagues
             Member = league.Members.FirstOrDefault(lu => lu.UserID == user?.Id);
 
             IsAdmin = IsAdminMode || user?.Id == league.AdminID;
+        }
+
+        public bool IsSubPageActive<T>() where T : PageViewModel
+        {
+            return this is T;
         }
     }
 }
