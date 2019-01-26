@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Climb.Data;
 using Climb.Models;
 using Microsoft.Extensions.Configuration;
 

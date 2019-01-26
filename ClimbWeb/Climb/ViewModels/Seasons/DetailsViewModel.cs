@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Climb.Data;
 using Climb.Models;
 using Climb.Services;
 using Microsoft.Extensions.Configuration;

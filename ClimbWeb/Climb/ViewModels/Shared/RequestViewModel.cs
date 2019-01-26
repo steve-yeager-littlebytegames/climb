@@ -1,4 +1,4 @@
-﻿using Climb.Data;
+﻿using Climb.Models;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 

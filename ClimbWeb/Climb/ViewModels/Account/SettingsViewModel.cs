@@ -1,4 +1,4 @@
-﻿using Climb.Data;
+﻿using Climb.Models;
 using Climb.Requests.Account;
 using Climb.Services;
 using Microsoft.Extensions.Configuration;

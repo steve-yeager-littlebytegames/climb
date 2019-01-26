@@ -1,5 +1,4 @@
-﻿using Climb.Data;
-using Climb.Models;
+﻿using Climb.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace Climb.ViewModels.Games
