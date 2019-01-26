@@ -51,6 +51,8 @@ namespace Climb
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<ILeagueService, LeagueService>();
             services.AddTransient<ISeasonService, SeasonService>();
+            services.AddTransient<ITournamentService, TournamentService>();
+            services.AddTransient<IBracketGenerator, BracketGenerator>();
             services.AddTransient<ISetService, SetService>();
             services.AddTransient<IOrganizationService, OrganizationService>();
             services.AddTransient<ITokenHelper, TokenHelper>();
