@@ -143,6 +143,14 @@ namespace Climb.Services
             if(competitor == null)
             {
                 competitor = new TournamentUser(tournament, member.UserID, member.ID, tournament.TournamentUsers.Count + 1);
+
+                var seasonUser = await dbContext.SeasonLeagueUsers
+                    .FirstOrDefaultAsync(su => su.LeagueUserID == member.ID && su.UserID == userID);
+                if(seasonUser != null)
+                {
+                    competitor.SeasonLeagueUserID = seasonUser.ID;
+                }
+
                 await dbContext.AddAndSaveAsync(competitor);
             }
 

@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 namespace Climb.Test.Services.ModelServices
 {
-    // TODO: Join_NewUser_LinkSeasonUser
     [TestFixture]
     public class TournamentServiceTest
     {
@@ -108,6 +107,18 @@ namespace Climb.Test.Services.ModelServices
             var competitor = await testObj.Join(tournament.ID, member.UserID);
 
             Assert.AreEqual(tournament.TournamentUsers.Count, competitor.Seed);
+        }
+
+        [Test]
+        public async Task Join_NewUser_LinkSeasonUser()
+        {
+            var season = dbContext.CreateSeason(1).season;
+            var tournament = dbContext.CreateTournament(DateTime.MinValue, season.League);
+            var participant = season.Participants[0];
+
+            var competitor = await testObj.Join(tournament.ID, participant.UserID);
+
+            Assert.AreEqual(participant.ID, competitor.SeasonLeagueUserID);
         }
 
         [Test]

@@ -6,9 +6,9 @@ namespace Climb.Test.Utilities
 {
     public static class TournamentUtility
     {
-        public static Tournament CreateTournament(this ApplicationDbContext dbContext, DateTime createDate)
+        public static Tournament CreateTournament(this ApplicationDbContext dbContext, DateTime createDate, League league = null)
         {
-            var league = dbContext.CreateLeague();
+            league = league ?? dbContext.CreateLeague();
             var tournament = new Tournament(league.ID, createDate);
             dbContext.AddAndSave(tournament);
             return tournament;
