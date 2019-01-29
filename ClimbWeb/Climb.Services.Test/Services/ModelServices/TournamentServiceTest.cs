@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 namespace Climb.Test.Services.ModelServices
 {
-    // TODO: league and season don't match
     // TODO: Join_NewUser_LinkSeasonUser
     [TestFixture]
     public class TournamentServiceTest
@@ -63,6 +62,15 @@ namespace Climb.Test.Services.ModelServices
                 var seed = tournament.TournamentUsers.First(tu => tu.SeasonLeagueUserID == participant.ID).Seed;
                 Assert.AreEqual(participant.Standing, seed);
             }
+        }
+
+        [Test]
+        public void Create_SeasonDoesntMatchLeague_BadRequestException()
+        {
+            var league = dbContext.CreateLeague();
+            var season = dbContext.CreateSeason(0).season;
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Create(league.ID, season.ID, "TestName"));
         }
 
         [Test]

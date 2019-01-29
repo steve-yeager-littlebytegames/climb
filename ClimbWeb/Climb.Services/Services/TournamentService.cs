@@ -51,6 +51,11 @@ namespace Climb.Services
                         throw new NotFoundException(typeof(Season), seasonID.Value);
                     }
 
+                    if(season.LeagueID != leagueID)
+                    {
+                        throw new BadRequestException(nameof(seasonID), $"The Season does not belong to the League ({season.LeagueID} vs {leagueID}).");
+                    }
+
                     tournament.TournamentUsers = season.Participants
                         .Select(slu => new TournamentUser(tournament, slu.UserID, slu.LeagueUserID, slu.Standing, slu.ID))
                         .ToList();
