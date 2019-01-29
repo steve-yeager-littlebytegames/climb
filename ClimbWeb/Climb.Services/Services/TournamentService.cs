@@ -115,24 +115,29 @@ namespace Climb.Services
         public async Task<TournamentUser> Join(int tournamentID, string userID)
         {
             var tournament = await dbContext.Tournaments
+                .Include(t => t.TournamentUsers)
                 .FirstOrDefaultAsync(t => t.ID == tournamentID);
             if(tournament == null)
             {
                 throw new NotFoundException(typeof(Tournament), tournamentID);
             }
 
+            if(tournament.HasStarted)
+            {
+                throw new BadRequestException("Can't add user after tournament has been started.");
+            }
+
             var member = await dbContext.LeagueUsers
-                .FirstOrDefaultAsync(lu => lu.ID == tournament.LeagueID && lu.UserID == userID);
+                .FirstOrDefaultAsync(lu => lu.LeagueID == tournament.LeagueID && lu.UserID == userID);
             if(member == null)
             {
                 throw new NotFoundException(typeof(ApplicationUser), userID);
             }
 
-            var competitor = await dbContext.TournamentUsers
-                .FirstOrDefaultAsync(tu => tu.TournamentID == tournamentID && tu.UserID == userID);
+            var competitor = tournament.TournamentUsers.FirstOrDefault(tu => tu.UserID == userID);
             if(competitor == null)
             {
-                competitor = new TournamentUser(tournament, member.UserID, member.ID, -1);
+                competitor = new TournamentUser(tournament, member.UserID, member.ID, tournament.TournamentUsers.Count + 1);
                 await dbContext.AddAndSaveAsync(competitor);
             }
 

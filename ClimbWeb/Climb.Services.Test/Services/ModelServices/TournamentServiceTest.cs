@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
@@ -10,6 +11,7 @@ using NUnit.Framework;
 namespace Climb.Test.Services.ModelServices
 {
     // TODO: league and season don't match
+    // TODO: Join_NewUser_LinkSeasonUser
     [TestFixture]
     public class TournamentServiceTest
     {
@@ -72,7 +74,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void Join_NoLeagueUser_NotFoundException()
         {
-            var tournament = dbContext.CreateTournament();
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.Join(tournament.ID, ""));
         }
@@ -80,7 +82,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Join_NewUser_AddTournamentUser()
         {
-            var tournament = dbContext.CreateTournament();
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
             var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
 
             var competitor = await testObj.Join(tournament.ID, member.UserID);
@@ -89,9 +91,21 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
+        public async Task Join_NewUser_BottomSeed()
+        {
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
+            dbContext.AddCompetitors(tournament, 4);
+            var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
+
+            var competitor = await testObj.Join(tournament.ID, member.UserID);
+
+            Assert.AreEqual(tournament.TournamentUsers.Count, competitor.Seed);
+        }
+
+        [Test]
         public async Task Join_AlreadyJoined_NoNewUser()
         {
-            var tournament = dbContext.CreateTournament();
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
             var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
 
             await testObj.Join(tournament.ID, member.UserID);
@@ -101,6 +115,14 @@ namespace Climb.Test.Services.ModelServices
             Assert.AreEqual(1, tournament.TournamentUsers.Count);
         }
 
-        // TODO: Get season leagueuser
+        [Test]
+        public void Join_TournamentStarted_BadRequestException()
+        {
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
+            dbContext.UpdateAndSave(tournament, t => t.HasStarted = true);
+            var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Join(tournament.ID, member.UserID));
+        }
     }
 }

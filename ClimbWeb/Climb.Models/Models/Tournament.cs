@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Climb.Models
 {
@@ -8,6 +9,10 @@ namespace Climb.Models
         public string Name { get; set; }
         public int LeagueID { get; set; }
         public int? SeasonID { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public bool HasStarted { get; set; }
 
         public League League { get; set; }
         public Season Season { get; set; }
@@ -21,9 +26,10 @@ namespace Climb.Models
         {
         }
 
-        public Tournament(int leagueID)
+        public Tournament(int leagueID, DateTime createDate)
         {
             LeagueID = leagueID;
+            CreateDate = createDate;
         }
     }
 }
