@@ -35,7 +35,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void Create_NoSeason_NotFoundException()
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.Create(league.ID, -1, "TestName"));
         }
@@ -44,11 +44,14 @@ namespace Climb.Test.Services.ModelServices
         public async Task Create_Season_AddCompetitors()
         {
             const int competitorCount = 4;
-            var season = SeasonUtility.CreateSeason(dbContext, competitorCount).season;
-            for(var i = 0; i < season.Participants.Count; i++)
+            var season = dbContext.CreateSeason(competitorCount).season;
+            dbContext.UpdateAndSave(season, () =>
             {
-                season.Participants[i].Standing = i;
-            }
+                for(var i = 0; i < season.Participants.Count; i++)
+                {
+                    season.Participants[i].Standing = i;
+                }
+            });
 
             var tournament = await testObj.Create(season.LeagueID, season.ID, "TestName");
 
@@ -80,6 +83,18 @@ namespace Climb.Test.Services.ModelServices
             var tournament = dbContext.CreateTournament();
             var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
 
+            var competitor = await testObj.Join(tournament.ID, member.UserID);
+
+            Assert.IsNotNull(competitor);
+        }
+
+        [Test]
+        public async Task Join_AlreadyJoined_ReturnTournamentUser()
+        {
+            var tournament = dbContext.CreateTournament();
+            var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
+
+            await testObj.Join(tournament.ID, member.UserID);
             var competitor = await testObj.Join(tournament.ID, member.UserID);
 
             Assert.IsNotNull(competitor);

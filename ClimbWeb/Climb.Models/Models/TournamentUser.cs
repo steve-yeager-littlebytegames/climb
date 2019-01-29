@@ -1,6 +1,4 @@
-﻿using Climb.Data;
-
-namespace Climb.Models
+﻿namespace Climb.Models
 {
     public class TournamentUser
     {
@@ -20,11 +18,12 @@ namespace Climb.Models
         {
         }
 
-        public TournamentUser(Tournament tournament, string userID, int leagueUserID, int? seasonUserID = null)
+        public TournamentUser(Tournament tournament, string userID, int leagueUserID, int seed, int? seasonUserID = null)
         {
             Tournament = tournament;
             UserID = userID;
             LeagueUserID = leagueUserID;
+            Seed = seed;
             SeasonLeagueUserID = seasonUserID;
         }
     }

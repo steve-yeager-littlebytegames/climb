@@ -7,7 +7,7 @@ namespace Climb.Test.Utilities
 {
     public static class SeasonUtility
     {
-        public static (Season season, List<LeagueUser> members) CreateSeason(ApplicationDbContext dbContext, int participants, Action<Season> preprocess = null)
+        public static (Season season, List<LeagueUser> members) CreateSeason(this ApplicationDbContext dbContext, int participants, Action<Season> preprocess = null)
         {
             var league = dbContext.CreateLeague();
             var members = dbContext.AddUsersToLeague(league, participants);
@@ -27,7 +27,7 @@ namespace Climb.Test.Utilities
             return (season, members);
         }
 
-        public static List<Set> CreateSets(ApplicationDbContext dbContext, Season season)
+        public static List<Set> CreateSets(this ApplicationDbContext dbContext, Season season)
         {
             var sets = new List<Set>();
             var participants = season.Participants.ToArray();
@@ -40,7 +40,7 @@ namespace Climb.Test.Utilities
             return sets;
         }
 
-        public static List<SeasonLeagueUser> AddParticipants(ApplicationDbContext dbContext, Season season, params LeagueUser[] members)
+        public static List<SeasonLeagueUser> AddParticipants(this ApplicationDbContext dbContext, Season season, params LeagueUser[] members)
         {
             return dbContext.AddNewRange<SeasonLeagueUser>(members.Length, (slu, i) =>
             {

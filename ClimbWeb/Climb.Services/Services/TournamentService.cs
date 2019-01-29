@@ -52,9 +52,8 @@ namespace Climb.Services
                     }
 
                     tournament.TournamentUsers = season.Participants
-                        .Select(slu => new TournamentUser(tournament, slu.UserID, slu.LeagueUserID, slu.ID) {Seed = slu.Standing})
+                        .Select(slu => new TournamentUser(tournament, slu.UserID, slu.LeagueUserID, slu.Standing, slu.ID))
                         .ToList();
-                    dbContext.TournamentUsers.AddRange(tournament.TournamentUsers);
                 }
             }
         }
@@ -129,7 +128,7 @@ namespace Climb.Services
                 throw new NotFoundException(typeof(ApplicationUser), userID);
             }
 
-            var competitor = new TournamentUser(tournament, member.UserID, member.ID);
+            var competitor = new TournamentUser(tournament, member.UserID, member.ID, -1);
             await dbContext.AddAndSaveAsync(competitor);
 
             return competitor;
