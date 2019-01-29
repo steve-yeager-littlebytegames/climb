@@ -92,7 +92,7 @@ namespace Climb.Services
                     Bracket = bracket,
                 };
                 round.SetSlots = roundData.Games.Select(g => CreateSlot(g, round)).ToList();
-            
+
                 return round;
             }
 
@@ -128,8 +128,13 @@ namespace Climb.Services
                 throw new NotFoundException(typeof(ApplicationUser), userID);
             }
 
-            var competitor = new TournamentUser(tournament, member.UserID, member.ID, -1);
-            await dbContext.AddAndSaveAsync(competitor);
+            var competitor = await dbContext.TournamentUsers
+                .FirstOrDefaultAsync(tu => tu.TournamentID == tournamentID && tu.UserID == userID);
+            if(competitor == null)
+            {
+                competitor = new TournamentUser(tournament, member.UserID, member.ID, -1);
+                await dbContext.AddAndSaveAsync(competitor);
+            }
 
             return competitor;
         }

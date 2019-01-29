@@ -89,7 +89,7 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task Join_AlreadyJoined_ReturnTournamentUser()
+        public async Task Join_AlreadyJoined_NoNewUser()
         {
             var tournament = dbContext.CreateTournament();
             var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
@@ -98,6 +98,7 @@ namespace Climb.Test.Services.ModelServices
             var competitor = await testObj.Join(tournament.ID, member.UserID);
 
             Assert.IsNotNull(competitor);
+            Assert.AreEqual(1, tournament.TournamentUsers.Count);
         }
 
         // TODO: Get season leagueuser
