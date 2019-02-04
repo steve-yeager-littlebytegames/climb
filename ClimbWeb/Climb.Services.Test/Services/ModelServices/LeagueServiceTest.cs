@@ -525,7 +525,7 @@ namespace Climb.Test.Services.ModelServices
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
 
-            var characters = GameUtility.Create(dbContext, characterCount + 1, 0).Characters;
+            var characters = dbContext.CreateGame(characterCount + 1, 0).Characters;
             var set = SetUtility.Create(dbContext, leagueUser.ID, members[1].ID, league.ID);
             var matches = SetUtility.AddMatches(dbContext, set, 2);
 
@@ -562,7 +562,7 @@ namespace Climb.Test.Services.ModelServices
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
 
-            var characters = GameUtility.Create(dbContext, matchCharacterCount, 0).Characters;
+            var characters = dbContext.CreateGame(matchCharacterCount, 0).Characters;
             var set = SetUtility.Create(dbContext, leagueUser.ID, members[1].ID, league.ID);
             var match = SetUtility.AddMatches(dbContext, set, 1)[0];
 
@@ -588,7 +588,7 @@ namespace Climb.Test.Services.ModelServices
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
             var leagueUser = members[0];
 
-            var characters = GameUtility.Create(dbContext, matchCharacterCount, 0).Characters;
+            var characters = dbContext.CreateGame(matchCharacterCount, 0).Characters;
             var set = SetUtility.Create(dbContext, leagueUser.ID, members[1].ID, league.ID);
             var match = SetUtility.AddMatches(dbContext, set, 1)[0];
 
