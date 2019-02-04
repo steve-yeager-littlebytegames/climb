@@ -21,7 +21,7 @@ namespace Climb.Test.Utilities
             for(var i = 0; i < members.Count; i++)
             {
                 var member = members[i];
-                competitors[i] = dbContext.AddAndSave(new TournamentUser(tournament, member.UserID, member.ID, -1));
+                competitors[i] = dbContext.AddAndSave(new TournamentUser(tournament, member.UserID, member.ID, i + 1));
             }
 
             return competitors;

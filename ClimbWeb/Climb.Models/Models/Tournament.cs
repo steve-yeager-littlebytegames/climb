@@ -5,6 +5,13 @@ namespace Climb.Models
 {
     public class Tournament
     {
+        public enum States
+        {
+            Open,
+            Active,
+            Complete,
+        }
+
         public int ID { get; set; }
         public string Name { get; set; }
         public int LeagueID { get; set; }
@@ -12,7 +19,7 @@ namespace Climb.Models
         public DateTime CreateDate { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public bool HasStarted { get; set; }
+        public States State { get; set; }
 
         public League League { get; set; }
         public Season Season { get; set; }

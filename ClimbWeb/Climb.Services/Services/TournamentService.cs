@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
@@ -127,9 +128,14 @@ namespace Climb.Services
                 throw new NotFoundException(typeof(Tournament), tournamentID);
             }
 
-            if(tournament.HasStarted)
+            if(tournament.State == Tournament.States.Active)
             {
                 throw new BadRequestException("Can't add user after tournament has been started.");
+            }
+
+            if(tournament.State == Tournament.States.Complete)
+            {
+                throw new BadRequestException("Can't add user after tournament has been completed.");
             }
 
             var member = await dbContext.LeagueUsers
@@ -155,6 +161,47 @@ namespace Climb.Services
             }
 
             return competitor;
+        }
+
+        public async Task Leave(int competitorID)
+        {
+            var competitor = await dbContext.TournamentUsers
+                .Include(tu => tu.Tournament).ThenInclude(t => t.TournamentUsers)
+                .FirstOrDefaultAsync(tu => tu.ID == competitorID);
+            if(competitor == null)
+            {
+                throw new NotFoundException(typeof(TournamentUser), competitorID);
+            }
+
+            var tournament = competitor.Tournament;
+
+            if(tournament.State == Tournament.States.Active)
+            {
+                throw new BadRequestException($"Tournament {tournament.ID} has already started.");
+            }
+
+            if(tournament.State == Tournament.States.Complete)
+            {
+                throw new BadRequestException($"Tournament {tournament.ID} has already finished.");
+            }
+
+            tournament.TournamentUsers.Remove(competitor);
+            dbContext.Remove(competitor);
+
+            dbContext.Update(tournament);
+            SortSeeds(tournament.TournamentUsers);
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        private static void SortSeeds(List<TournamentUser> competitors)
+        {
+            competitors.Sort((x, y) => x.Seed.CompareTo(y.Seed));
+
+            for(int i = 0; i < competitors.Count; i++)
+            {
+                competitors[i].Seed = i + 1;
+            }
         }
     }
 }

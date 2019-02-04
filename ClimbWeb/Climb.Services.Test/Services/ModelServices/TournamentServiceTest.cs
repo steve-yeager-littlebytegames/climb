@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
+using Climb.Models;
 using Climb.Services;
 using Climb.Test.Utilities;
 using NSubstitute;
@@ -135,13 +136,77 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public void Join_TournamentStarted_BadRequestException()
+        public void Join_HasStarted_BadRequestException()
         {
-            var tournament = dbContext.CreateTournament(DateTime.MinValue);
-            dbContext.UpdateAndSave(tournament, t => t.HasStarted = true);
-            var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
+            var (member, tournament) = CreateTournament(Tournament.States.Active);
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.Join(tournament.ID, member.UserID));
         }
+
+        [Test]
+        public void Join_HasFinished_BadRequestException()
+        {
+            var (member, tournament) = CreateTournament(Tournament.States.Complete);
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Join(tournament.ID, member.UserID));
+        }
+
+        [Test]
+        public void Leave_NoCompetitor_NotFoundException()
+        {
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.Leave(-1));
+        }
+
+        [Test]
+        public void Leave_HasStarted_BadRequestException()
+        {
+            var competitor = CreateTournamentWithCompetitor(Tournament.States.Active);
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Leave(competitor.ID));
+        }
+
+        [Test]
+        public void Leave_HasFinished_BadRequestException()
+        {
+            var competitor = CreateTournamentWithCompetitor(Tournament.States.Complete);
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Leave(competitor.ID));
+        }
+
+        [Test]
+        public async Task Leave_UpdateSeeds_SeedsAligned()
+        {
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
+            var competitors = dbContext.AddCompetitors(tournament, 4);
+
+            await testObj.Leave(competitors[1].ID);
+
+            var tournamentUsers = tournament.TournamentUsers;
+            tournamentUsers.Sort((x, y) => x.Seed.CompareTo(y.Seed));
+
+            Assert.AreEqual(competitors.Length - 1, tournamentUsers.Count);
+            for(int i = 0; i < tournamentUsers.Count; i++)
+            {
+                Assert.AreEqual(i + 1, tournamentUsers[i].Seed);
+            }
+        }
+
+        #region Helper
+        private (LeagueUser, Tournament) CreateTournament(Tournament.States state)
+        {
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
+            dbContext.UpdateAndSave(tournament, t => t.State = state);
+            var member = dbContext.AddUsersToLeague(tournament.League, 1)[0];
+            return (member, tournament);
+        }
+
+        private TournamentUser CreateTournamentWithCompetitor(Tournament.States state)
+        {
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
+            var competitor = dbContext.AddCompetitors(tournament, 1)[0];
+            dbContext.UpdateAndSave(tournament, t => t.State = state);
+            return competitor;
+        }
+        #endregion
     }
 }
