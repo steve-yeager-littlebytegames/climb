@@ -6,19 +6,28 @@
 
 <link rel="stylesheet" href="~/dist/styles/site-home.css"/>
 
-<div id="banner">
+<div>
     <img src="~/images/logo/logo-128x128.png" alt="logo"/>
     <h1 class="h1">Welcome to Climb!</h1>
     <p id="description">
         This site is for Fighting Game Leagues. Climb has Seasons, Power Rankings, Stats, and more! Happy punching and good luck in your Climb to the top!
     </p>
-
-    <h3>Games</h3>
-    @foreach (var game in Model.TopGames)
-    {
-        <div>
-            <a asp-controller="Game" asp-action="Home" asp-route-gameID="@game.ID">@game.Name</a>
+    
+    <div class="banner-plain">
+        <div class="col-12">
+            <h2>Games</h2>
+            <div class="d-flex flex-wrap justify-content-center">
+                @foreach (var game in Model.TopGames)
+                {
+                    <div class="game-feature">
+                        <a asp-controller="Game" asp-action="Home" asp-route-gameID="@game.ID">@game.Name</a>
+                        <div class="game-image" style="background-image: url(/images/games/game_@(game.ID).jpg)"></div>
+                        <div class="game-bg"></div>
+                    </div>
+                }
+            </div>
         </div>
-    }
+    </div>
+
     <a class="btn btn-cstm-primary mt-4" asp-controller="Game" asp-action="Index">See more!</a>
 </div>
