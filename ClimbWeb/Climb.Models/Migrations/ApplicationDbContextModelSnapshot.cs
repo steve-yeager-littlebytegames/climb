@@ -524,11 +524,19 @@ namespace Climb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime>("CreateDate");
+
+                    b.Property<DateTime?>("EndDate");
+
                     b.Property<int>("LeagueID");
 
                     b.Property<string>("Name");
 
                     b.Property<int?>("SeasonID");
+
+                    b.Property<DateTime?>("StartDate");
+
+                    b.Property<int>("State");
 
                     b.HasKey("ID");
 

@@ -89,5 +89,20 @@ namespace Climb.API
                 return GetExceptionResult(exception, new {id});
             }
         }
+
+        [HttpPost("leave")]
+        [SwaggerResponse(HttpStatusCode.OK, null)]
+        public async Task<IActionResult> Leave(int competitorID)
+        {
+            try
+            {
+                await tournamentService.Leave(competitorID);
+                return Ok();
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {competitorID});
+            }
+        }
     }
 }
