@@ -86,16 +86,5 @@ namespace Climb.Data
             Add(entity);
             await SaveChangesAsync();
         }
-
-        public void DetachEntries()
-        {
-            foreach(var entry in ChangeTracker.Entries().ToArray())
-            {
-                if(entry.Entity != null)
-                {
-                    entry.State = EntityState.Detached;
-                }
-            }
-        }
     }
 }
