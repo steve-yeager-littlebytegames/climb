@@ -13,7 +13,7 @@
         @if(Model.CanJoin)
         {
             <form asp-action="JoinPost" asp-route-userid="@Model.User.Id" asp-route-seasonID="@Model.Season.ID">
-                <button class="btn btn-danger">Join</button>
+                <button class="btn btn-cstm-primary">Join</button>
             </form>
         }
     </div>

@@ -16,13 +16,13 @@ namespace Climb.Services
 
         public string GetUserProfilePicUrl(string id, string imageKey, ImageRules rules)
         {
-            const int defaultPicturesCount = 24;
+            const int defaultPicturesCount = 12;
 
             if(string.IsNullOrWhiteSpace(imageKey))
             {
                 var idHash = id.Select(c => (int)c).Sum();
                 var defaultID = idHash % defaultPicturesCount;
-                return $"/images/profile-default/profile-default-{defaultID}.jpg";
+                return $"/images/profile-default/profile-default-{defaultID.ToString().PadLeft(2, '0')}.jpg";
             }
 
             return GetImageUrl(imageKey, ClimbImageRules.ProfilePic);

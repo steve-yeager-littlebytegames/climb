@@ -2,28 +2,32 @@
 @model Climb.ViewModels.Leagues.LeagueUserViewModel
 
 <div class="seasonparticipant-container d-flex filterable" data-filter-keys="@Html.FilterKeys(Model.LeagueUser.DisplayName, Model.LeagueUser.League.Name)">
-    <img class="profile-pic" src="@Model.Picture" width="64" height="64"/>
-    <div class="d-flex flex-column flex-grow-1 justify-content-center text-center">
-        <b class="name p-1">
-            <a href="@Model.TitleLink">@Model.Title</a>
-        </b>
-        <div class="d-flex flex-grow-1 justify-content-around align-items-center">
+    <img src="@Model.Picture" width="64" height="64"/>
+    <div class="d-flex flex-grow-1 justify-content-start">
+        <div class="d-flex flex-column w-50">
+            <b class="p-1 d-flex justify-content-start">
+                <a href="@Model.TitleLink">@Model.Title</a>
+            </b>
             <div class="d-flex">
-                @foreach(var character in Model.Characters)
+                @foreach (var character in Model.Characters)
                 {
                     <img src="@character" width="20" height="20"/>
                 }
-                @for(var i = 0; i < Model.EmptyCharacterCount; i++)
+                @for (var i = 0; i < Model.EmptyCharacterCount; i++)
                 {
                     <div style="height: 20px; width: 20px;"></div>
                 }
             </div>
-            <div class="points-text-small">( @Model.LeagueUser.Points )</div>
+        </div>
+        <div class="points-text-small d-flex align-items-center">( @Model.LeagueUser.Points )</div>
+        <div class="d-flex flex-grow-1 justify-content-around align-items-center" style="width: 37px;">
             <div>
                 <i class="fas @Model.RankTrendClass rank-trend"></i>
             </div>
-            <div class="rank-text-small text-center">
-                <span class="hidden">@Model.RankWhiteSpace</span>@Model.LeagueUser.Rank</div>
+            <div class="d-flex justify-content-end rank-text-small text-center">
+                @*<span class="hidden">@Model.RankWhiteSpace</span>*@
+                @Model.LeagueUser.Rank
+            </div>
         </div>
     </div>
 </div>

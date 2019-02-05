@@ -8,7 +8,13 @@ html {
 body {
     min-width: 300px;
     margin-bottom: 150px;
+    color: @color-text;
+    background-color: @color-almostwhite;
     overflow-y: scroll;
+}
+
+.h1 {
+    font-size: 2em;
 }
 
 .footer {
@@ -29,6 +35,40 @@ a:hover {
 
 a:active {
     color: @color-link-active;
+}
+
+.btn-cstm-primary {
+    color: white;
+    font-weight: 500;
+    background-color: #ff6400;
+}
+
+.btn-cstm-primary:hover {
+    color: white;
+    background-color: #ffaf00;
+}
+
+.btn-cstm-primary:active {
+    color: white;
+    background-color: #d64000;
+}
+
+.btn-cstm-secondary {
+    color: #ff6400;
+    font-weight: 500;
+    border: 2px solid #ff9632;
+}
+
+.btn-cstm-secondary:hover {
+    color: #ffaf00;
+    font-weight: 500;
+    border: 2px solid #ffaf00;
+}
+
+.btn-cstm-secondary:active {
+    color: #d64000;
+    font-weight: 500;
+    border: 2px solid #d64000;
 }
 
 .text-darker {
@@ -63,20 +103,15 @@ a:active {
     align-items: center;
 }
 
-.page-section-child {
-    background-color: @color-dark;
-    padding: 25px 0;
-    border-radius: 3px;
-    margin: 0;
-}
-
-.page-section-child {
-    width: 350px;
+.page-section h3 {
+    color: @color-darker;
 }
 
 .page-section-content {
-    border-bottom: 1px solid @color-darker;
-    border-top: 1px solid @color-darker;
+    padding: 25px 0;
+    margin: 0;
+    width: 100%;
+    max-width: 350px;
 }
 
 .hidden {
@@ -116,12 +151,25 @@ a:active {
 }
 
 .section-divider {
-    border-bottom: 1px solid @color-darker;
+    color: @color-darker;
+    margin-top: 1rem;
 }
 
 .section-divider h5 {
     padding: 0.5em;
     margin: 0;
+}
+
+body::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+body::-webkit-scrollbar-track {
+    background-color: @color-almostwhite;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: @color-desat;
 }
 
 .list-group.list-group-horizontal {
@@ -150,4 +198,35 @@ a:active {
 
 .filtered {
     display: none !important;
+}
+
+.fake-form-input {
+    color: rgb(73, 80, 87);
+    padding: 10px;
+    border: 1px solid rgb(206, 212, 218);
+    border-radius: 4px;
+}
+
+.modal-content {
+    background-color: @color-almostwhite;
+}
+
+.optional {
+    color: @color-dark;
+}
+
+.m-w-60 {
+    max-width: 60px;
+}
+
+.banner-plain {
+    background: linear-gradient(@color-med, @color-light);
+    margin: 1rem 0;
+    padding: 1rem 0 2rem 0;
+}
+
+.banner-plain h2 {
+    color: @color-almostwhite;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
 }
