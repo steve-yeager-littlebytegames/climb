@@ -191,7 +191,39 @@ namespace Climb.Test.Services.ModelServices
             }
         }
 
+        [Test]
+        public void Start_NotFound_NotFoundException()
+        {
+            Assert.ThrowsAsync<NotFoundException>(() => testObj.Start(-1));
+        }
+
+        [Test]
+        public async Task Start_Valid_SetsCreated()
+        {
+            testObj = new TournamentService(dbContext, new BracketGenerator());
+
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
+            dbContext.AddCompetitors(tournament, 8);
+
+            dbContext.Clean();
+
+            await testObj.GenerateBracket(tournament.ID);
+
+            dbContext.Clean();
+
+            await testObj.Start(tournament.ID);
+
+
+        }
+
         #region Helper
+        private void CreateRealBracket()
+        {
+            var realBracketGenerator = new BracketGenerator();
+
+            bracketGenerator.WhenForAnyArgs(bg => bg.Generate(0)).Do(ci => realBracketGenerator.Generate(ci.Arg<int>()));
+        }
+
         private (LeagueUser, Tournament) CreateTournament(Tournament.States state)
         {
             var tournament = dbContext.CreateTournament(DateTime.MinValue);

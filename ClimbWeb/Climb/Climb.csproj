@@ -134,9 +134,6 @@
     <Content Update="Views\Tournament\Partials\GamePlayer.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Tournament\Test.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Views\Tournament\_TournamentsLayout.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

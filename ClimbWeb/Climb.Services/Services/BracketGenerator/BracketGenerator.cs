@@ -7,7 +7,7 @@ namespace Climb.Services
     {
         public int MinCompetitors => 4;
 
-        public TournamentData Generate(int competitorCount)
+        public BracketData Generate(int competitorCount)
         {
             if(competitorCount < MinCompetitors)
             {
@@ -17,7 +17,7 @@ namespace Climb.Services
             var competitors = GetCompetitors(competitorCount);
             competitors = SortCompetitors(competitors);
 
-            var tournament = new TournamentData();
+            var tournament = new BracketData();
 
             CreateFirstRounds(tournament, competitors);
             CreateMiddleRounds(tournament);
@@ -66,20 +66,20 @@ namespace Climb.Services
             return (int)result;
         }
 
-        private static void CreateFirstRounds(TournamentData tournament, IReadOnlyList<int?> competitors)
+        private static void CreateFirstRounds(BracketData bracket, IReadOnlyList<int?> competitors)
         {
-            var winners = tournament.AddRound(tournament.Winners);
+            var winners = bracket.AddRound(bracket.Winners);
             for(var i = 0; i < competitors.Count; i += 2)
             {
                 var isBye = competitors[i] == null || competitors[i + 1] == null;
-                tournament.AddGame(winners, competitors[i], competitors[i + 1], isBye);
+                bracket.AddGame(winners, competitors[i], competitors[i + 1], isBye);
             }
 
-            var losers = tournament.AddRound(tournament.Losers);
+            var losers = bracket.AddRound(bracket.Losers);
             for(var i = 0; i < winners.Games.Count; i += 2)
             {
                 var isBye = winners.Games[i].IsBye || winners.Games[i + 1].IsBye;
-                var game = tournament.AddGame(losers, null, null, isBye);
+                var game = bracket.AddGame(losers, null, null, isBye);
                 game.P1Game = winners.Games[i];
                 game.P2Game = winners.Games[i + 1];
                 game.P1Game.NextLoss = game;
@@ -87,33 +87,33 @@ namespace Climb.Services
             }
         }
 
-        private static void CreateMiddleRounds(TournamentData tournament)
+        private static void CreateMiddleRounds(BracketData bracket)
         {
-            var lastWinnersRound = tournament.Winners[0];
+            var lastWinnersRound = bracket.Winners[0];
             while(lastWinnersRound.Games.Count > 1)
             {
-                lastWinnersRound = CreateRoundGroup(tournament, lastWinnersRound);
+                lastWinnersRound = CreateRoundGroup(bracket, lastWinnersRound);
             }
         }
 
-        private static RoundData CreateRoundGroup(TournamentData tournament, RoundData lastWinnersRound)
+        private static RoundData CreateRoundGroup(BracketData bracket, RoundData lastWinnersRound)
         {
-            var winners = tournament.AddRound(tournament.Winners);
+            var winners = bracket.AddRound(bracket.Winners);
             for(var i = 0; i < lastWinnersRound.Games.Count; i += 2)
             {
-                var game = tournament.AddGame(winners);
+                var game = bracket.AddGame(winners);
                 game.P1Game = lastWinnersRound.Games[i];
                 game.P2Game = lastWinnersRound.Games[i + 1];
                 game.P1Game.NextWin = game;
                 game.P2Game.NextWin = game;
             }
 
-            var lastLosersRound = tournament.Losers[tournament.Losers.Count - 1];
+            var lastLosersRound = bracket.Losers[bracket.Losers.Count - 1];
 
-            var losers = tournament.AddRound(tournament.Losers);
+            var losers = bracket.AddRound(bracket.Losers);
             for(var i = 0; i < lastLosersRound.Games.Count; i++)
             {
-                var game = tournament.AddGame(losers);
+                var game = bracket.AddGame(losers);
                 game.P1Game = lastLosersRound.Games[i];
                 game.P2Game = winners.Games[i];
                 game.P1Game.NextWin = game;
@@ -122,10 +122,10 @@ namespace Climb.Services
 
             if(losers.Games.Count > 1)
             {
-                var secondLosers = tournament.AddRound(tournament.Losers);
+                var secondLosers = bracket.AddRound(bracket.Losers);
                 for(var i = 0; i < losers.Games.Count; i++)
                 {
-                    var game = tournament.AddGame(secondLosers);
+                    var game = bracket.AddGame(secondLosers);
                     game.P1Game = losers.Games[i];
                     game.P2Game = losers.Games[++i];
                     game.P1Game.NextWin = game;
@@ -136,61 +136,61 @@ namespace Climb.Services
             return winners;
         }
 
-        private static void CreateGrandFinals(TournamentData tournament)
+        private static void CreateGrandFinals(BracketData bracket)
         {
-            var lastWinners = tournament.Winners[tournament.Winners.Count - 1];
-            var lastLosers = tournament.Losers[tournament.Losers.Count - 1];
+            var lastWinners = bracket.Winners[bracket.Winners.Count - 1];
+            var lastLosers = bracket.Losers[bracket.Losers.Count - 1];
 
-            tournament.GrandFinals = new List<RoundData>(2) {new RoundData(++tournament.RoundCount), new RoundData(++tournament.RoundCount)};
+            bracket.GrandFinals = new List<RoundData>(2) {new RoundData(++bracket.RoundCount), new RoundData(++bracket.RoundCount)};
 
-            var firstGame = tournament.AddGame(tournament.GrandFinals[0]);
+            var firstGame = bracket.AddGame(bracket.GrandFinals[0]);
             lastWinners.Games[0].NextWin = firstGame;
             lastLosers.Games[0].NextWin = firstGame;
 
-            var secondGame = tournament.AddGame(tournament.GrandFinals[1]);
+            var secondGame = bracket.AddGame(bracket.GrandFinals[1]);
             secondGame.P1Game = firstGame;
             secondGame.P2Game = firstGame;
             firstGame.NextWin = secondGame;
             firstGame.NextLoss = secondGame;
         }
 
-        private static void NameRounds(TournamentData tournament)
+        private static void NameRounds(BracketData bracket)
         {
-            tournament.GrandFinals[0].Name = "Grand Finals";
-            tournament.GrandFinals[1].Name = "Grand Finals Reset";
+            bracket.GrandFinals[0].Name = "Grand Finals";
+            bracket.GrandFinals[1].Name = "Grand Finals Reset";
 
-            var winnersCount = tournament.Winners.Count;
+            var winnersCount = bracket.Winners.Count;
             var namedRounds = 0;
 
-            tournament.Winners[winnersCount - 1].Name = "Winners Finals";
+            bracket.Winners[winnersCount - 1].Name = "Winners Finals";
             ++namedRounds;
 
             if(winnersCount > 3)
             {
-                tournament.Winners[winnersCount - 2].Name = "Winners Semi-Finals";
+                bracket.Winners[winnersCount - 2].Name = "Winners Semi-Finals";
                 ++namedRounds;
             }
 
             for(var i = winnersCount - namedRounds - 1; i >= 0; i--)
             {
-                tournament.Winners[i].Name = $"Winners {i + 1}";
+                bracket.Winners[i].Name = $"Winners {i + 1}";
             }
 
-            var losersCount = tournament.Losers.Count;
+            var losersCount = bracket.Losers.Count;
             namedRounds = 0;
 
-            tournament.Losers[losersCount - 1].Name = "Losers Finals";
+            bracket.Losers[losersCount - 1].Name = "Losers Finals";
             ++namedRounds;
 
             if(losersCount > 3)
             {
-                tournament.Losers[losersCount - 2].Name = "Losers Semi-Finals";
+                bracket.Losers[losersCount - 2].Name = "Losers Semi-Finals";
                 ++namedRounds;
             }
 
             for(var i = losersCount - namedRounds - 1; i >= 0; i--)
             {
-                tournament.Losers[i].Name = $"Losers {i + 1}";
+                bracket.Losers[i].Name = $"Losers {i + 1}";
             }
         }
     }

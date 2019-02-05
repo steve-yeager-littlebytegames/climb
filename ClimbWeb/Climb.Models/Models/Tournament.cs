@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Climb.Models
 {
@@ -37,6 +38,11 @@ namespace Climb.Models
         {
             LeagueID = leagueID;
             CreateDate = createDate;
+        }
+
+        public Round GetRound(Round.Brackets bracket, int index)
+        {
+            return Rounds.First(r => r.Bracket == bracket && r.Index == index);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Climb.Services
 {
     public partial class BracketGenerator
     {
-        public class TournamentData
+        public class BracketData
         {
             public int GameCount { get; private set; }
             public int RoundCount { get; set; }

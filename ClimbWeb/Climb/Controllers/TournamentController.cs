@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Climb.Data;
+using Climb.Models;
 using Climb.Requests.Tournaments;
 using Climb.Services;
 using Climb.ViewModels.Tournaments;
@@ -89,63 +91,19 @@ namespace Climb.Controllers
         }
 
         [HttpGet("tournaments/test/{count:int}")]
-        public IActionResult Test(int count, bool randomize)
+        public async Task<IActionResult> Test(int count, bool randomize)
         {
+            var league = await dbContext.Leagues.FirstOrDefaultAsync();
+
             var bracketGenerator = new BracketGenerator();
-            var tournament = bracketGenerator.Generate(count);
-
-            if(randomize)
+            var tournamentData = bracketGenerator.Generate(count);
+            var tournament = new Tournament(league.ID, DateTime.Now)
             {
-                Randomize();
-            }
+                Rounds = new List<Round>(),
+            };
+            tournamentService.AddBracket(tournament, tournamentData);
 
-            var viewModel = new Test(tournament);
-            return View(viewModel);
-
-            void Randomize()
-            {
-                var random = new Random();
-
-                foreach(var round in tournament.Winners)
-                {
-                    foreach(var game in round.Games)
-                    {
-                        if(game.P2 == null || game.P1 != null && random.NextDouble() < 0.5)
-                        {
-                            game.NextWin.AddPlayer(game.P1);
-                            game.NextLoss.AddPlayer(game.P2);
-                            game.P1Score = 2;
-                            game.P2Score = random.Next(0, 2);
-                        }
-                        else
-                        {
-                            game.NextWin.AddPlayer(game.P2);
-                            game.NextLoss.AddPlayer(game.P1);
-                            game.P1Score = random.Next(0, 2);
-                            game.P2Score = 2;
-                        }
-                    }
-                }
-
-                foreach(var round in tournament.Losers)
-                {
-                    foreach(var game in round.Games)
-                    {
-                        if(game.P2 == null || game.P1 != null && random.NextDouble() < 0.5)
-                        {
-                            game.NextWin.AddPlayer(game.P1);
-                            game.P1Score = 2;
-                            game.P2Score = random.Next(0, 2);
-                        }
-                        else
-                        {
-                            game.NextWin.AddPlayer(game.P2);
-                            game.P1Score = random.Next(0, 2);
-                            game.P2Score = 2;
-                        }
-                    }
-                }
-            }
+            return View("Home", new HomeViewModel(null, tournament, configuration));
         }
     }
 }

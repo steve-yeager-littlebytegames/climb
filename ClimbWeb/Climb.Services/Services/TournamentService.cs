@@ -73,27 +73,31 @@ namespace Climb.Services
                 .FirstOrDefaultAsync(t => t.ID == tournamentID);
             dbContext.Update(tournament);
 
-            var tournamentData = bracketGenerator.Generate(tournament.TournamentUsers.Count);
-
             dbContext.Rounds.RemoveRange(tournament.Rounds);
             tournament.Rounds.Clear();
             dbContext.SetSlots.RemoveRange(tournament.SetSlots);
             tournament.SetSlots.Clear();
 
-            tournament.Rounds.AddRange(tournamentData.Winners.Select(rd => CreateRound(rd, Round.Brackets.Winners)));
-            tournament.Rounds.AddRange(tournamentData.Losers.Select(rd => CreateRound(rd, Round.Brackets.Losers)));
-            tournament.Rounds.AddRange(tournamentData.GrandFinals.Select(rd => CreateRound(rd, Round.Brackets.Grands)));
+            var tournamentData = bracketGenerator.Generate(tournament.TournamentUsers.Count);
+            AddBracket(tournament, tournamentData);
 
             await dbContext.SaveChangesAsync();
 
             return tournament;
+        }
+
+        public void AddBracket(Tournament tournament, BracketGenerator.BracketData bracketData)
+        {
+            tournament.Rounds.AddRange(bracketData.Winners.Select(rd => CreateRound(rd, Round.Brackets.Winners)));
+            tournament.Rounds.AddRange(bracketData.Losers.Select(rd => CreateRound(rd, Round.Brackets.Losers)));
+            tournament.Rounds.AddRange(bracketData.GrandFinals.Select(rd => CreateRound(rd, Round.Brackets.Grands)));
 
             Round CreateRound(BracketGenerator.RoundData roundData, Round.Brackets bracket)
             {
                 var round = new Round
                 {
                     Index = roundData.Index,
-                    TournamentID = tournamentID,
+                    TournamentID = tournament.ID,
                     Name = roundData.Name,
                     Bracket = bracket,
                 };
@@ -101,12 +105,12 @@ namespace Climb.Services
 
                 return round;
             }
-
+        
             SetSlot CreateSlot(BracketGenerator.GameData game, Round round)
             {
                 return new SetSlot
                 {
-                    TournamentID = tournamentID,
+                    TournamentID = tournament.ID,
                     Identifier = game.ID,
                     Round = round,
                     WinSlotIdentifier = game.NextWin?.ID,
@@ -202,6 +206,38 @@ namespace Climb.Services
             {
                 competitors[i].Seed = i + 1;
             }
+        }
+
+        public async Task<Tournament> Start(int tournamentID)
+        {
+            var tournament = await dbContext.Tournaments
+                .Include(t => t.Rounds).ThenInclude(r => r.SetSlots)
+                .FirstOrDefaultAsync(t => t.ID == tournamentID);
+            if(tournament == null)
+            {
+                throw new NotFoundException(typeof(Tournament), tournamentID);
+            }
+
+            dbContext.Update(tournament);
+
+            var firstRound = tournament.GetRound(Round.Brackets.Winners, 1);
+            foreach(var slot in firstRound.SetSlots)
+            {
+                var hasPlayers = true;
+                if(hasPlayers)
+                {
+                    await CreateSetForSlot(slot);
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
+
+            async Task CreateSetForSlot(SetSlot slot)
+            {
+
+            }
+
+            return tournament;
         }
     }
 }

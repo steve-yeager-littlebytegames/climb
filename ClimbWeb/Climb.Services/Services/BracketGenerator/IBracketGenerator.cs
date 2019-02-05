@@ -3,6 +3,6 @@
     public interface IBracketGenerator
     {
         int MinCompetitors { get; }
-        BracketGenerator.TournamentData Generate(int competitorCount);
+        BracketGenerator.BracketData Generate(int competitorCount);
     }
 }

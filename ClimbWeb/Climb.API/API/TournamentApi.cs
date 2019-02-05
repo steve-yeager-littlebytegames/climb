@@ -104,5 +104,12 @@ namespace Climb.API
                 return GetExceptionResult(exception, new {competitorID});
             }
         }
+
+        [HttpPost("start/{id:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(TournamentDto))]
+        public async Task<IActionResult> Start(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
