@@ -1,6 +1,6 @@
 ﻿@using Climb.Extensions
 @using Climb.ViewModels.Seasons
-@model Climb.ViewModels.Seasons.PageViewModel
+@model PageViewModel
 
 @{
     Layout = "_LayoutWithNavbar";
@@ -10,7 +10,7 @@
 <div class="container">
     <div id="home-header" class="d-flex flex-column justify-content-center mt-4">
         <h1>@Model.Season.League.Name Season @Model.SeasonNumber.ToRoman()</h1>
-        @if (Model.CanJoin)
+        @if(Model.CanJoin)
         {
             <form asp-action="JoinPost" asp-route-userid="@Model.User.Id" asp-route-seasonID="@Model.Season.ID">
                 <button class="btn btn-cstm-primary">Join</button>

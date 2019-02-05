@@ -9,7 +9,7 @@ namespace Climb.Test.Utilities
     {
         public static (Season season, List<LeagueUser> members) CreateSeason(ApplicationDbContext dbContext, int participants, Action<Season> preprocess = null)
         {
-            var league = LeagueUtility.CreateLeague(dbContext);
+            var league = dbContext.CreateLeague();
             var members = LeagueUtility.AddUsersToLeague(league, participants, dbContext);
 
             preprocess += s => s.LeagueID = league.ID;

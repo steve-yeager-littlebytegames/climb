@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Climb.Controllers;
 using Climb.Data;
+using Climb.Models;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using NSubstitute;
 using NUnit.Framework;
 

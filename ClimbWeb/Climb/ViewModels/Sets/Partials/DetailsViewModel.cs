@@ -1,5 +1,4 @@
-﻿using Climb.Data;
-using Climb.Models;
+﻿using Climb.Models;
 using Climb.Services;
 
 namespace Climb.ViewModels.Sets
