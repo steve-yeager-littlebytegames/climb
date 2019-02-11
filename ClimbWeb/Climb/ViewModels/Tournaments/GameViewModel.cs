@@ -6,8 +6,8 @@ namespace Climb.ViewModels.Tournaments
     {
         public int Identifier { get; set; }
         public bool IsBye { get; set; }
-        public int? Player1ID { get; set; }
-        public int? Player2ID { get; set; }
+        public TournamentUser Player1 { get; set; }
+        public TournamentUser Player2 { get; set; }
         public int? P1GameID { get; set; }
         public int? P2GameID { get; set; }
         public int P1Score { get; set; }
@@ -19,6 +19,10 @@ namespace Climb.ViewModels.Tournaments
             Identifier = setSlot.Identifier;
             IsBye = setSlot.IsBye;
             WinID = setSlot.WinSlotIdentifier;
+            Player1 = setSlot.User1;
+            Player2 = setSlot.User2;
+            P1GameID = setSlot.P1Game;
+            P2GameID = setSlot.P2Game;
         }
 
         public static GameViewModel Create(SetSlot setSlot) => new GameViewModel(setSlot);

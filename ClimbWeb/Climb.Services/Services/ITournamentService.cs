@@ -10,5 +10,6 @@ namespace Climb.Services
         void AddBracket(Tournament tournament, BracketGenerator.BracketData bracketData);
         Task<TournamentUser> Join(int tournamentID, string userID);
         Task Leave(int competitorID);
+        Task<Tournament> Start(int tournamentID);
     }
 }

@@ -154,5 +154,15 @@ namespace Climb.Services.ModelServices
                 dbContext.MatchCharacters.Add(character);
             }
         }
+
+        public Set CreateTournamentSet(Tournament tournament, TournamentUser p1, TournamentUser p2, DateTime dueDate)
+        {
+            return new Set(tournament.LeagueID, p1.LeagueUserID, p2.LeagueUserID, dueDate, tournament.SeasonID, p1.SeasonLeagueUserID, p2.SeasonLeagueUserID)
+            {
+                Tournament = tournament,
+                TournamentPlayer1 = p1,
+                TournamentPlayer2 = p2,
+            };
+        }
     }
 }

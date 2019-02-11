@@ -36,6 +36,8 @@ namespace Climb.Controllers
                 .Include(t => t.Rounds).AsNoTracking()
                 .Include(t => t.Sets).AsNoTracking()
                 .Include(t => t.SetSlots).ThenInclude(ss => ss.Round).AsNoTracking()
+                .Include(t => t.SetSlots).ThenInclude(ss => ss.User1).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
+                .Include(t => t.SetSlots).ThenInclude(ss => ss.User2).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .Include(t => t.TournamentUsers).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .FirstOrDefaultAsync(t => t.ID == id);
             if (tournament == null)
@@ -44,6 +46,25 @@ namespace Climb.Controllers
             }
 
             var viewModel = new HomeViewModel(user, tournament, configuration);
+            return View(viewModel);
+        }
+
+        [HttpGet("tournaments/sets/{id:int}")]
+        public async Task<IActionResult> Sets(int id)
+        {
+            var user = await GetViewUserAsync();
+
+            var tournament = await dbContext.Tournaments
+                .Include(t => t.Sets).ThenInclude(s => s.League).AsNoTracking()
+                .Include(t => t.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(t => t.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
+                .FirstOrDefaultAsync(t => t.ID == id);
+            if (tournament == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new SetsViewModel(tournament.Sets, tournament, user, configuration);
             return View(viewModel);
         }
 

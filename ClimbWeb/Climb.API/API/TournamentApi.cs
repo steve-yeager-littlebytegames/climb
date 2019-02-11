@@ -48,7 +48,6 @@ namespace Climb.API
         public async Task<IActionResult> GetAll()
         {
             var tournaments = await dbContext.Tournaments
-                .Include(t => t.TournamentUsers)
                 .Select(t => new TournamentDto(t))
                 .ToArrayAsync();
 
@@ -109,7 +108,15 @@ namespace Climb.API
         [SwaggerResponse(HttpStatusCode.OK, typeof(TournamentDto))]
         public async Task<IActionResult> Start(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await tournamentService.Start(id);
+                return Ok();
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, new {id});
+            }
         }
     }
 }

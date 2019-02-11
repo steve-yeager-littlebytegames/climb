@@ -116,6 +116,9 @@
     <Content Update="Views\Site\About.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Tournament\Sets.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Tournament\Manage.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

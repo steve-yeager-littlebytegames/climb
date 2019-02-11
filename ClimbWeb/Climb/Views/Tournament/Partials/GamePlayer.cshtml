@@ -1,7 +1,7 @@
 ﻿@model Climb.ViewModels.Tournaments.GamePlayerViewModel
 
-<div class="d-flex @(Model.PlayerID != null ? "player" : "")" data-player-id="@Model.PlayerID">
+<div class="d-flex @(Model.HasUser ? "player" : "")" data-player-id="@Model.User?.ID">
     <div class="game-player-seed">@(Model.PlayerSeed)</div>
-    <div class="game-player-name @(Model.PlayerID == null ? "small" : "")">@(Model.PlayerID == null ? $"from game {Model.PreviousGameID}" : $"Player {(char)(65 + Model.PlayerID)}")</div>
+    <div class="game-player-name @(!Model.HasUser ? "small" : "")">@(!Model.HasUser ? $"from game {Model.PreviousGameID}" : Model.User?.LeagueUser.DisplayName)</div>
     <div class="game-player-score @(Model.IsWinner ? "game-score-win" : "")">@Model.Score</div>
 </div>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
 using Climb.Models;
+using Climb.Services.ModelServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Climb.Services
@@ -12,11 +13,15 @@ namespace Climb.Services
     {
         private readonly ApplicationDbContext dbContext;
         private readonly IBracketGenerator bracketGenerator;
+        private readonly ISetService setService;
+        private readonly IDateService dateService;
 
-        public TournamentService(ApplicationDbContext dbContext, IBracketGenerator bracketGenerator)
+        public TournamentService(ApplicationDbContext dbContext, IBracketGenerator bracketGenerator, ISetService setService, IDateService dateService)
         {
             this.dbContext = dbContext;
             this.bracketGenerator = bracketGenerator;
+            this.setService = setService;
+            this.dateService = dateService;
         }
 
         public async Task<Tournament> Create(int leagueID, int? seasonID, string name)
@@ -31,6 +36,7 @@ namespace Climb.Services
                 LeagueID = leagueID,
                 SeasonID = seasonID,
                 Name = name,
+                StartDate = dateService.Now,
             };
 
             await CreateCompetitors();
@@ -77,6 +83,8 @@ namespace Climb.Services
             tournament.Rounds.Clear();
             dbContext.SetSlots.RemoveRange(tournament.SetSlots);
             tournament.SetSlots.Clear();
+
+            await dbContext.SaveChangesAsync();
 
             var tournamentData = bracketGenerator.Generate(tournament.TournamentUsers.Count);
             AddBracket(tournament, tournamentData);
@@ -212,6 +220,7 @@ namespace Climb.Services
         {
             var tournament = await dbContext.Tournaments
                 .Include(t => t.Rounds).ThenInclude(r => r.SetSlots)
+                .Include(t => t.TournamentUsers).AsNoTracking()
                 .FirstOrDefaultAsync(t => t.ID == tournamentID);
             if(tournament == null)
             {
@@ -220,24 +229,70 @@ namespace Climb.Services
 
             dbContext.Update(tournament);
 
+            var users = PadUsers();
+
+            // TODO: Need to shuffle sets so #1 doesn't play #2 in the second round.
             var firstRound = tournament.GetRound(Round.Brackets.Winners, 1);
-            foreach(var slot in firstRound.SetSlots)
+            firstRound.SetSlots.Sort((x, y) => x.Identifier.CompareTo(y.Identifier));
+            for(var i = 0; i < firstRound.SetSlots.Count; i++)
             {
-                var hasPlayers = true;
-                if(hasPlayers)
+                var slot = firstRound.SetSlots[i];
+
+                var p1 = users[i];
+                var p2 = users[users.Count - 1 - i];
+
+                if(p1 != TournamentUser.NullUser && p2 != TournamentUser.NullUser)
                 {
-                    await CreateSetForSlot(slot);
+                    // TODO: Don't hardcode due date.
+                    slot.Set = setService.CreateTournamentSet(tournament, p1, p2, dateService.Now.AddDays(7));
+                    slot.User1 = slot.User1 = p1;
+                    slot.User2 = slot.User2 = p2;
+                }
+                else if(p1 == TournamentUser.NullUser)
+                {
+                    MoveUserPastBye(slot, p2);
+                }
+                else if(p2 == TournamentUser.NullUser)
+                {
+                    MoveUserPastBye(slot, p1);
                 }
             }
 
             await dbContext.SaveChangesAsync();
 
-            async Task CreateSetForSlot(SetSlot slot)
-            {
+            return tournament;
 
+            List<TournamentUser> PadUsers()
+            {
+                var tournamentUsers = new List<TournamentUser>(tournament.TournamentUsers);
+                var fullBracketCount = BracketGenerator.GetFullBracketCount(tournamentUsers.Count);
+
+                while(tournamentUsers.Count < fullBracketCount)
+                {
+                    tournamentUsers.Add(TournamentUser.NullUser);
+                }
+
+                return tournamentUsers;
             }
 
-            return tournament;
+            void MoveUserPastBye(SetSlot slot, TournamentUser user)
+            {
+                var nextSlot = tournament.SetSlots.First(ss => ss.Identifier == slot.WinSlotIdentifier);
+                if(slot.Identifier == nextSlot.P1Game)
+                {
+                    nextSlot.User1 = user;
+                }
+                else
+                {
+                    nextSlot.User2 = user;
+                }
+
+                if(nextSlot.User1 != null && nextSlot.User2 != null)
+                {
+                    // TODO: Don't hardcode due date.
+                    nextSlot.Set = setService.CreateTournamentSet(tournament, nextSlot.User1, nextSlot.User2, dateService.Now.AddDays(7));
+                }
+            }
         }
     }
 }

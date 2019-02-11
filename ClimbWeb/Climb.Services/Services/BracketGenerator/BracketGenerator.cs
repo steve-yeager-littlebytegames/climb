@@ -58,8 +58,9 @@ namespace Climb.Services
             return sortedCompetitors;
         }
 
+        // TODO: This should not be public.
         // https://www.hackerearth.com/practice/notes/round-a-number-to-the-next-power-of-2/
-        private static int GetFullBracketCount(int count)
+        public static int GetFullBracketCount(int count)
         {
             var nextNumber = Math.Ceiling(Math.Log(count, 2));
             var result = Math.Pow(2, nextNumber);

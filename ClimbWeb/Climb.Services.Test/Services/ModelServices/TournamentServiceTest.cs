@@ -5,6 +5,7 @@ using Climb.Data;
 using Climb.Exceptions;
 using Climb.Models;
 using Climb.Services;
+using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
 using NSubstitute;
 using NUnit.Framework;
@@ -17,14 +18,18 @@ namespace Climb.Test.Services.ModelServices
         private TournamentService testObj;
         private ApplicationDbContext dbContext;
         private IBracketGenerator bracketGenerator;
+        private ISetService setService;
+        private IDateService dateService;
 
         [SetUp]
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
             bracketGenerator = Substitute.For<IBracketGenerator>();
+            setService = Substitute.For<ISetService>();
+            dateService = Substitute.For<IDateService>();
 
-            testObj = new TournamentService(dbContext, bracketGenerator);
+            testObj = new TournamentService(dbContext, bracketGenerator, setService, dateService);
         }
 
         [Test]
@@ -39,6 +44,18 @@ namespace Climb.Test.Services.ModelServices
             var league = dbContext.CreateLeague();
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.Create(league.ID, -1, "TestName"));
+        }
+
+        [Test]
+        public async Task Create_Valid_StartDateSet()
+        {
+            var league = dbContext.CreateLeague(8);
+            var date = new DateTime(2020, 2, 22);
+            dateService.Now.Returns(date);
+
+            var tournament = await testObj.Create(league.ID, null, "TestName");
+
+            Assert.AreEqual(date, tournament.StartDate);
         }
 
         [Test]
@@ -197,13 +214,16 @@ namespace Climb.Test.Services.ModelServices
             Assert.ThrowsAsync<NotFoundException>(() => testObj.Start(-1));
         }
 
-        [Test]
-        public async Task Start_Valid_SetsCreated()
+        [TestCase(8, 4)]
+        [TestCase(16, 8)]
+        [TestCase(10, 4)]
+        [TestCase(17, 8)]
+        public async Task Start_Valid_SetsCreated(int userCount, int setCount)
         {
-            testObj = new TournamentService(dbContext, new BracketGenerator());
+            testObj = new TournamentService(dbContext, new BracketGenerator(), setService, dateService);
 
             var tournament = dbContext.CreateTournament(DateTime.MinValue);
-            dbContext.AddCompetitors(tournament, 8);
+            dbContext.AddCompetitors(tournament, userCount);
 
             dbContext.Clean();
 
@@ -213,17 +233,10 @@ namespace Climb.Test.Services.ModelServices
 
             await testObj.Start(tournament.ID);
 
-
+            setService.ReceivedWithAnyArgs(setCount).CreateTournamentSet(null, null, null, DateTime.MinValue);
         }
 
         #region Helper
-        private void CreateRealBracket()
-        {
-            var realBracketGenerator = new BracketGenerator();
-
-            bracketGenerator.WhenForAnyArgs(bg => bg.Generate(0)).Do(ci => realBracketGenerator.Generate(ci.Arg<int>()));
-        }
-
         private (LeagueUser, Tournament) CreateTournament(Tournament.States state)
         {
             var tournament = dbContext.CreateTournament(DateTime.MinValue);

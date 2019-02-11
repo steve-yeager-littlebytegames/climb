@@ -2,6 +2,8 @@
 {
     public class TournamentUser
     {
+        public static readonly TournamentUser NullUser = new TournamentUser();
+
         public int ID { get; set; }
         public string UserID { get; set; }
         public int LeagueUserID { get; set; }

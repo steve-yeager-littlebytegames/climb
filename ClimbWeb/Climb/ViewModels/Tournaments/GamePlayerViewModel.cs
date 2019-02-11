@@ -1,16 +1,20 @@
-﻿namespace Climb.ViewModels.Tournaments
+﻿using Climb.Models;
+
+namespace Climb.ViewModels.Tournaments
 {
     public class GamePlayerViewModel
     {
-        public int? PlayerID { get; }
+        public TournamentUser User { get; set; }
         public int PlayerSeed { get; }
         public int? PreviousGameID { get; }
         public int Score { get; }
         public bool IsWinner { get; }
 
-        public GamePlayerViewModel(int? playerID, int playerSeed, int? previousGameID, int score, bool isWinner)
+        public bool HasUser => User != null;
+
+        public GamePlayerViewModel(TournamentUser user, int playerSeed, int? previousGameID, int score, bool isWinner)
         {
-            PlayerID = playerID;
+            User = user;
             PlayerSeed = playerSeed;
             PreviousGameID = previousGameID;
             Score = score;

@@ -4,14 +4,16 @@ using Climb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Climb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190211015644_Add_SetSlot_User")]
+    partial class Add_SetSlot_User
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -415,14 +417,6 @@ namespace Climb.Migrations
 
                     b.Property<int?>("TournamentID");
 
-                    b.Property<int?>("TournamentPlayer1ID");
-
-                    b.Property<int?>("TournamentPlayer2ID");
-
-                    b.Property<int?>("TournamentUser1ID");
-
-                    b.Property<int?>("TournamentUser2ID");
-
                     b.Property<DateTime?>("UpdatedDate");
 
                     b.HasKey("ID");
@@ -440,10 +434,6 @@ namespace Climb.Migrations
                     b.HasIndex("SeasonPlayer2ID");
 
                     b.HasIndex("TournamentID");
-
-                    b.HasIndex("TournamentPlayer1ID");
-
-                    b.HasIndex("TournamentPlayer2ID");
 
                     b.ToTable("Sets");
                 });
@@ -876,16 +866,6 @@ namespace Climb.Migrations
                     b.HasOne("Climb.Models.Tournament", "Tournament")
                         .WithMany("Sets")
                         .HasForeignKey("TournamentID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Climb.Models.TournamentUser", "TournamentPlayer1")
-                        .WithMany()
-                        .HasForeignKey("TournamentPlayer1ID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Climb.Models.TournamentUser", "TournamentPlayer2")
-                        .WithMany()
-                        .HasForeignKey("TournamentPlayer2ID")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

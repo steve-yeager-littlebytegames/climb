@@ -1,0 +1,21 @@
+﻿@using Climb.Services
+@using Climb.ViewModels.Sets
+@model Climb.ViewModels.Tournaments.SetsViewModel
+@inject ICdnService cdnService
+
+@{
+    Layout = "_TournamentsLayout";
+}
+
+@section TournamentsBody
+{
+    <div>
+        <h3>Sets</h3>
+        <ol>
+            @foreach(var set in Model.Sets)
+            {
+                <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
+            }
+        </ol>
+    </div>
+}
