@@ -89,15 +89,11 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
                 {!set.isLocked &&
                     <div className="mt-4">
                         <div>
-                            <button id="add-button" className="btn btn-primary" onClick={this.onAddMatch}>Add {game.matchName}</button>
+                            <button id="add-button" className="btn btn-cstm-primary" onClick={this.onAddMatch}>Add {game.matchName}</button>
                         </div>
 
                         <div className="d-flex justify-content-end">
-                            <button id="submit-button"
-                                    className="btn btn-danger mt-4"
-                                    disabled={!canSubmit} onClick={this.onSubmit}>
-                                Submit
-                            </button>
+                            <button id="submit-button" className="btn btn-cstm-primary mt-4" disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
                         </div>
                     </div>
                 }

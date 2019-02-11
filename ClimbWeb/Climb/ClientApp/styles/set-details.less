@@ -2,17 +2,23 @@
 // Move all common detail styles to site.less
 
 .set-container {
-    padding-bottom: 4px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0 auto;
+    margin-bottom: 1rem;
+    padding-bottom: 0;
+    background-color: @color-almostwhite;
 }
 
-.set-container:last-of-type {
-    padding-bottom: 0;
+.set-container-header {
+    background-color: @color-light;
 }
 
 .set-details {
     color: @color-darker;
-    background-color: @color-med;
-    padding: 5px 0;
+    background-color: @color-light;
+    width: 100%;
+    padding: 0.5rem;
 }
 
 .set-score {
@@ -32,7 +38,6 @@
 }
 
 .btn-set {
-    color: white;
     margin-top: -1.5rem;
 }
 
@@ -81,4 +86,13 @@
 
 .background-dark {
     background-color: @color-light;
+}
+
+.player-name {
+    font-size: 12px;
+}
+
+.left-line {
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
 }

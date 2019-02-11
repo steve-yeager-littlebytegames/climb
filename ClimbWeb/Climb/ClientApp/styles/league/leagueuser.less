@@ -1,19 +1,11 @@
 ﻿@import "../vars.less";
 
 .leagueuser-container, .seasonparticipant-container {
-    background-color: @color-light;
+    background-color: @color-almostwhite;
 }
 
 .leagueuser-details {
     border-bottom: 1px solid @color-dark;
-}
-
-.name {
-    background-color: @color-med;
-}
-
-.profile-pic {
-    border-left: 1px solid @color-dark;
 }
 
 .points-text, .rank-text, 
@@ -22,7 +14,10 @@
 }
 
 .rank-text {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
+    min-width: 29px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .points-text, .rank-text-small {
@@ -34,11 +29,17 @@
 }
 
 .seasonparticipant-container {
-    margin-top: 5px;
+    border-bottom: 1px solid @color-lighter;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 4px 6px;
 }
 
 .seasonparticipant-container:first-of-type {
     margin-top: 0;
+}
+
+.participant-details {
+    background-color: @color-lighter;
 }
 
 .fa-arrow-down.rank-trend {
@@ -47,4 +48,16 @@
 
 .fa-arrow-up.rank-trend {
     color: green;
+}
+
+.cstm-card {
+    border-radius: 3px;
+    border: none;
+    background-color: white;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 4px 6px;
+}
+
+.cstm-card:first-of-type {
+    margin-top: 0;
 }

@@ -12,7 +12,7 @@
 {
     <div class="col-xl-4 page-section pb-2 mt-4">
         <h3>Sets</h3>
-        <div class="page-section-child">
+        <div class="page-section-content">
             @foreach(var set in Model.Season.Sets)
             {
                 <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>

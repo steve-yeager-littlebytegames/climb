@@ -1,38 +1,61 @@
 ﻿@using Climb.Extensions
+@using Climb.ViewModels.Sets
 @model Climb.ViewModels.Sets.DetailsViewModel
 
-<div class="set-container d-flex flex-column filterable" data-filter-keys="@Html.FilterKeys(Model.Set.Player1.DisplayName, Model.Set.Player2.DisplayName, Model.Set.League.Name)">
-    <span class="set-details">@Model.Set.League.Name - @Model.SetType - @Model.Set.DueDate.ToShortDateString()</span>
-    <div class="background-dark">
-        <div class="d-flex justify-content-between align-items-center px-2 py-1">
+<div class="d-flex cstm-card set-container">
+    <div class="d-flex flex-column filterable w-100" data-filter-keys="@Html.FilterKeys(Model.Set.Player1.DisplayName, Model.Set.Player2.DisplayName, Model.Set.League.Name)">
+        <div class="set-details d-flex justify-content-between">
+            <strong>@Model.Set.DueDate.ToString("MM/dd/yy")</strong>
+            <em>@Model.Set.League.Name</em>
+        </div>
+        <div class="d-flex justify-content-between align-items-end p-3">
             <div class="d-flex flex-column align-items-start w-40">
                 <img src="@Model.P1ProfilePic" width="64" height="64"/>
                 <span>
-                    <small>
+                    <small class="player-name">
                         <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player1"/>
                     </small>
                 </span>
             </div>
-            <div class="set-score">
-                @Model.Set.Player1Score
-            </div>
-            <strong class="set-vs mx-4">
-                <em>@Model.VersusLabel</em>
-            </strong>
-            <div class="set-score">
-                @Model.Set.Player2Score
+            <div class="d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="set-score">
+                        @Model.Set.Player1Score
+                    </div>
+                    <strong class="set-vs mx-2">
+                        <em>@Model.VersusLabel</em>
+                    </strong>
+                    <div class="set-score">
+                        @Model.Set.Player2Score
+                    </div>
+                </div>
+                @switch (Model.Action)
+                {
+                    case DetailsViewModel.Actions.Details:
+                        <a class="w-100" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                        break;
+                    case DetailsViewModel.Actions.Edit:
+                        <a class="w-100" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        break;
+                    case DetailsViewModel.Actions.Fight:
+                        <a class="btn btn-cstm-primary btn-sm w-100" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
+                            Fight
+                        </a>
+                        break;
+                }
             </div>
             <div class="d-flex flex-column align-items-end w-40">
                 <img src="@Model.P2ProfilePic" width="64" height="64"/>
                 <span>
-                    <small>
-                        <partial name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player2"/>
+                    <small class="player-name">
+                        <partial class="player-name" name="~/Views/User/Partials/LeagueUserLink.cshtml" model="@Model.Set.Player2"/>
                     </small>
                 </span>
             </div>
         </div>
-        <a class="btn btn-set @Model.ActionButtonClass btn-sm w-25 mx-auto mb-1" asp-controller="Set" asp-action="Fight" asp-route-setID="@Model.Set.ID">
-            <strong>@Model.ActionName</strong>
-        </a>
     </div>
 </div>
