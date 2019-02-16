@@ -32,7 +32,7 @@ namespace Climb.API
         public async Task<IActionResult> Get(int tournamentID)
         {
             var tournament = await dbContext.Tournaments
-                .Include(t => t.TournamentUsers)
+                .Include(t => t.TournamentUsers).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .FirstOrDefaultAsync(t => t.ID == tournamentID);
             if(tournament == null)
             {
