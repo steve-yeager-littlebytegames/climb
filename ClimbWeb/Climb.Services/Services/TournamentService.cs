@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -201,6 +201,7 @@ namespace Climb.Services
                 {
                     dbContext.Rounds.RemoveRange(tournament.Rounds);
                 }
+
                 tournament.Rounds = new List<Round>();
 
                 if(tournament.SetSlots?.Count > 0)
@@ -208,6 +209,7 @@ namespace Climb.Services
                     dbContext.SetSlots.RemoveRange(tournament.SetSlots);
                     tournament.SetSlots.Clear();
                 }
+
                 tournament.SetSlots = new List<SetSlot>();
             }
 
@@ -227,6 +229,7 @@ namespace Climb.Services
                         Bracket = bracket,
                     };
                     round.SetSlots = roundData.Games.Select(g => CreateSlot(g, round)).ToList();
+                    tournament.SetSlots.AddRange(round.SetSlots);
 
                     return round;
                 }
@@ -242,7 +245,6 @@ namespace Climb.Services
                         LoseSlotIdentifier = game.NextLoss?.ID,
                         P1Game = game.P1Game?.ID,
                         P2Game = game.P2Game?.ID,
-                        IsBye = game.IsBye,
                     };
                 }
             }
@@ -270,8 +272,25 @@ namespace Climb.Services
                 return tournamentUsers;
             }
 
+            // https://stackoverflow.com/a/6783584
             void SortUsers()
             {
+                var slice = 1;
+                while(slice < users.Count / 2)
+                {
+                    var tempUsers = new List<TournamentUser>(users);
+                    users.Clear();
+
+                    while(tempUsers.Count > 0)
+                    {
+                        users.AddRange(tempUsers.GetRange(0, slice));
+                        tempUsers.RemoveRange(0, slice);
+                        users.AddRange(tempUsers.GetRange(tempUsers.Count - slice, slice));
+                        tempUsers.RemoveRange(tempUsers.Count - slice, slice);
+                    }
+
+                    slice *= 2;
+                }
             }
 
             void ClearSlots()
@@ -288,20 +307,14 @@ namespace Climb.Services
                 var firstRound = tournament.GetRound(Round.Brackets.Winners, 1);
                 firstRound.SetSlots.Sort((x, y) => x.Identifier.CompareTo(y.Identifier));
 
-                var userIndex = 0;
-                for(var i = 0; i < firstRound.SetSlots.Count; i++)
+                var slotIndex = 0;
+                for(var i = 0; i < users.Count; i += 2)
                 {
-                    var slot = firstRound.SetSlots[i];
+                    var p1 = users[i];
+                    var p2 = users[i + 1];
+                    var slot = firstRound.SetSlots[slotIndex];
 
-                    var p1 = users[userIndex];
-                    var p2 = users[++userIndex];
-
-                    if(p1 != TournamentUser.NullUser && p2 != TournamentUser.NullUser)
-                    {
-                        slot.User1 = p1;
-                        slot.User2 = p2;
-                    }
-                    else if(p1 == TournamentUser.NullUser)
+                    if(p1 == TournamentUser.NullUser)
                     {
                         MoveUserPastBye(slot, p2);
                     }
@@ -309,6 +322,13 @@ namespace Climb.Services
                     {
                         MoveUserPastBye(slot, p1);
                     }
+                    else
+                    {
+                        slot.User1 = p1;
+                        slot.User2 = p2;
+                    }
+
+                    ++slotIndex;
                 }
             }
 

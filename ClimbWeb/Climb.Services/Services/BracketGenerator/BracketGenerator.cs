@@ -79,8 +79,7 @@ namespace Climb.Services
             var losers = bracket.AddRound(bracket.Losers);
             for(var i = 0; i < winners.Games.Count; i += 2)
             {
-                var isBye = winners.Games[i].IsBye || winners.Games[i + 1].IsBye;
-                var game = bracket.AddGame(losers, null, null, isBye);
+                var game = bracket.AddGame(losers);
                 game.P1Game = winners.Games[i];
                 game.P2Game = winners.Games[i + 1];
                 game.P1Game.NextLoss = game;

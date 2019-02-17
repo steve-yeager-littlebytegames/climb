@@ -24,7 +24,7 @@ namespace Climb.Services
             public GameData AddGame(RoundData round, int? p1 = null, int? p2 = null, bool isBye = false)
             {
                 ++GameCount;
-                var game = new GameData(GameCount, isBye, p1, p2);
+                var game = new GameData(GameCount, p1, p2);
                 round.Games.Add(game);
                 return game;
             }
