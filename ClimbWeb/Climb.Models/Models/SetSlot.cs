@@ -19,5 +19,7 @@
         public Set Set { get; set; }
         public TournamentUser User1 { get; set; }
         public TournamentUser User2 { get; set; }
+
+        public bool IsFull => User1ID != null && User2ID != null;
     }
 }

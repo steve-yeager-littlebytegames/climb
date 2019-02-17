@@ -68,66 +68,6 @@ namespace Climb.Services
             }
         }
 
-        public async Task<Tournament> GenerateBracket(int tournamentID)
-        {
-            var tournament = await dbContext.Tournaments
-                .Include(s => s.TournamentUsers).AsNoTracking()
-                .Include(t => t.Rounds)
-                .Include(t => t.SetSlots)
-                .FirstOrDefaultAsync(t => t.ID == tournamentID);
-            dbContext.Update(tournament);
-
-            dbContext.Rounds.RemoveRange(tournament.Rounds);
-            tournament.Rounds.Clear();
-            dbContext.SetSlots.RemoveRange(tournament.SetSlots);
-            tournament.SetSlots.Clear();
-
-            await dbContext.SaveChangesAsync();
-
-            var tournamentData = bracketGenerator.Generate(tournament.TournamentUsers.Count);
-            AddBracket(tournament, tournamentData);
-
-            await dbContext.SaveChangesAsync();
-
-            return tournament;
-        }
-
-        public void AddBracket(Tournament tournament, BracketGenerator.BracketData bracketData)
-        {
-            tournament.Rounds.AddRange(bracketData.Winners.Select(rd => CreateRound(rd, Round.Brackets.Winners)));
-            tournament.Rounds.AddRange(bracketData.Losers.Select(rd => CreateRound(rd, Round.Brackets.Losers)));
-            tournament.Rounds.AddRange(bracketData.GrandFinals.Select(rd => CreateRound(rd, Round.Brackets.Grands)));
-
-            Round CreateRound(BracketGenerator.RoundData roundData, Round.Brackets bracket)
-            {
-                var round = new Round
-                {
-                    Index = roundData.Index,
-                    TournamentID = tournament.ID,
-                    Name = roundData.Name,
-                    Bracket = bracket,
-                };
-                round.SetSlots = roundData.Games.Select(g => CreateSlot(g, round)).ToList();
-
-                return round;
-            }
-        
-            SetSlot CreateSlot(BracketGenerator.GameData game, Round round)
-            {
-                return new SetSlot
-                {
-                    TournamentID = tournament.ID,
-                    Identifier = game.ID,
-                    Round = round,
-                    WinSlotIdentifier = game.NextWin?.ID,
-                    LoseSlotIdentifier = game.NextLoss?.ID,
-                    P1Game = game.P1Game?.ID,
-                    P2Game = game.P2Game?.ID,
-                    IsBye = game.IsBye,
-                };
-            }
-        }
-
         public async Task<TournamentUser> Join(int tournamentID, string userID)
         {
             var tournament = await dbContext.Tournaments
@@ -204,16 +144,6 @@ namespace Climb.Services
             await dbContext.SaveChangesAsync();
         }
 
-        private static void SortSeeds(List<TournamentUser> competitors)
-        {
-            competitors.Sort((x, y) => x.Seed.CompareTo(y.Seed));
-
-            for(int i = 0; i < competitors.Count; i++)
-            {
-                competitors[i].Seed = i + 1;
-            }
-        }
-
         public async Task<Tournament> Start(int tournamentID)
         {
             var tournament = await dbContext.Tournaments
@@ -231,9 +161,17 @@ namespace Climb.Services
             // TODO: Clear old sets?
             tournament.Sets = new List<Set>();
 
-            var users = PadUsers();
+            foreach(var slot in tournament.SetSlots)
+            {
+                if(slot.IsFull)
+                {
+                    var set = CreateSet(tournament, slot.User1, slot.User2, dateService.Now.AddDays(7));
+                    slot.Set = set;
+                    tournament.Sets.Add(set);
+                }
+            }
 
-            // TODO: Need to shuffle sets so #1 doesn't play #2 in the second round.
+
             var firstRound = tournament.GetRound(Round.Brackets.Winners, 1);
             firstRound.SetSlots.Sort((x, y) => x.Identifier.CompareTo(y.Identifier));
             for(var i = 0; i < firstRound.SetSlots.Count; i++)
@@ -261,6 +199,83 @@ namespace Climb.Services
 
             return tournament;
 
+            
+
+            void CreateSetForSlot(SetSlot slot, TournamentUser p1, TournamentUser p2)
+            {
+                // TODO: Don't hardcode due date.
+                var set = CreateSet(tournament, p1, p2, dateService.Now.AddDays(7));
+                slot.Set = set;
+                slot.User1 = p1;
+                slot.User2 = p2;
+                tournament.Sets.Add(set);
+            }
+        }
+
+
+
+
+
+        public void CreateBracket(Tournament tournament)
+        {
+            Clear();
+            var bracketData = bracketGenerator.Generate(tournament.TournamentUsers.Count);
+            AddBracket();
+
+            void Clear()
+            {
+                dbContext.Rounds.RemoveRange(tournament.Rounds);
+                tournament.Rounds.Clear();
+                dbContext.SetSlots.RemoveRange(tournament.SetSlots);
+                tournament.SetSlots.Clear();
+            }
+
+            void AddBracket()
+            {
+                tournament.Rounds.AddRange(bracketData.Winners.Select(rd => CreateRound(rd, Round.Brackets.Winners)));
+                tournament.Rounds.AddRange(bracketData.Losers.Select(rd => CreateRound(rd, Round.Brackets.Losers)));
+                tournament.Rounds.AddRange(bracketData.GrandFinals.Select(rd => CreateRound(rd, Round.Brackets.Grands)));
+
+                Round CreateRound(BracketGenerator.RoundData roundData, Round.Brackets bracket)
+                {
+                    var round = new Round
+                    {
+                        Index = roundData.Index,
+                        TournamentID = tournament.ID,
+                        Name = roundData.Name,
+                        Bracket = bracket,
+                    };
+                    round.SetSlots = roundData.Games.Select(g => CreateSlot(g, round)).ToList();
+
+                    return round;
+                }
+        
+                SetSlot CreateSlot(BracketGenerator.GameData game, Round round)
+                {
+                    return new SetSlot
+                    {
+                        TournamentID = tournament.ID,
+                        Identifier = game.ID,
+                        Round = round,
+                        WinSlotIdentifier = game.NextWin?.ID,
+                        LoseSlotIdentifier = game.NextLoss?.ID,
+                        P1Game = game.P1Game?.ID,
+                        P2Game = game.P2Game?.ID,
+                        IsBye = game.IsBye,
+                    };
+                }
+            }
+        }
+
+        
+
+        public void PopulateBracket(Tournament tournament)
+        {
+            var users = PadUsers();
+            SortUsers();
+            ClearSlots();
+            AssignToSlots();
+
             List<TournamentUser> PadUsers()
             {
                 var tournamentUsers = new List<TournamentUser>(tournament.TournamentUsers);
@@ -276,6 +291,47 @@ namespace Climb.Services
                 return tournamentUsers;
             }
 
+            void SortUsers()
+            {
+
+            }
+
+            void ClearSlots()
+            {
+                foreach(var slot in tournament.SetSlots)
+                {
+                    slot.User1 = null;
+                    slot.User2 = null;
+                }
+            }
+
+            void AssignToSlots()
+            {
+                var firstRound = tournament.GetRound(Round.Brackets.Winners, 1);
+                firstRound.SetSlots.Sort((x, y) => x.Identifier.CompareTo(y.Identifier));
+                for(var i = 0; i < firstRound.SetSlots.Count; i++)
+                {
+                    var slot = firstRound.SetSlots[i];
+
+                    var p1 = users[i];
+                    var p2 = users[users.Count - 1 - i];
+
+                    if(p1 != TournamentUser.NullUser && p2 != TournamentUser.NullUser)
+                    {
+                        slot.User1 = p1;
+                        slot.User2 = p2;
+                    }
+                    else if(p1 == TournamentUser.NullUser)
+                    {
+                        MoveUserPastBye(slot, p2);
+                    }
+                    else if(p2 == TournamentUser.NullUser)
+                    {
+                        MoveUserPastBye(slot, p1);
+                    }
+                }
+            }
+
             void MoveUserPastBye(SetSlot slot, TournamentUser user)
             {
                 var nextSlot = tournament.SetSlots.First(ss => ss.Identifier == slot.WinSlotIdentifier);
@@ -287,21 +343,20 @@ namespace Climb.Services
                 {
                     nextSlot.User2 = user;
                 }
-
-                if(nextSlot.User1 != null && nextSlot.User2 != null)
-                {
-                    CreateSetForSlot(nextSlot, nextSlot.User1, nextSlot.User2);
-                }
             }
+        }
 
-            void CreateSetForSlot(SetSlot slot, TournamentUser p1, TournamentUser p2)
+
+
+
+
+        private static void SortSeeds(List<TournamentUser> competitors)
+        {
+            competitors.Sort((x, y) => x.Seed.CompareTo(y.Seed));
+
+            for(int i = 0; i < competitors.Count; i++)
             {
-                // TODO: Don't hardcode due date.
-                var set = CreateSet(tournament, p1, p2, dateService.Now.AddDays(7));
-                slot.Set = set;
-                slot.User1 = p1;
-                slot.User2 = p2;
-                tournament.Sets.Add(set);
+                competitors[i].Seed = i + 1;
             }
         }
 

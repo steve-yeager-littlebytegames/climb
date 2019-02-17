@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
@@ -235,7 +236,7 @@ namespace Climb.Test.Services.ModelServices
             testObj = new TournamentService(dbContext, new BracketGenerator(), dateService);
 
             var tournament = dbContext.CreateTournament(DateTime.MinValue);
-            var users = dbContext.AddCompetitors(tournament, userCount).ToList();
+            var users = new List<TournamentUser>(dbContext.AddCompetitors(tournament, userCount));
             users.Sort((a, b) => a.Seed.CompareTo(b.Seed));
 
             tournament = await GenerateAndStart(tournament.ID);
@@ -250,6 +251,18 @@ namespace Climb.Test.Services.ModelServices
                 Assert.AreEqual(users[users.Count - i - 1].Seed, set.TournamentPlayer2.Seed);
             }
         }
+
+        [Test]
+        public void PopulateBracket_Valid_SortSeeds()
+        {
+            
+        }
+
+        //[Test]
+        //public async Task Clear_Valid_SetsDeleted()
+        //{
+            
+        //}
 
         #region Helper
 
