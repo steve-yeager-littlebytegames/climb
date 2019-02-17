@@ -42,16 +42,17 @@
 {
     <script src="~/lib/jquery-bracket/jquery.bracket.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="~/lib/jquery-bracket/jquery.bracket.min.css"/>
-    <script src="~/lib/jsplumb.js" type="text/javascript"></script>
+    <script src="~/lib/jsplumb/jsplumb.js" type="text/javascript"></script>
     <link rel="stylesheet" href="~/dist/styles/tournament.css"/>
 
     <script type="text/javascript">
         window.onload = () => {
-            jsPlumb.setContainer("bracket-container");
+            var instance = jsPlumb.getInstance();
+            instance.setContainer("bracket-container");
 
             $('#bracket-container').scroll(
                 function() {
-                    jsPlumb.repaintEverything();
+                    instance.repaintEverything();
                 }
             );
 
@@ -61,7 +62,7 @@
                 const id = $(this).attr("id");
                 const parentId = $(this).attr("data-parent");
 
-                jsPlumb.connect({
+                instance.connect({
                     source: id,
                     target: `game-${parentId}`,
                     anchors: ["Right", "Left"],
