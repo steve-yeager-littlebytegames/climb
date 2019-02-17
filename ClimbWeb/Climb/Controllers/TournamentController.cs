@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Climb.Data;
-using Climb.Models;
 using Climb.Requests.Tournaments;
 using Climb.Services;
 using Climb.ViewModels.Tournaments;

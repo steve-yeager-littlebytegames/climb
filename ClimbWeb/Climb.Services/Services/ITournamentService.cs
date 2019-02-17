@@ -9,9 +9,5 @@ namespace Climb.Services
         Task<TournamentUser> Join(int tournamentID, string userID);
         Task Leave(int competitorID);
         Task<Tournament> Start(int tournamentID);
-
-        // Private?
-        //void CreateBracket(Tournament tournament);
-        //void PopulateBracket(Tournament tournament);
     }
 }
