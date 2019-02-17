@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
 using Climb.Models;
-using Climb.Services.ModelServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Climb.Services
@@ -13,14 +13,12 @@ namespace Climb.Services
     {
         private readonly ApplicationDbContext dbContext;
         private readonly IBracketGenerator bracketGenerator;
-        private readonly ISetService setService;
         private readonly IDateService dateService;
 
-        public TournamentService(ApplicationDbContext dbContext, IBracketGenerator bracketGenerator, ISetService setService, IDateService dateService)
+        public TournamentService(ApplicationDbContext dbContext, IBracketGenerator bracketGenerator, IDateService dateService)
         {
             this.dbContext = dbContext;
             this.bracketGenerator = bracketGenerator;
-            this.setService = setService;
             this.dateService = dateService;
         }
 
@@ -219,7 +217,8 @@ namespace Climb.Services
         public async Task<Tournament> Start(int tournamentID)
         {
             var tournament = await dbContext.Tournaments
-                .Include(t => t.Rounds).ThenInclude(r => r.SetSlots)
+                .Include(t => t.Rounds).ThenInclude(r => r.SetSlots).ThenInclude(ss => ss.Set).ThenInclude(s => s.TournamentPlayer1)
+                .Include(t => t.Rounds).ThenInclude(r => r.SetSlots).ThenInclude(ss => ss.Set).ThenInclude(s => s.TournamentPlayer2)
                 .Include(t => t.TournamentUsers).AsNoTracking()
                 .FirstOrDefaultAsync(t => t.ID == tournamentID);
             if(tournament == null)
@@ -228,6 +227,9 @@ namespace Climb.Services
             }
 
             dbContext.Update(tournament);
+
+            // TODO: Clear old sets?
+            tournament.Sets = new List<Set>();
 
             var users = PadUsers();
 
@@ -243,10 +245,7 @@ namespace Climb.Services
 
                 if(p1 != TournamentUser.NullUser && p2 != TournamentUser.NullUser)
                 {
-                    // TODO: Don't hardcode due date.
-                    slot.Set = setService.CreateTournamentSet(tournament, p1, p2, dateService.Now.AddDays(7));
-                    slot.User1 = slot.User1 = p1;
-                    slot.User2 = slot.User2 = p2;
+                    CreateSetForSlot(slot, p1, p2);
                 }
                 else if(p1 == TournamentUser.NullUser)
                 {
@@ -266,6 +265,8 @@ namespace Climb.Services
             {
                 var tournamentUsers = new List<TournamentUser>(tournament.TournamentUsers);
                 var fullBracketCount = BracketGenerator.GetFullBracketCount(tournamentUsers.Count);
+
+                tournamentUsers.Sort((a, b) => a.Seed.CompareTo(b.Seed));
 
                 while(tournamentUsers.Count < fullBracketCount)
                 {
@@ -289,10 +290,29 @@ namespace Climb.Services
 
                 if(nextSlot.User1 != null && nextSlot.User2 != null)
                 {
-                    // TODO: Don't hardcode due date.
-                    nextSlot.Set = setService.CreateTournamentSet(tournament, nextSlot.User1, nextSlot.User2, dateService.Now.AddDays(7));
+                    CreateSetForSlot(nextSlot, nextSlot.User1, nextSlot.User2);
                 }
             }
+
+            void CreateSetForSlot(SetSlot slot, TournamentUser p1, TournamentUser p2)
+            {
+                // TODO: Don't hardcode due date.
+                var set = CreateSet(tournament, p1, p2, dateService.Now.AddDays(7));
+                slot.Set = set;
+                slot.User1 = p1;
+                slot.User2 = p2;
+                tournament.Sets.Add(set);
+            }
+        }
+
+        private static Set CreateSet(Tournament tournament, TournamentUser p1, TournamentUser p2, DateTime dueDate)
+        {
+            return new Set(tournament.LeagueID, p1.LeagueUserID, p2.LeagueUserID, dueDate, tournament.SeasonID, p1.SeasonLeagueUserID, p2.SeasonLeagueUserID)
+            {
+                Tournament = tournament,
+                TournamentPlayer1 = p1,
+                TournamentPlayer2 = p2,
+            };
         }
     }
 }

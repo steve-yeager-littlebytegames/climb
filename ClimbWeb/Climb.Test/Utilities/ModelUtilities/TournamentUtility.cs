@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Climb.Data;
 using Climb.Models;
 
@@ -14,14 +15,14 @@ namespace Climb.Test.Utilities
             return tournament;
         }
 
-        public static TournamentUser[] AddCompetitors(this ApplicationDbContext dbContext, Tournament tournament, int count)
+        public static List<TournamentUser> AddCompetitors(this ApplicationDbContext dbContext, Tournament tournament, int count)
         {
             var members = dbContext.AddUsersToLeague(tournament.League, count);
-            var competitors = new TournamentUser[count];
-            for(var i = 0; i < members.Count; i++)
+            var competitors = new List<TournamentUser>(count);
+            for(var i = 0; i < count; i++)
             {
                 var member = members[i];
-                competitors[i] = dbContext.AddAndSave(new TournamentUser(tournament, member.UserID, member.ID, i + 1));
+                competitors.Add(dbContext.AddAndSave(new TournamentUser(tournament, member.UserID, member.ID, count - i)));
             }
 
             return competitors;

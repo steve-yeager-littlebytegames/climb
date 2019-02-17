@@ -5,7 +5,6 @@ using Climb.Data;
 using Climb.Exceptions;
 using Climb.Models;
 using Climb.Services;
-using Climb.Services.ModelServices;
 using Climb.Test.Utilities;
 using NSubstitute;
 using NUnit.Framework;
@@ -18,7 +17,6 @@ namespace Climb.Test.Services.ModelServices
         private TournamentService testObj;
         private ApplicationDbContext dbContext;
         private IBracketGenerator bracketGenerator;
-        private ISetService setService;
         private IDateService dateService;
 
         [SetUp]
@@ -26,10 +24,9 @@ namespace Climb.Test.Services.ModelServices
         {
             dbContext = DbContextUtility.CreateMockDb();
             bracketGenerator = Substitute.For<IBracketGenerator>();
-            setService = Substitute.For<ISetService>();
             dateService = Substitute.For<IDateService>();
 
-            testObj = new TournamentService(dbContext, bracketGenerator, setService, dateService);
+            testObj = new TournamentService(dbContext, bracketGenerator, dateService);
         }
 
         [Test]
@@ -201,7 +198,7 @@ namespace Climb.Test.Services.ModelServices
             var tournamentUsers = tournament.TournamentUsers;
             tournamentUsers.Sort((x, y) => x.Seed.CompareTo(y.Seed));
 
-            Assert.AreEqual(competitors.Length - 1, tournamentUsers.Count);
+            Assert.AreEqual(competitors.Count - 1, tournamentUsers.Count);
             for(int i = 0; i < tournamentUsers.Count; i++)
             {
                 Assert.AreEqual(i + 1, tournamentUsers[i].Seed);
@@ -220,23 +217,54 @@ namespace Climb.Test.Services.ModelServices
         [TestCase(17, 8)]
         public async Task Start_Valid_SetsCreated(int userCount, int setCount)
         {
-            testObj = new TournamentService(dbContext, new BracketGenerator(), setService, dateService);
+            testObj = new TournamentService(dbContext, new BracketGenerator(), dateService);
 
             var tournament = dbContext.CreateTournament(DateTime.MinValue);
             dbContext.AddCompetitors(tournament, userCount);
 
-            dbContext.Clean();
+            tournament = await GenerateAndStart(tournament.ID);
 
-            await testObj.GenerateBracket(tournament.ID);
+            Assert.AreEqual(setCount, tournament.Sets.Count);
+        }
 
-            dbContext.Clean();
+        [Test]
+        public async Task Start_Valid_SeedsSorted()
+        {
+            const int userCount = 8;
 
-            await testObj.Start(tournament.ID);
+            testObj = new TournamentService(dbContext, new BracketGenerator(), dateService);
 
-            setService.ReceivedWithAnyArgs(setCount).CreateTournamentSet(null, null, null, DateTime.MinValue);
+            var tournament = dbContext.CreateTournament(DateTime.MinValue);
+            var users = dbContext.AddCompetitors(tournament, userCount).ToList();
+            users.Sort((a, b) => a.Seed.CompareTo(b.Seed));
+
+            tournament = await GenerateAndStart(tournament.ID);
+
+            var slots = tournament.GetRound(Round.Brackets.Winners, 1).SetSlots;
+            slots.Sort((a, b) => a.Identifier.CompareTo(b.Identifier));
+
+            for(int i = 0; i < slots.Count; i++)
+            {
+                var set = slots[i].Set;
+                Assert.AreEqual(users[i].Seed, set.TournamentPlayer1.Seed);
+                Assert.AreEqual(users[users.Count - i - 1].Seed, set.TournamentPlayer2.Seed);
+            }
         }
 
         #region Helper
+
+        private async Task<Tournament> GenerateAndStart(int tournamentID)
+        {
+            dbContext.Clean();
+
+            await testObj.GenerateBracket(tournamentID);
+
+            dbContext.Clean();
+
+            var tournament = await testObj.Start(tournamentID);
+            return tournament;
+        }
+
         private (LeagueUser, Tournament) CreateTournament(Tournament.States state)
         {
             var tournament = dbContext.CreateTournament(DateTime.MinValue);

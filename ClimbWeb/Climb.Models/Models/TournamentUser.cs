@@ -2,7 +2,7 @@
 {
     public class TournamentUser
     {
-        public static readonly TournamentUser NullUser = new TournamentUser();
+        public static readonly TournamentUser NullUser = new TournamentUser {Seed = int.MaxValue};
 
         public int ID { get; set; }
         public string UserID { get; set; }
