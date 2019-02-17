@@ -111,20 +111,20 @@ namespace Climb.Controllers
             }
         }
 
-        [HttpGet("tournaments/test/{count:int}")]
-        public async Task<IActionResult> Test(int count, bool randomize)
-        {
-            var league = await dbContext.Leagues.FirstOrDefaultAsync();
+        //[HttpGet("tournaments/test/{count:int}")]
+        //public async Task<IActionResult> Test(int count, bool randomize)
+        //{
+        //    var league = await dbContext.Leagues.FirstOrDefaultAsync();
 
-            var bracketGenerator = new BracketGenerator();
-            var tournamentData = bracketGenerator.Generate(count);
-            var tournament = new Tournament(league.ID, DateTime.Now)
-            {
-                Rounds = new List<Round>(),
-            };
-            tournamentService.AddBracket(tournament, tournamentData);
+        //    var bracketGenerator = new BracketGenerator();
+        //    var tournamentData = bracketGenerator.Generate(count);
+        //    var tournament = new Tournament(league.ID, DateTime.Now)
+        //    {
+        //        Rounds = new List<Round>(),
+        //    };
+        //    tournamentService.AddBracket(tournament, tournamentData);
 
-            return View("Home", new HomeViewModel(null, tournament, configuration));
-        }
+        //    return View("Home", new HomeViewModel(null, tournament, configuration));
+        //}
     }
 }

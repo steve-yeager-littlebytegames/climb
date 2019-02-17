@@ -270,7 +270,7 @@ namespace Climb.Test.Services.ModelServices
         {
             dbContext.Clean();
 
-            await testObj.GenerateBracket(tournamentID);
+            //await testObj.GenerateBracket(tournamentID);
 
             dbContext.Clean();
 
