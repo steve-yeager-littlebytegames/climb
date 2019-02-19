@@ -33,6 +33,7 @@ namespace Climb.Controllers
                 .Include(t => t.Season).AsNoTracking()
                 .Include(t => t.Rounds).AsNoTracking()
                 .Include(t => t.Sets).AsNoTracking()
+                .Include(t => t.SetSlots).ThenInclude(ss => ss.Set).AsNoTracking()
                 .Include(t => t.SetSlots).ThenInclude(ss => ss.Round).AsNoTracking()
                 .Include(t => t.SetSlots).ThenInclude(ss => ss.User1).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .Include(t => t.SetSlots).ThenInclude(ss => ss.User2).ThenInclude(tu => tu.LeagueUser).AsNoTracking()

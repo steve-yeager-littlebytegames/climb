@@ -23,6 +23,8 @@ namespace Climb.ViewModels.Tournaments
             Player2 = setSlot.User2;
             P1GameID = setSlot.P1Game;
             P2GameID = setSlot.P2Game;
+            P1Score = setSlot.Set?.Player1Score ?? 0;
+            P2Score = setSlot.Set?.Player2Score ?? 0;
         }
 
         public static GameViewModel Create(SetSlot setSlot) => new GameViewModel(setSlot);
