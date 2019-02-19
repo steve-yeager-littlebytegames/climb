@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
@@ -34,7 +35,7 @@ namespace Climb.Services
                 LeagueID = leagueID,
                 SeasonID = seasonID,
                 Name = name,
-                StartDate = dateService.Now,
+                CreateDate = dateService.Now,
             };
 
             await CreateCompetitors();
@@ -174,19 +175,75 @@ namespace Climb.Services
             {
                 if(slot.IsFull)
                 {
-                    var set = CreateSet(tournament, slot.User1, slot.User2, dateService.Now.AddDays(7));
+                    // TODO: Dupe?
+                    var set = CreateSet(tournament, slot, slot.User1, slot.User2, dateService.Now.AddDays(7));
                     slot.Set = set;
                     tournament.Sets.Add(set);
                 }
             }
 
+            await dbContext.SaveChangesAsync();
+
             return tournament;
         }
 
+        public async Task FightSet(Set set)
+        {
+            var tournament = await dbContext.Tournaments
+                .Include(t => t.SetSlots)
+                .Include(t => t.Rounds).ThenInclude(r => r.SetSlots).ThenInclude(ss => ss.Set).ThenInclude(s => s.TournamentPlayer1)
+                .Include(t => t.Rounds).ThenInclude(r => r.SetSlots).ThenInclude(ss => ss.Set).ThenInclude(s => s.TournamentPlayer2)
+                .Include(t => t.TournamentUsers)
+                .FirstAsync(t => t.ID == set.TournamentID);
+
+            dbContext.Update(tournament);
+
+            var slot = await dbContext.SetSlots
+                .FindAsync(set.SetSlotID);
+
+            var winner = set.Player1Score > set.Player2Score ? set.TournamentUser1ID : set.TournamentUser2ID;
+            var loser = set.Player1Score > set.Player2Score ? set.TournamentUser2ID : set.TournamentUser1ID;
+            Debug.Assert(winner != null, nameof(winner) + " != null");
+            Debug.Assert(loser != null, nameof(loser) + " != null");
+
+            await UpdateSlot(winner.Value, slot.WinSlotIdentifier);
+            await UpdateSlot(loser.Value, slot.LoseSlotIdentifier);
+
+            await dbContext.SaveChangesAsync();
+
+            async Task UpdateSlot(int user, int? nextSlotIdentifier)
+            {
+                if(nextSlotIdentifier != null)
+                {
+                    var nextSlot = tournament.SetSlots.First(ss => ss.Identifier == nextSlotIdentifier);
+                    nextSlot.AssignPlayer(slot, user);
+                
+                    if(nextSlot.IsFull)
+                    {
+                        // TODO: Don't do this.
+                        var user1 = await dbContext.TournamentUsers.FindAsync(nextSlot.User1ID);
+                        var user2 = await dbContext.TournamentUsers.FindAsync(nextSlot.User2ID);
+
+                        var nextSet = CreateSet(tournament, slot, user1, user2, dateService.Now.AddDays(7));
+                        nextSlot.Set = nextSet;
+                        tournament.Sets.Add(nextSet);
+                    }
+                }
+                else
+                {
+                    // TODO: Give user place.
+                }
+            }
+        }
+
+        // TODO: should not be named this. this is for creating a bracket
         private void UpdateBracket(Tournament tournament)
         {
-            CreateBracket(tournament);
-            PopulateBracket(tournament);
+            if (tournament.TournamentUsers?.Count >= 4)
+            {
+                CreateBracket(tournament);
+                PopulateBracket(tournament); 
+            }
         }
 
         private void CreateBracket(Tournament tournament)
@@ -356,13 +413,16 @@ namespace Climb.Services
             }
         }
 
-        private static Set CreateSet(Tournament tournament, TournamentUser p1, TournamentUser p2, DateTime dueDate)
+        private static Set CreateSet(Tournament tournament, SetSlot slot, TournamentUser p1, TournamentUser p2, DateTime dueDate)
         {
             return new Set(tournament.LeagueID, p1.LeagueUserID, p2.LeagueUserID, dueDate, tournament.SeasonID, p1.SeasonLeagueUserID, p2.SeasonLeagueUserID)
             {
                 Tournament = tournament,
+                SetSlot = slot,
                 TournamentPlayer1 = p1,
                 TournamentPlayer2 = p2,
+                TournamentUser1ID = p1.ID,
+                TournamentUser2ID = p2.ID,
             };
         }
     }

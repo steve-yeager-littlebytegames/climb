@@ -4,14 +4,16 @@ using Climb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Climb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190218083700_Add_SetSlot_ID")]
+    partial class Add_SetSlot_ID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -413,7 +415,7 @@ namespace Climb.Migrations
 
                     b.Property<int?>("SeasonPlayer2ID");
 
-                    b.Property<int?>("SetSlotID");
+                    b.Property<int?>("SlotID");
 
                     b.Property<int?>("TournamentID");
 
@@ -440,10 +442,6 @@ namespace Climb.Migrations
                     b.HasIndex("SeasonPlayer1ID");
 
                     b.HasIndex("SeasonPlayer2ID");
-
-                    b.HasIndex("SetSlotID")
-                        .IsUnique()
-                        .HasFilter("[SetSlotID] IS NOT NULL");
 
                     b.HasIndex("TournamentID");
 
@@ -503,6 +501,8 @@ namespace Climb.Migrations
 
                     b.Property<int>("RoundID");
 
+                    b.Property<int?>("SetID");
+
                     b.Property<int>("TournamentID");
 
                     b.Property<int?>("User1ID");
@@ -514,6 +514,10 @@ namespace Climb.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("RoundID");
+
+                    b.HasIndex("SetID")
+                        .IsUnique()
+                        .HasFilter("[SetID] IS NOT NULL");
 
                     b.HasIndex("TournamentID");
 
@@ -877,11 +881,6 @@ namespace Climb.Migrations
                         .HasForeignKey("SeasonPlayer2ID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Climb.Models.SetSlot", "SetSlot")
-                        .WithOne("Set")
-                        .HasForeignKey("Climb.Models.Set", "SetSlotID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Climb.Models.Tournament", "Tournament")
                         .WithMany("Sets")
                         .HasForeignKey("TournamentID")
@@ -926,6 +925,11 @@ namespace Climb.Migrations
                     b.HasOne("Climb.Models.Round", "Round")
                         .WithMany("SetSlots")
                         .HasForeignKey("RoundID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Climb.Models.Set", "Set")
+                        .WithOne("SetSlot")
+                        .HasForeignKey("Climb.Models.SetSlot", "SetID")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Climb.Models.Tournament", "Tournament")

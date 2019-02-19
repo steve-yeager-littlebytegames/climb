@@ -32,6 +32,7 @@ namespace Climb.Models
         public bool IsForfeit { get; set; }
         public int Player1SeasonPoints { get; set; }
         public int Player2SeasonPoints { get; set; }
+        public int? SetSlotID { get; set; }
         public int? TournamentUser1ID { get; set; }
         public int? TournamentUser2ID { get; set; }
 
@@ -50,6 +51,7 @@ namespace Climb.Models
         [ForeignKey("SeasonPlayer2ID")]
         public SeasonLeagueUser SeasonPlayer2 { get; set; }
         public Tournament Tournament { get; set; }
+        public SetSlot SetSlot { get; set; }
         public TournamentUser TournamentPlayer1 { get; set; }
         public TournamentUser TournamentPlayer2 { get; set; }
 

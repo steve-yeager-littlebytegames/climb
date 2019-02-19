@@ -1,13 +1,15 @@
-﻿namespace Climb.Models
+﻿using System;
+
+namespace Climb.Models
 {
     public class SetSlot
     {
+        public int ID { get; set; }
         public int Identifier { get; set; }
         public int TournamentID { get; set; }
         public int RoundID { get; set; }
         public int? WinSlotIdentifier { get; set; }
         public int? LoseSlotIdentifier { get; set; }
-        public int? SetID { get; set; }
         public int? P1Game { get; set; }
         public int? P2Game { get; set; }
         public int? User1ID { get; set; }
@@ -21,5 +23,21 @@
 
         public bool IsFull => User1ID != null && User2ID != null;
         public bool IsBye => !IsFull && P1Game == null && P2Game == null;
+
+        public void AssignPlayer(SetSlot fromSlot, int tournamentUserID)
+        {
+            if(P1Game == fromSlot.Identifier)
+            {
+                User1ID = tournamentUserID;
+            }
+            else if(P2Game == fromSlot.Identifier)
+            {
+                User2ID = tournamentUserID;
+            }
+            else
+            {
+                throw new ArgumentException($"Slot {fromSlot.Identifier} is not a child of slot {Identifier}.");
+            }
+        }
     }
 }

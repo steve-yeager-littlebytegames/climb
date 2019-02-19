@@ -9,5 +9,6 @@ namespace Climb.Services
         Task<TournamentUser> Join(int tournamentID, string userID);
         Task Leave(int competitorID);
         Task<Tournament> Start(int tournamentID);
+        Task FightSet(Set set);
     }
 }

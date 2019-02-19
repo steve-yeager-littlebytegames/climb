@@ -70,7 +70,6 @@ namespace Climb.Data
             builder.Entity<SeasonLeagueUser>().HasQueryFilter(slu => !slu.HasLeft);
             builder.Entity<MatchCharacter>().HasKey(m => new {m.MatchID, m.CharacterID, m.LeagueUserID});
             builder.Entity<SetRequest>().HasQueryFilter(lu => lu.IsOpen);
-            builder.Entity<SetSlot>().HasKey(ss => new {ss.Identifier, ss.TournamentID});
         }
 
         public void Clean()

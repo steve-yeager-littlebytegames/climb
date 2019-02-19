@@ -15,12 +15,14 @@ namespace Climb.Services.ModelServices
         private readonly ApplicationDbContext dbContext;
         private readonly ISeasonService seasonService;
         private readonly IDateService dateService;
+        private readonly ITournamentService tournamentService;
 
-        public SetService(ApplicationDbContext dbContext, ISeasonService seasonService, IDateService dateService)
+        public SetService(ApplicationDbContext dbContext, ISeasonService seasonService, IDateService dateService, ITournamentService tournamentService)
         {
             this.dbContext = dbContext;
             this.seasonService = seasonService;
             this.dateService = dateService;
+            this.tournamentService = tournamentService;
         }
 
         public async Task<SetRequest> RequestSetAsync(int requesterID, int challengedID, string message)
@@ -144,6 +146,11 @@ namespace Climb.Services.ModelServices
             {
                 await seasonService.PlaySet(setID);
                 await seasonService.UpdateRanksAsync(set.SeasonID.Value);
+            }
+
+            if(set.TournamentID != null)
+            {
+                await tournamentService.FightSet(set);
             }
 
             return set;

@@ -31,8 +31,9 @@ namespace Climb.Test.Services.ModelServices
             dbContext = DbContextUtility.CreateMockDb();
             seasonService = Substitute.For<ISeasonService>();
             dateService = Substitute.For<IDateService>();
+            var tournamentService = Substitute.For<ITournamentService>();
 
-            testObj = new SetService(dbContext, seasonService, dateService);
+            testObj = new SetService(dbContext, seasonService, dateService, tournamentService);
         }
 
         [Test]

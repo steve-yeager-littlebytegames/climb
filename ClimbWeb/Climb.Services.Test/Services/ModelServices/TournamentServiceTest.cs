@@ -17,14 +17,13 @@ namespace Climb.Test.Services.ModelServices
     {
         private TournamentService testObj;
         private ApplicationDbContext dbContext;
-        private IBracketGenerator bracketGenerator;
         private IDateService dateService;
 
         [SetUp]
         public void SetUp()
         {
             dbContext = DbContextUtility.CreateMockDb();
-            bracketGenerator = Substitute.For<IBracketGenerator>();
+            var bracketGenerator = new BracketGenerator();// Substitute.For<IBracketGenerator>();
             dateService = Substitute.For<IDateService>();
 
             testObj = new TournamentService(dbContext, bracketGenerator, dateService);
@@ -45,7 +44,7 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task Create_Valid_StartDateSet()
+        public async Task Create_Valid_SetCreateDate()
         {
             var league = dbContext.CreateLeague(8);
             var date = new DateTime(2020, 2, 22);
@@ -53,7 +52,7 @@ namespace Climb.Test.Services.ModelServices
 
             var tournament = await testObj.Create(league.ID, null, "TestName");
 
-            Assert.AreEqual(date, tournament.StartDate);
+            Assert.AreEqual(date, tournament.CreateDate);
         }
 
         [Test]
@@ -78,6 +77,23 @@ namespace Climb.Test.Services.ModelServices
                 Assert.AreEqual(participant.Standing, seed);
             }
         }
+
+        //[Test]
+        //public async Task Create_Valid_SeedsSorted()
+        //{
+            
+        //    const int competitorCount = 4;
+        //    var season = dbContext.CreateSeason(competitorCount).season;
+        //    dbContext.UpdateAndSave(season, () =>
+        //    {
+        //        for(var i = 0; i < season.Participants.Count; i++)
+        //        {
+        //            season.Participants[i].Standing = i;
+        //        }
+        //    });
+
+        //    var tournament = await testObj.Create(season.LeagueID, season.ID, "TestName");
+        //}
 
         [Test]
         public void Create_SeasonDoesntMatchLeague_BadRequestException()
@@ -229,40 +245,10 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
-        public async Task Start_Valid_SeedsSorted()
-        {
-            const int userCount = 8;
-
-            testObj = new TournamentService(dbContext, new BracketGenerator(), dateService);
-
-            var tournament = dbContext.CreateTournament(DateTime.MinValue);
-            var users = new List<TournamentUser>(dbContext.AddCompetitors(tournament, userCount));
-            users.Sort((a, b) => a.Seed.CompareTo(b.Seed));
-
-            tournament = await GenerateAndStart(tournament.ID);
-
-            var slots = tournament.GetRound(Round.Brackets.Winners, 1).SetSlots;
-            slots.Sort((a, b) => a.Identifier.CompareTo(b.Identifier));
-
-            for(int i = 0; i < slots.Count; i++)
-            {
-                var set = slots[i].Set;
-                Assert.AreEqual(users[i].Seed, set.TournamentPlayer1.Seed);
-                Assert.AreEqual(users[users.Count - i - 1].Seed, set.TournamentPlayer2.Seed);
-            }
-        }
-
-        [Test]
         public void PopulateBracket_Valid_SortSeeds()
         {
             
         }
-
-        //[Test]
-        //public async Task Clear_Valid_SetsDeleted()
-        //{
-            
-        //}
 
         #region Helper
 
@@ -270,7 +256,7 @@ namespace Climb.Test.Services.ModelServices
         {
             dbContext.Clean();
 
-            //await testObj.GenerateBracket(tournamentID);
+            //await testObj.(tournamentID);
 
             dbContext.Clean();
 
