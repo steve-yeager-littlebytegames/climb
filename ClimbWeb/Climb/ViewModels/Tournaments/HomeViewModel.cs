@@ -20,6 +20,7 @@ namespace Climb.ViewModels.Tournaments
 
             foreach(var round in tournament.Rounds)
             {
+                round.SetSlots.Sort((a, b) => a.Identifier.CompareTo(b.Identifier));
                 switch(round.Bracket)
                 {
                     case Round.Brackets.Winners:
