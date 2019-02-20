@@ -14,6 +14,7 @@ namespace Climb.Models
         public int? P2Game { get; set; }
         public int? User1ID { get; set; }
         public int? User2ID { get; set; }
+        public bool IsBye { get; set; }
 
         public Tournament Tournament { get; set; }
         public Round Round { get; set; }
@@ -22,7 +23,6 @@ namespace Climb.Models
         public TournamentUser User2 { get; set; }
 
         public bool IsFull => User1ID != null && User2ID != null;
-        public bool IsBye => !IsFull && P1Game == null && P2Game == null;
 
         public void AssignPlayer(SetSlot fromSlot, int tournamentUserID)
         {

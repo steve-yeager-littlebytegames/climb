@@ -495,6 +495,8 @@ namespace Climb.Migrations
 
                     b.Property<int>("Identifier");
 
+                    b.Property<bool>("IsBye");
+
                     b.Property<int?>("LoseSlotIdentifier");
 
                     b.Property<int?>("P1Game");
