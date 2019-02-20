@@ -31,10 +31,7 @@ namespace Climb.Controllers
             var tournament = await dbContext.Tournaments
                 .Include(t => t.League).AsNoTracking()
                 .Include(t => t.Season).AsNoTracking()
-                .Include(t => t.Rounds).AsNoTracking()
-                .Include(t => t.Sets).AsNoTracking()
-                .Include(t => t.SetSlots).ThenInclude(ss => ss.Set).AsNoTracking()
-                .Include(t => t.SetSlots).ThenInclude(ss => ss.Round).AsNoTracking()
+                .Include(t => t.Rounds).ThenInclude(r => r.SetSlots).ThenInclude(ss => ss.Set).AsNoTracking()
                 .Include(t => t.SetSlots).ThenInclude(ss => ss.User1).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .Include(t => t.SetSlots).ThenInclude(ss => ss.User2).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
                 .Include(t => t.TournamentUsers).ThenInclude(tu => tu.LeagueUser).AsNoTracking()
