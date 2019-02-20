@@ -209,22 +209,21 @@ namespace Climb.Services
             await UpdateSlot(winner.Value, slot.WinSlotIdentifier);
             await UpdateSlot(loser.Value, slot.LoseSlotIdentifier);
 
-            await dbContext.SaveChangesAsync();
-
             async Task UpdateSlot(int user, int? nextSlotIdentifier)
             {
                 if(nextSlotIdentifier != null)
                 {
                     var nextSlot = tournament.SetSlots.First(ss => ss.Identifier == nextSlotIdentifier);
                     nextSlot.AssignPlayer(slot, user);
-                
+
                     if(nextSlot.IsFull)
                     {
                         // TODO: Don't do this.
                         var user1 = await dbContext.TournamentUsers.FindAsync(nextSlot.User1ID);
                         var user2 = await dbContext.TournamentUsers.FindAsync(nextSlot.User2ID);
 
-                        var nextSet = CreateSet(tournament, slot, user1, user2, dateService.Now.AddDays(7));
+                        var nextSet = CreateSet(tournament, nextSlot, user1, user2, dateService.Now.AddDays(7));
+                        dbContext.Add(nextSet);
                         nextSlot.Set = nextSet;
                         tournament.Sets.Add(nextSet);
                     }
@@ -239,10 +238,10 @@ namespace Climb.Services
         // TODO: should not be named this. this is for creating a bracket
         private void UpdateBracket(Tournament tournament)
         {
-            if (tournament.TournamentUsers?.Count >= 4)
+            if(tournament.TournamentUsers?.Count >= 4)
             {
                 CreateBracket(tournament);
-                PopulateBracket(tournament); 
+                PopulateBracket(tournament);
             }
         }
 
@@ -313,6 +312,7 @@ namespace Climb.Services
             SortUsers();
             ClearSlots();
             AssignToSlots();
+            MarkLoserFirstRoundByes();
 
             List<TournamentUser> PadUsers()
             {
@@ -361,7 +361,7 @@ namespace Climb.Services
 
             void AssignToSlots()
             {
-                var firstRound = tournament.GetRound(Round.Brackets.Winners, 1);
+                var firstRound = tournament.GetRound(Round.Brackets.Winners, 0);
                 firstRound.SetSlots.Sort((x, y) => x.Identifier.CompareTo(y.Identifier));
 
                 var slotIndex = 0;
@@ -391,6 +391,8 @@ namespace Climb.Services
 
             void MoveUserPastBye(SetSlot slot, TournamentUser user)
             {
+                slot.IsBye = true;
+
                 var nextSlot = tournament.SetSlots.First(ss => ss.Identifier == slot.WinSlotIdentifier);
                 if(slot.Identifier == nextSlot.P1Game)
                 {
@@ -399,6 +401,22 @@ namespace Climb.Services
                 else
                 {
                     nextSlot.User2 = user;
+                }
+            }
+
+            void MarkLoserFirstRoundByes()
+            {
+                var round = tournament.GetRound(Round.Brackets.Losers, 0);
+                foreach(var setSlot in round.SetSlots)
+                {
+                    if(tournament.SetSlots.First(ss => ss.Identifier == setSlot.P1Game).IsBye)
+                    {
+                        setSlot.IsBye = true;
+                    }
+                    else if(tournament.SetSlots.First(ss => ss.Identifier == setSlot.P2Game).IsBye)
+                    {
+                        setSlot.IsBye = true;
+                    }
                 }
             }
         }

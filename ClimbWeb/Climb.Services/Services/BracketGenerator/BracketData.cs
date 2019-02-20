@@ -16,7 +16,7 @@ namespace Climb.Services
             public RoundData AddRound(List<RoundData> bracket)
             {
                 ++RoundCount;
-                var round = new RoundData(RoundCount);
+                var round = new RoundData(bracket.Count);
                 bracket.Add(round);
                 return round;
             }
