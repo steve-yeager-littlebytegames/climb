@@ -140,8 +140,6 @@ namespace Climb.Services.ModelServices
                 }
             }
 
-            await dbContext.SaveChangesAsync();
-
             if(set.SeasonID != null)
             {
                 await seasonService.PlaySet(setID);
@@ -152,6 +150,8 @@ namespace Climb.Services.ModelServices
             {
                 await tournamentService.FightSet(set);
             }
+
+            await dbContext.SaveChangesAsync();
 
             return set;
 
