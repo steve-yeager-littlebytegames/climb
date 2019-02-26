@@ -1,7 +1,83 @@
-﻿#banner {
-    margin-top: 20px;
-}
+﻿@import "vars.less";
 
 #description {
     padding: 5px 10px;
+}
+
+/* GAME FEATURE: image buttons for top 3 games on the homepage*/
+.game-feature {
+    margin: 0 2rem 1rem 0;
+}
+
+.game-feature:last-of-type {
+    margin-right: 0;
+}
+
+.game-feature, .game-feature a, .game-image, .game-bg {
+    transition: all .1s ease-in-out;
+    width: 300px;
+    height: 200px;
+    position: relative;
+}
+
+.game-feature a, .game-image, .game-bg {
+    position: absolute;
+}
+
+.game-feature a {
+    color: white;
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 2rem;
+    top: 38%;
+    left: 0;
+    z-index: 3;
+}
+
+.game-feature:hover {
+    transform: scale(1.05);
+}
+
+.game-feature:hover a {
+    opacity: 0;
+    text-decoration: none;
+}
+
+.game-feature:hover .game-image {
+    opacity: 1;
+    mix-blend-mode: normal;
+}
+
+/* Does not work in IE or Edge*/
+.game-image, .game-bg {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 70%);
+}
+
+.game-image {
+    color: white;
+    font-weight: bold;
+    font-size: 2rem;
+    opacity: 0.2;
+    mix-blend-mode: luminosity;
+    background-position: center;
+    background-size: cover;
+    z-index: 2;
+}
+
+.game-bg {
+    background: linear-gradient(-45deg, @color-accent, @color-yellow-dark);
+    background: -webkit-linear-gradient(-45deg, @color-accent, @color-yellow-dark);
+    z-index: 1;
+}
+
+@media only screen and (max-width: 1024px) {
+    .game-feature {
+        margin: 0 1rem 1rem 0;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .game-feature {
+        margin: 0 0 1rem 0;
+    }
 }

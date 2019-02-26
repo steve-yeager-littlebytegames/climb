@@ -38,7 +38,7 @@ namespace Climb.Test.Utilities
 
         public static Set Create(ApplicationDbContext dbContext)
         {
-            GameUtility.Create(dbContext, 3, 3);
+            GameUtility.CreateGame(dbContext, 3, 3);
 
             var (season, members) = SeasonUtility.CreateSeason(dbContext, 2);
             var set = Create(dbContext, members[0].ID, members[1].ID, season.LeagueID, season);

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
@@ -93,17 +93,16 @@ namespace Climb.Services.ModelServices
             Character character;
             if(characterID == null)
             {
-                if(imageFile == null)
-                {
-                    throw new ArgumentNullException(nameof(imageFile));
-                }
-
                 if(game.Characters.Any(c => c.Name == name))
                 {
                     throw new ConflictException(typeof(Character), nameof(Character.Name), name);
                 }
 
-                var imageKey = await cdnService.UploadImageAsync(imageFile, ClimbImageRules.CharacterPic);
+                string imageKey = null;
+                if(imageFile != null)
+                {
+                    imageKey = await cdnService.UploadImageAsync(imageFile, ClimbImageRules.CharacterPic);
+                }
 
                 character = new Character
                 {
@@ -135,6 +134,25 @@ namespace Climb.Services.ModelServices
             await dbContext.SaveChangesAsync();
 
             return character;
+        }
+
+        public async Task<IReadOnlyCollection<Character>> AddCharacters(int gameID, ICollection<string> names)
+        {
+            var characters = await dbContext.Characters.Where(c => c.GameID == gameID).ToArrayAsync();
+            var addedCharacters = new List<Character>(names.Count);
+
+            foreach(var name in names)
+            {
+                if(characters.Any(c => c.Name == name))
+                {
+                    continue;
+                }
+
+                var character = await AddCharacter(gameID, null, name, null);
+                addedCharacters.Add(character);
+            }
+
+            return addedCharacters;
         }
 
         public async Task<Stage> AddStage(int gameID, int? stageID, string name)

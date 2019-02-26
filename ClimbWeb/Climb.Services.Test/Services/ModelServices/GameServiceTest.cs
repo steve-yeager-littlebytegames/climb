@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
 using Climb.Exceptions;
@@ -44,12 +45,12 @@ namespace Climb.Test.Services.ModelServices
         public void Update_NameTaken_Conflict()
         {
             var logoFile = Substitute.For<IFormFile>();
-            var gameOld = GameUtility.Create(dbContext, 1, 1);
+            var gameOld = dbContext.CreateGame(1, 1);
             var createRequest = new UpdateRequest(gameOld.Name, 1, 2, logoFile);
 
             Assert.ThrowsAsync<ConflictException>(() => testObj.Update(createRequest));
 
-            var game = GameUtility.Create(dbContext, 0, 0, name:"GameOther");
+            var game = dbContext.CreateGame(0, 0, name: "GameOther");
             var updateRequest = new UpdateRequest(gameOld.Name, 1, 2, null)
             {
                 GameID = game.ID,
@@ -67,7 +68,7 @@ namespace Climb.Test.Services.ModelServices
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(createRequest));
 
-            var game = GameUtility.Create(dbContext, 0, 0);
+            var game = dbContext.CreateGame(0, 0);
             var updateRequest = new UpdateRequest("GameName", maxCharacters, 2, logoFile)
             {
                 GameID = game.ID,
@@ -85,7 +86,7 @@ namespace Climb.Test.Services.ModelServices
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(createRequest));
 
-            var game = GameUtility.Create(dbContext, 0, 0);
+            var game = dbContext.CreateGame(0, 0);
             var updateRequest = new UpdateRequest("GameName", 1, maxPoints, logoFile)
             {
                 GameID = game.ID,
@@ -105,7 +106,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task AddCharacter_Valid_Character()
         {
-            var game = GameUtility.Create(dbContext, 0, 0);
+            var game = dbContext.CreateGame(0, 0);
             var imageFile = Substitute.For<IFormFile>();
 
             var character = await testObj.AddCharacter(game.ID, null, "Char1", imageFile);
@@ -124,24 +125,16 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void AddCharacter_NameTaken_ConflictException()
         {
-            var game = GameUtility.Create(dbContext, 1, 0);
+            var game = dbContext.CreateGame(1, 0);
             var imageFile = Substitute.For<IFormFile>();
 
             Assert.ThrowsAsync<ConflictException>(() => testObj.AddCharacter(game.ID, null, game.Characters[0].Name, imageFile));
         }
 
         [Test]
-        public void AddCharacter_NewCharacterNoImageKey_NullArgumentException()
-        {
-            var game = GameUtility.Create(dbContext, 0, 0);
-
-            Assert.ThrowsAsync<ArgumentNullException>(() => testObj.AddCharacter(game.ID, null, "Char1", null));
-        }
-
-        [Test]
         public async Task AddCharacter_NewCharacter_UploadImage()
         {
-            var game = GameUtility.Create(dbContext, 1, 0);
+            var game = dbContext.CreateGame(1, 0);
             var imageFile = Substitute.For<IFormFile>();
 
             await testObj.AddCharacter(game.ID, null, "Char1", imageFile);
@@ -150,9 +143,19 @@ namespace Climb.Test.Services.ModelServices
         }
 
         [Test]
+        public async Task AddCharacter_NoImage_NoValidation()
+        {
+            var game = dbContext.CreateGame(1, 0);
+            
+            await testObj.AddCharacter(game.ID, null, "Char1", null);
+
+            await cdnService.DidNotReceiveWithAnyArgs().UploadImageAsync(null, null);
+        }
+
+        [Test]
         public async Task AddCharacter_OldCharacterNoImage_ImageKeyNotUpdated()
         {
-            var game = GameUtility.Create(dbContext, 1, 0);
+            var game = dbContext.CreateGame(1, 0);
             var imageKey = game.Characters[0].ImageKey;
 
             var character = await testObj.AddCharacter(game.ID, game.Characters[0].ID, "Char1", null);
@@ -163,7 +166,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task AddCharacter_OldCharacterNewImage_NewImageUploaded()
         {
-            var game = GameUtility.Create(dbContext, 1, 0);
+            var game = dbContext.CreateGame(1, 0);
             var imageFile = Substitute.For<IFormFile>();
 
             await testObj.AddCharacter(game.ID, game.Characters[0].ID, "Char1", imageFile);
@@ -174,7 +177,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task AddCharacter_OldCharacterNewImage_ImageKeySaved()
         {
-            var game = GameUtility.Create(dbContext, 1, 0);
+            var game = dbContext.CreateGame(1, 0);
             var imageFile = Substitute.For<IFormFile>();
             const string imageKey = "key";
             cdnService.ReplaceImageAsync(Arg.Any<string>(), imageFile, ClimbImageRules.CharacterPic).Returns(imageKey);
@@ -188,7 +191,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task AddCharacter_OldCharacterNoImage_ValuesUpdated()
         {
             const string name = "NewName";
-            var game = GameUtility.Create(dbContext, 1, 0);
+            var game = dbContext.CreateGame(1, 0);
 
             var character = await testObj.AddCharacter(game.ID, game.Characters[0].ID, name, null);
 
@@ -198,16 +201,43 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void AddCharacter_HasCharacterIDButNoCharacter_NotFoundException()
         {
-            var game = GameUtility.Create(dbContext, 0, 0);
+            var game = dbContext.CreateGame(0, 0);
             var imageFile = Substitute.For<IFormFile>();
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.AddCharacter(game.ID, 1, "Char1", imageFile));
         }
 
         [Test]
+        public async Task AddCharacters_AllNew_AddsCharacters()
+        {
+            var game = dbContext.CreateGame(0, 0);
+            var characterNames = new[] {"1", "2", "3", "4"};
+
+            var characters = await testObj.AddCharacters(game.ID, characterNames);
+
+            Assert.AreEqual(characterNames.Length, characters.Count);
+        }
+
+        [Test]
+        public async Task AddCharacters_CharacterExists_AddsOtherCharacters()
+        {
+            const int initialCharacters = 3;
+            string[] newCharacters = new[] {"A2", "B2"};
+
+            var game = dbContext.CreateGame(initialCharacters, 0);
+            var characterNames = new List<string>(game.Characters.Select(c => c.Name));
+            characterNames.AddRange(newCharacters);
+
+            var characters = await testObj.AddCharacters(game.ID, characterNames);
+
+            Assert.AreEqual(newCharacters.Length, characters.Count);
+            Assert.AreEqual(initialCharacters + newCharacters.Length, game.Characters.Count);
+        }
+
+        [Test]
         public async Task AddStage_Valid_Stage()
         {
-            var game = GameUtility.Create(dbContext, 0, 0);
+            var game = dbContext.CreateGame(0, 0);
 
             var stage = await testObj.AddStage(game.ID, null, "Stage1");
 
@@ -223,15 +253,15 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void AddStage_NameTaken_ConflictException()
         {
-            var game = GameUtility.Create(dbContext, 0, 1);
+            var game = dbContext.CreateGame(0, 1);
 
             Assert.ThrowsAsync<ConflictException>(() => testObj.AddStage(game.ID, null, game.Stages[0].Name));
         }
-        
+
         [Test]
         public void AddStage_HasStageIDButNoStage_NotFoundException()
         {
-            var game = GameUtility.Create(dbContext, 0, 0);
+            var game = dbContext.CreateGame(0, 0);
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.AddStage(game.ID, 1, "Stage1"));
         }
@@ -240,7 +270,7 @@ namespace Climb.Test.Services.ModelServices
         public async Task AddStage_OldStage_ValuesUpdated()
         {
             const string name = "NewName";
-            var game = GameUtility.Create(dbContext, 0, 1);
+            var game = dbContext.CreateGame(0, 1);
 
             var stage = await testObj.AddStage(game.ID, game.Stages[0].ID, name);
 

@@ -11,7 +11,7 @@
     ViewBag.Title = $"{Model.HomeUser.UserName}";
 }
 
-<!-- Challanges/Fight Modal -->
+<!-- Challenges/Fight Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -32,11 +32,11 @@
                                 <div class="card-header">
                                     League @setRequest.League.Name
                                 </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">@setRequest.Requester.User.UserName</h5>
+                                <div class="card-body mx-auto">
+                                    @*<h5 class="card-title">@setRequest.Requester.User.UserName</h5>*@
                                     <p class="card-text">@setRequest.Message</p>
-                                    <button class="request-decline btn btn-secondary" data-requestId="@setRequest.ID">Decline</button>
-                                    <button class="request-accept btn btn-danger" data-requestId="@setRequest.ID">Accept</button>
+                                    <button class="request-decline btn btn-cstm-secondary" data-requestId="@setRequest.ID">Decline</button>
+                                    <button class="request-accept btn btn-cstm-primary" data-requestId="@setRequest.ID">Accept</button>
                                 </div>
                                 <div class="card-footer text-muted">
                                     @setRequest.DateCreated.ToShortDateString()
@@ -55,16 +55,17 @@
                 {
                     foreach(var leagueUser in Model.SharedLeagues)
                     {
-                        <div class="card text-center">
-                            <div class="card-header">
-                                @leagueUser.Requester.League.Name
+                        <div class="cstm-card text-center mb-4 mx-5">
+                            <div class="set-details d-flex justify-content-between px-3">
+                                <h5 class="mb-0">@Model.HomeUser.UserName</h5>
+                                <em>@leagueUser.Requester.League.Name</em>
                             </div>
-                            <div class="card-body">
-                                <h5 class="card-title">@Model.HomeUser.UserName</h5>
-                                <div class="input-group">
-                                    <input id="challenge-message-@leagueUser.Challenged.ID" type="text" value="Let's fight!"/>
+                            <div class="card-body mx-auto">
+                                <div class="input-group d-flex flex-column align-items-start mb-4">
+                                    <label>Message</label>
+                                    <input id="challenge-message-@leagueUser.Challenged.ID" class="fake-form-input w-100" type="text" value="Let's fight!"/>
                                 </div>
-                                <button class="request-button btn btn-danger" data-requester="@leagueUser.Requester.ID" data-challenged="@leagueUser.Challenged.ID">Challenge!</button>
+                                <button class="request-button btn btn-cstm-primary" data-requester="@leagueUser.Requester.ID" data-challenged="@leagueUser.Challenged.ID">Challenge!</button>
                             </div>
                         </div>
                     }
@@ -80,11 +81,13 @@
         <div id="user-info" class="col-sm-6">
             <img src="@Model.ProfilePic" width="150" height="150"/>
 
-            <div id="user-info-names">
-                <h2>@Model.HomeUser.UserName</h2>
-                <h4 id="real-name">
-                    <em>@Model.HomeUser.Name</em>
-                </h4>
+            <div id="user-info-names" class="d-flex flex-column align-items-start">
+                <div class="d-flex align-items-center">
+                    <h3 class="mr-2">@Model.HomeUser.UserName</h3>
+                    <h3 id="real-name">
+                        <em>@Model.HomeUser.Name</em>
+                    </h3>
+                </div>
                 @if(Model.IsViewingUserHome)
                 {
                     <button id="challenges-button" class="header-button btn" type="button" data-toggle="modal" data-target="#exampleModal">
@@ -107,7 +110,7 @@
         <!-- Leagues -->
         <div class="col-xl-4 page-section pb-2 mt-4">
             <h3>Leagues</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @foreach(var leagueUser in Model.HomeUser.LeagueUsers)
                 {
                     <partial name="../League/Partials/LeagueUser" model="@await LeagueUserViewModel.Create(leagueUser, cdnService, false, Url, leagueService)"/>
@@ -118,7 +121,7 @@
         <!-- Sets -->
         <div class="col-xl-4 order-xl-2 page-section pb-2 mt-4">
             <h3>Sets</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @foreach(var set in Model.AvailableSets)
                 {
                     <partial name="../Set/Partials/Details" model="@DetailsViewModel.Create(Model.User, set, cdnService)"/>
@@ -129,7 +132,7 @@
         <!-- Activity -->
         <div class="col-xl-4 order-xl-1 page-section pb-2 mt-4">
             <h3>Activity</h3>
-            <div class="page-section-child">
+            <div class="page-section-content">
                 @if(Model.RecentSets.Count == 0)
                 {
                     <div class="text-darker">

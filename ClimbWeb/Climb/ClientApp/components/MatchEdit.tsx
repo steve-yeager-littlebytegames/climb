@@ -50,7 +50,7 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         return (
             <div className="container">
                 <div className="d-flex justify-content-start">
-                    <button className="btn btn-sm btn-danger" onClick={this.props.onDelete}>Delete</button>
+                    <button className="btn btn-cstm-secondary" onClick={this.props.onDelete}>Delete</button>
                 </div>
 
                 <h3>{game.matchName} {match.index + 1}</h3>
@@ -60,8 +60,8 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
                 {stageInput}
 
                 <div className="d-flex justify-content-between">
-                    <button className="btn btn-secondary" onClick={this.props.onCancel}>Cancel</button>
-                    <button className="btn btn-primary" disabled={!canOk} onClick={() => this.props.onEdit(this.state.match)}>Ok</button>
+                    <button className="btn btn-cstm-secondary" onClick={this.props.onCancel}>Cancel</button>
+                    <button className="btn btn-cstm-primary" disabled={!canOk} onClick={() => this.props.onEdit(this.state.match)}>Ok</button>
                 </div>
             </div>
         );

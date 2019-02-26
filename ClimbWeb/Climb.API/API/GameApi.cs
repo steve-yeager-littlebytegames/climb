@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Climb.Attributes;
 using Climb.Data;
+using Climb.Requests.Game;
 using Climb.Responses.Models;
 using Climb.Services;
+using Climb.Services.ModelServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,12 +19,14 @@ namespace Climb.API
     {
         private readonly ApplicationDbContext dbContext;
         private readonly ICdnService cdnService;
+        private readonly IGameService gameService;
 
-        public GameApi(ILogger<GameApi> logger, ApplicationDbContext dbContext, ICdnService cdnService)
+        public GameApi(ILogger<GameApi> logger, ApplicationDbContext dbContext, ICdnService cdnService, IGameService gameService)
             : base(logger)
         {
             this.dbContext = dbContext;
             this.cdnService = cdnService;
+            this.gameService = gameService;
         }
 
         [HttpGet("{id:int}")]
@@ -44,12 +48,33 @@ namespace Climb.API
         }
 
         [HttpGet("")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<GameDto>))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(GameDto[]))]
         public async Task<IActionResult> ListAll()
         {
             var games = await dbContext.Games.ToListAsync();
             var dtos = games.Select(g => GameDto.Create(g, cdnService));
             return CodeResult(HttpStatusCode.OK, dtos);
+        }
+
+        [HttpPost("add-characters")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(CharacterDto[]))]
+        public async Task<IActionResult> AddCharacters([FromBody]AddCharacters request)
+        {
+            if(request.Names == null)
+            {
+                return BadRequest($"Can't send null for {nameof(request.Names)}");
+            }
+
+            try
+            {
+                var characters = await gameService.AddCharacters(request.GameID, request.Names);
+                var dto = characters.Select(c => CharacterDto.Create(c, cdnService));
+                return CodeResult(HttpStatusCode.OK, dto);
+            }
+            catch(Exception exception)
+            {
+                return GetExceptionResult(exception, request);
+            }
         }
     }
 }

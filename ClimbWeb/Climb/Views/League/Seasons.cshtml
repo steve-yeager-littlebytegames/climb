@@ -15,18 +15,18 @@
     <!-- Columns -->
     <div class="row">
         <!-- Members -->
-        <div class="col-xl-6 page-section pb-2 mt-4">
+        <div class="col-xl-12 page-section pb-2 mt-4">
             <h3>Seasons</h3>
             @if(Model.ActiveSeason != null)
             {
                 <h4>Active Season</h4>
-                <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.ActiveSeason.ID">Season @((Model.ActiveSeason.Index + 1).ToRoman())</a>
+                <a class="btn btn-cstm-primary mb-4" asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.ActiveSeason.ID">Season @((Model.ActiveSeason.Index + 1).ToRoman())</a>
             }
 
             @if(Model.NextSeason != null)
             {
                 <h4>Next Season</h4>
-                <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.NextSeason.ID">Season @((Model.NextSeason.Index + 1).ToRoman())</a>
+                <a class="btn btn-cstm-secondary mb-4" asp-controller="Season" asp-action="Home" asp-route-seasonid="@Model.NextSeason.ID">Season @((Model.NextSeason.Index + 1).ToRoman())</a>
             }
 
             @if(Model.CompletedSeasons.Count > 0)
@@ -34,7 +34,7 @@
                 <h4>Completed Seasons</h4>
                 foreach(var season in Model.CompletedSeasons)
                 {
-                    <a asp-controller="Season" asp-action="Home" asp-route-seasonid="@season.ID">Season @((season.Index + 1).ToRoman())</a>
+                    <a class="btn btn-cstm-secondary mb-4" asp-controller="Season" asp-action="Home" asp-route-seasonid="@season.ID">Season @((season.Index + 1).ToRoman())</a>
                 }
             }
         </div>
