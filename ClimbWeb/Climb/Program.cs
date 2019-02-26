@@ -32,6 +32,9 @@ namespace Climb
             host.Run();
         }
 
-        private static IWebHost BuildWebHost(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build();
+        private static IWebHost BuildWebHost(string[] args) => WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            .UseApplicationInsights()
+            .Build();
     }
 }
