@@ -6,9 +6,9 @@ namespace Climb.Test.Utilities
 {
     public static class SetUtility
     {
-        public static Set Create(ApplicationDbContext dbContext, int player1ID, int player2ID, int leagueID, Season season = null)
+        public static Set CreateSet(this ApplicationDbContext dbContext, int player1ID, int player2ID, int leagueID, Season season = null)
         {
-            var set = DbContextUtility.AddNew<Set>(dbContext, s =>
+            var set = dbContext.AddNew<Set>(s =>
             {
                 s.Player1ID = player1ID;
                 s.Player2ID = player2ID;
@@ -19,9 +19,9 @@ namespace Climb.Test.Utilities
             return set;
         }
 
-        public static Set Create(ApplicationDbContext dbContext, SeasonLeagueUser player1, SeasonLeagueUser player2, int leagueID)
+        public static Set CreateSet(this ApplicationDbContext dbContext, SeasonLeagueUser player1, SeasonLeagueUser player2, int leagueID)
         {
-            var set = DbContextUtility.AddNew<Set>(dbContext, s =>
+            var set = dbContext.AddNew<Set>(s =>
             {
                 s.LeagueID = leagueID;
                 s.SeasonID = player1.Season.ID;
@@ -36,18 +36,18 @@ namespace Climb.Test.Utilities
             return set;
         }
 
-        public static Set Create(ApplicationDbContext dbContext)
+        public static Set CreateSet(this ApplicationDbContext dbContext)
         {
-            GameUtility.CreateGame(dbContext, 3, 3);
+            dbContext.CreateGame(3, 3);
 
             var (season, members) = SeasonUtility.CreateSeason(dbContext, 2);
-            var set = Create(dbContext, members[0].ID, members[1].ID, season.LeagueID, season);
+            var set = CreateSet(dbContext, members[0].ID, members[1].ID, season.LeagueID, season);
             return set;
         }
 
-        public static List<Match> AddMatches(ApplicationDbContext dbContext, Set set, int count)
+        public static List<Match> AddMatchesToSet(this ApplicationDbContext dbContext, Set set, int count)
         {
-            return DbContextUtility.AddNewRange<Match>(dbContext, count, (m, i) =>
+            return dbContext.AddNewRange<Match>(count, (m, i) =>
             {
                 m.Index = i;
                 m.SetID = set.ID;

@@ -178,7 +178,7 @@ namespace Climb.Test.Services.ModelServices
             var player2 = season.Participants[1];
             var player3 = season.Participants[2];
 
-            DbContextUtility.UpdateAndSave(dbContext, player2, slu => slu.HasLeft = true);
+            dbContext.UpdateAndSave(player2, slu => slu.HasLeft = true);
 
             await testObj.UpdateRanksAsync(season.ID);
 
@@ -197,13 +197,13 @@ namespace Climb.Test.Services.ModelServices
 
             for(var i = 0; i < setCount; i++)
             {
-                sets.Add(SetUtility.Create(dbContext, participants[0].ID, participants[1].ID, season.LeagueID, season));
+                sets.Add(dbContext.CreateSet(participants[0].ID, participants[1].ID, season.LeagueID, season));
             }
 
             for(var i = 0; i < completedSets; i++)
             {
                 var setIndex = i;
-                DbContextUtility.UpdateAndSave(dbContext, sets[setIndex], () => sets[setIndex].IsComplete = true);
+                dbContext.UpdateAndSave(sets[setIndex], () => sets[setIndex].IsComplete = true);
             }
 
             season = await testObj.End(season.ID);
@@ -221,15 +221,15 @@ namespace Climb.Test.Services.ModelServices
 
             for(var i = 0; i < setCount; i++)
             {
-                sets.Add(SetUtility.Create(dbContext, participants[0].ID, participants[1].ID, season.LeagueID, season));
+                sets.Add(dbContext.CreateSet(participants[0].ID, participants[1].ID, season.LeagueID, season));
                 var setIndex = i;
-                DbContextUtility.UpdateAndSave(dbContext, sets[setIndex], () => sets[setIndex].IsComplete = true);
+                dbContext.UpdateAndSave(sets[setIndex], () => sets[setIndex].IsComplete = true);
             }
 
             for(var i = 0; i < lockedSets; i++)
             {
                 var setIndex = i;
-                DbContextUtility.UpdateAndSave(dbContext, sets[setIndex], () => sets[setIndex].IsLocked = true);
+                dbContext.UpdateAndSave(sets[setIndex], () => sets[setIndex].IsLocked = true);
             }
 
             season = await testObj.End(season.ID);
@@ -284,7 +284,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var (season, _) = SeasonUtility.CreateSeason(dbContext, 2, s => s.IsActive = true);
             var seasonID = season.ID;
-            DbContextUtility.UpdateAndSave(dbContext, season.League, l => l.ActiveSeasonID = seasonID);
+            dbContext.UpdateAndSave(season.League, l => l.ActiveSeasonID = seasonID);
 
             Assert.IsNotNull(season.League.ActiveSeasonID);
 
@@ -309,7 +309,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var season = CreateSeason((0, 0, 0));
             var participant = season.Participants[0];
-            DbContextUtility.UpdateAndSave(dbContext, participant, () => participant.HasLeft = true);
+            dbContext.UpdateAndSave(participant, () => participant.HasLeft = true);
 
             await testObj.LeaveAsync(participant.ID);
 
@@ -356,7 +356,7 @@ namespace Climb.Test.Services.ModelServices
         public void Leave_SeasonComplete_BadRequestException()
         {
             var season = CreateSeason((0, 0, 0));
-            DbContextUtility.UpdateAndSave(dbContext, season, () => season.IsComplete = true);
+            dbContext.UpdateAndSave(season, () => season.IsComplete = true);
             var participant = season.Participants[0];
 
             Assert.ThrowsAsync<BadRequestException>(() => testObj.LeaveAsync(participant.ID));
@@ -378,7 +378,7 @@ namespace Climb.Test.Services.ModelServices
             var season = CreateSeason((0, 0, 0), (0, 0, 0));
             var participant = season.Participants[0];
             var set = SeasonUtility.CreateSets(dbContext, season)[0];
-            DbContextUtility.UpdateAndSave(dbContext, set, s => s.IsComplete = true);
+            dbContext.UpdateAndSave(set, s => s.IsComplete = true);
 
             await testObj.LeaveAsync(participant.ID);
 
@@ -400,7 +400,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public void Join_NoSeason_NotFoundException()
         {
-            var user = DbContextUtility.AddNew<ApplicationUser>(dbContext);
+            var user = dbContext.AddNew<ApplicationUser>();
 
             Assert.ThrowsAsync<NotFoundException>(() => testObj.JoinAsync(-1, user.Id));
         }
@@ -429,7 +429,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var season = CreateSeason((0, 0, 0));
             var participant = season.Participants[0];
-            DbContextUtility.UpdateAndSave(dbContext, participant, () => participant.HasLeft = true);
+            dbContext.UpdateAndSave(participant, () => participant.HasLeft = true);
 
             await testObj.JoinAsync(season.ID, participant.UserID);
 
@@ -442,7 +442,7 @@ namespace Climb.Test.Services.ModelServices
         {
             scheduler.GenerateSchedule(default, default, default).ReturnsForAnyArgs(new List<Set>());
             var season = CreateSeason();
-            DbContextUtility.UpdateAndSave(dbContext, season, s => s.IsActive = true);
+            dbContext.UpdateAndSave(season, s => s.IsActive = true);
             var leagueUser = LeagueUtility.AddUsersToLeague(season.League, 1, dbContext)[0];
 
             await testObj.JoinAsync(season.ID, leagueUser.UserID);
@@ -456,9 +456,9 @@ namespace Climb.Test.Services.ModelServices
         {
             scheduler.GenerateSchedule(default, default, default).ReturnsForAnyArgs(new List<Set>());
             var season = CreateSeason((0, 0, 0));
-            DbContextUtility.UpdateAndSave(dbContext, season, s => s.IsActive = true);
+            dbContext.UpdateAndSave(season, s => s.IsActive = true);
             var participant = season.Participants[0];
-            DbContextUtility.UpdateAndSave(dbContext, participant, p => p.HasLeft = true);
+            dbContext.UpdateAndSave(participant, p => p.HasLeft = true);
 
             await testObj.JoinAsync(season.ID, participant.UserID);
 
@@ -511,8 +511,8 @@ namespace Climb.Test.Services.ModelServices
         private void CreateSets(Season season, SeasonLeagueUser participant)
         {
             var opponent = season.Participants[1];
-            SetUtility.Create(dbContext, participant, opponent, season.LeagueID);
-            SetUtility.Create(dbContext, opponent, participant, season.LeagueID);
+            dbContext.CreateSet(participant, opponent, season.LeagueID);
+            dbContext.CreateSet(opponent, participant, season.LeagueID);
         }
         #endregion
     }
