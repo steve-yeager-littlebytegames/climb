@@ -24,7 +24,7 @@ namespace Climb.ViewModels.Users
 
         public ApplicationUser HomeUser { get; }
         public string ProfilePic { get; }
-        public bool IsViewingUserHome => User.Id == HomeUser.Id;
+        public bool IsViewingUserHome => User?.Id == HomeUser.Id;
         public IReadOnlyList<Set> RecentSets { get; }
         public IReadOnlyList<Set> AvailableSets { get; }
         public IReadOnlyList<SharedLeagueUsers> SharedLeagues { get; }
@@ -42,12 +42,15 @@ namespace Climb.ViewModels.Users
             ShowSetRequests = showSetRequests;
 
             var sharedLeagues = new List<SharedLeagueUsers>();
-            foreach(var requester in user.LeagueUsers)
+            if(user != null)
             {
-                var challenged = homeUser.LeagueUsers.FirstOrDefault(lu => lu.LeagueID == requester.LeagueID);
-                if(challenged != null)
+                foreach(var requester in user.LeagueUsers)
                 {
-                    sharedLeagues.Add(new SharedLeagueUsers(requester, challenged));
+                    var challenged = homeUser.LeagueUsers.FirstOrDefault(lu => lu.LeagueID == requester.LeagueID);
+                    if(challenged != null)
+                    {
+                        sharedLeagues.Add(new SharedLeagueUsers(requester, challenged));
+                    }
                 }
             }
 
