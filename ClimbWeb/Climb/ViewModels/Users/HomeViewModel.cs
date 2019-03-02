@@ -67,7 +67,7 @@ namespace Climb.ViewModels.Users
 #if DEBUG
             const bool showSetRequests = true;
 #else
-            var showSetRequests = user.Id == homeUser.Id;
+            var showSetRequests = user?.Id == homeUser.Id;
 #endif
 
             IReadOnlyList<SetRequest> setRequests = null;
