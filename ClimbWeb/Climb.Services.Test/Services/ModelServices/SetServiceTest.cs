@@ -38,7 +38,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_Valid_DateUpdated()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
 
             var matchForms = CreateMatchForms(3);
             await testObj.Update(set.ID, matchForms);
@@ -49,7 +49,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_FirstMatches_CreatesMatchesAndMatchCharacters()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
 
             var matchForms = CreateMatchForms(3);
             await testObj.Update(set.ID, matchForms);
@@ -60,7 +60,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_NewMatches_ReplacesOldMatchesAndMatchCharacters()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
             var matchForms = CreateMatchForms(3);
             await testObj.Update(set.ID, matchForms);
 
@@ -72,7 +72,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_RemoveMatches_DeletesOldMatchesAndMatchCharacters()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
             var matchForms = CreateMatchForms(3);
             await testObj.Update(set.ID, matchForms);
 
@@ -91,7 +91,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_HasWinner_UpdateScore()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
 
             var matchForms = CreateMatchFormsWithScores(1, 2, 1);
             matchForms.AddRange(CreateMatchFormsWithScores(2, 0, 2));
@@ -105,7 +105,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_IsSeasonSet_UpdatesSeasonPoints()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
 
             var matchForms = CreateMatchForms(3);
             await testObj.Update(set.ID, matchForms);
@@ -118,7 +118,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_IsNotSeasonSet_DoesNotUpdateSeasonPoints()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
             set.SeasonID = null;
 
             var matchForms = CreateMatchForms(3);
@@ -132,7 +132,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_NewSet_LeagueUserSetCountIncremented()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
             var matchForms = CreateMatchForms(3);
 
             await testObj.Update(set.ID, matchForms);
@@ -145,7 +145,7 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_OldSet_LeagueUserSetCountNotChanged()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
             var matchForms = CreateMatchForms(3);
 
             await testObj.Update(set.ID, matchForms);
@@ -157,12 +157,23 @@ namespace Climb.Test.Services.ModelServices
         [Test]
         public async Task Update_IsCompleteIsTrue()
         {
-            var set = SetUtility.Create(dbContext);
+            var set = dbContext.CreateSet();
 
             var matchForms = CreateMatchForms(3);
             await testObj.Update(set.ID, matchForms);
 
             Assert.IsTrue(set.IsComplete);
+        }
+
+        [Test]
+        public void Update_Overdue_BadRequestException()
+        {
+            var set = dbContext.CreateSet();
+            dbContext.UpdateAndSave(set, s => s.DueDate = DateTime.MinValue);
+            dateService.Now.Returns(DateTime.MaxValue);
+            var matchForms = CreateMatchForms(3);
+
+            Assert.ThrowsAsync<BadRequestException>(() => testObj.Update(set.ID, matchForms));
         }
 
         [Test]
@@ -297,7 +308,7 @@ namespace Climb.Test.Services.ModelServices
         {
             var league = dbContext.CreateLeague();
             var members = LeagueUtility.AddUsersToLeague(league, 2, dbContext);
-            var setRequest = DbContextUtility.AddNew<SetRequest>(dbContext, sr =>
+            var setRequest = dbContext.AddNew<SetRequest>(sr =>
             {
                 sr.LeagueID = league.ID;
                 sr.RequesterID = members[0].ID;

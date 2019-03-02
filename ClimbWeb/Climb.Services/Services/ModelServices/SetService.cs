@@ -25,11 +25,12 @@ namespace Climb.Services.ModelServices
 
         public async Task<SetRequest> RequestSetAsync(int requesterID, int challengedID, string message)
         {
-            if (!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == requesterID))
+            if(!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == requesterID))
             {
                 throw new NotFoundException(typeof(LeagueUser), requesterID);
             }
-            if (!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == challengedID))
+
+            if(!await dbContext.LeagueUsers.AnyAsync(lu => lu.ID == challengedID))
             {
                 throw new NotFoundException(typeof(LeagueUser), challengedID);
             }
@@ -82,6 +83,7 @@ namespace Climb.Services.ModelServices
                 dbContext.Add(set);
                 setRequest.Set = set;
             }
+
             await dbContext.SaveChangesAsync();
 
             return setRequest;
@@ -97,6 +99,11 @@ namespace Climb.Services.ModelServices
             if(set == null)
             {
                 throw new NotFoundException(typeof(Set), setID);
+            }
+
+            if(set.DueDate < dateService.Now)
+            {
+                throw new BadRequestException($"Set {setID} is overdue. Due date was {set.DueDate.ToShortDateString()}.");
             }
 
             if(set.Matches.Count > 0)
@@ -142,7 +149,7 @@ namespace Climb.Services.ModelServices
 
             await dbContext.SaveChangesAsync();
 
-            if (set.SeasonID != null)
+            if(set.SeasonID != null)
             {
                 await seasonService.PlaySet(setID);
                 await seasonService.UpdateRanksAsync(set.SeasonID.Value);
