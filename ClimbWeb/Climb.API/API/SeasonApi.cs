@@ -69,7 +69,7 @@ namespace Climb.API
         }
 
         [HttpGet("{id:int}/sets")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<SetDto>))]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(SetDto[]))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]
         public async Task<IActionResult> Sets(int id)
         {
@@ -137,6 +137,7 @@ namespace Climb.API
         }
 
         [HttpPost("{id:int}/update-ranks")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
         public async Task<IActionResult> UpdateStandings(int id)
         {
             try

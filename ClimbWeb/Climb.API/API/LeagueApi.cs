@@ -220,6 +220,7 @@ namespace Climb.API
         }
 
         [HttpGet("sets/{leagueUserID:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(SetDto[]))]
         public async Task<IActionResult> GetSets(int leagueUserID)
         {
             var leagueUser = await dbContext.LeagueUsers
