@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
+using Climb.Attributes;
 using Climb.Data;
 using Climb.Services;
 using Climb.Services.ModelServices;
@@ -29,6 +31,7 @@ namespace Climb.Controllers
         }
 
         [HttpPost("admin/update-all-leagues")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(string))]
         public async Task<IActionResult> UpdateAllLeagues([FromHeader] string key)
         {
             if(!Validate(key))
