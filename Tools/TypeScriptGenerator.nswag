@@ -1,5 +1,5 @@
 ﻿{
-  "runtime": "NetCore21",
+  "runtime": "NetCore22",
   "defaultVariables": null,
   "swaggerGenerator": {
     "fromSwagger": {
@@ -52,6 +52,7 @@
       "useGetBaseUrlMethod": true,
       "baseUrlTokenName": "API_BASE_URL",
       "queryNullValue": "",
+      "inlineNamedDictionaries": false,
       "templateDirectory": null,
       "typeNameGeneratorType": null,
       "propertyNameGeneratorType": null,
@@ -124,6 +125,8 @@
       "generateImmutableArrayProperties": false,
       "generateImmutableDictionaryProperties": false,
       "jsonSerializerSettingsTransformationMethod": null,
+      "inlineNamedDictionaries": false,
+      "inlineNamedTuples": true,
       "templateDirectory": null,
       "typeNameGeneratorType": null,
       "propertyNameGeneratorType": null,
