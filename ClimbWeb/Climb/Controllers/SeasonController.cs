@@ -38,6 +38,8 @@ namespace Climb.Controllers
                 .Include(s => s.Sets).ThenInclude(s => s.League).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.SeasonPlayer1).AsNoTracking()
+                .Include(s => s.Sets).ThenInclude(s => s.SeasonPlayer2).AsNoTracking()
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
