@@ -153,6 +153,28 @@ namespace Climb.API
             return Ok(sets);
         }
 
+        [HttpGet("{id:int}/sets-completed")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(SetDto[]))]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(string), "Can't find league.")]
+        public async Task<IActionResult> GetCompletedSetsAsync(int id, DateTime completedDate)
+        {
+            var league = await dbContext.Leagues.FindAsync(id);
+            if(league == null)
+            {
+                return NotFound(new {leagueID = id});
+            }
+
+            var sets = await dbContext.Sets
+                .Include(s => s.Player1).AsNoTracking()
+                .Include(s => s.Player2).AsNoTracking()
+                .Include(s => s.League).AsNoTracking()
+                .Where(s => s.LeagueID == id && s.IsComplete && s.UpdatedDate >= completedDate)
+                .Select(s => SetDto.Create(s, league.GameID))
+                .ToArrayAsync();
+
+            return Ok(sets);
+        }
+
         [HttpGet("{id:int}/members")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(LeagueUserDto[]))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(string))]

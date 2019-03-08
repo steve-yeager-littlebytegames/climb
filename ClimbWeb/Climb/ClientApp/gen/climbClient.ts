@@ -805,6 +805,58 @@ export class LeagueApi extends BaseClass {
         return Promise.resolve<SetDto[]>(<any>null);
     }
 
+    getCompletedSets(id: number, completedDate: Date | undefined): Promise<SetDto[]> {
+        let url_ = this.baseUrl + "/api/v1/leagues/{id}/sets-completed?";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        if (completedDate === null)
+            throw new Error("The parameter 'completedDate' cannot be null.");
+        else if (completedDate !== undefined)
+            url_ += "completedDate=" + encodeURIComponent(completedDate ? "" + completedDate.toJSON() : "") + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetCompletedSets(_response);
+        });
+    }
+
+    protected processGetCompletedSets(response: Response): Promise<SetDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SetDto.fromJS(item));
+            }
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SetDto[]>(<any>null);
+    }
+
     getMembers(id: number): Promise<LeagueUserDto[]> {
         let url_ = this.baseUrl + "/api/v1/leagues/{id}/members";
         if (id === undefined || id === null)
