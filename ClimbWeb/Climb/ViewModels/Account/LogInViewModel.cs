@@ -1,6 +1,8 @@
-﻿namespace Climb.ViewModels.Account
+﻿using Climb.Requests.Account;
+
+namespace Climb.ViewModels.Account
 {
-    public class LogInViewModel : BaseViewModel
+    public class LogInViewModel : RequestViewModel<LoginRequest>
     {
         public string ReturnUrl { get; }
 
