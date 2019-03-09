@@ -1,4 +1,4 @@
-﻿@model Climb.ViewModels.BaseViewModel
+﻿@model Climb.ViewModels.Account.LogInViewModel
 
 @{
     ViewBag.Title = "Log In";
@@ -6,9 +6,10 @@
 
 <div class="container mt-4">
     <form class="form" asp-action="LogInPost" method="post">
+        <input type="hidden" name="returnurl" value="@Model.ReturnUrl"/>
         <img class="mb-4" src="~/images/logo/logo-128x128.png" alt="" width="128" height="128">
         <h1 class="h3 mb-3 font-weight-normal">Please Log In</h1>
-        @if (ViewData.ContainsKey("LoginFail"))
+        @if(ViewData.ContainsKey("LoginFail"))
         {
             <span>Failed to Log In</span>
         }
