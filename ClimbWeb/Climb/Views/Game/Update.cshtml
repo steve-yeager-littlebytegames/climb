@@ -9,7 +9,7 @@
     <form class="form" asp-action="UpdatePost" enctype="multipart/form-data">
         <h1>@Model.Action Game</h1>
         <!--ID-->
-        <input type="hidden" name="gameID" value="@Model.Game?.ID" />
+        <input asp-for="Request.GameID" value="@Model.Game?.ID"/>
         <!--Name-->
         <div class="form-group row">
             <label class="col-md-4 col-form-label text-left">Name</label>
@@ -23,6 +23,15 @@
                 <img class="mb-2" src="@Model.LogoImage" width="100" height="100" />
                 <input class="form-control-file" asp-for="Request.LogoImage" accept="image/*" />
                 <span asp-validation-for="Request.LogoImage" class="text-danger"></span>
+            </div>
+        </div>
+        <!--Game Banner-->
+        <div class="form-group row mb-4">
+            <label class="col-md-4 col-form-label text-left">Banner</label>
+            <div class="col-md-8 d-flex flex-column p-0">
+                <img class="mb-2" src="@Model.BannerImage" width="100" height="100" />
+                <input class="form-control-file" asp-for="Request.BannerImage" accept="image/*" />
+                <span asp-validation-for="Request.BannerImage" class="text-danger"></span>
             </div>
         </div>
         <!--# Characters-->

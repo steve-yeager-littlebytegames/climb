@@ -14,6 +14,7 @@ namespace Climb.Models
         public int CharactersPerMatch { get; set; }
         public int MaxMatchPoints { get; set; }
         public string LogoImageKey { get; set; }
+        public string BannerImageKey { get; set; }
         public string ScoreName { get; set; }
         public string MatchName { get; set; }
 
