@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Climb.API\Climb.API.csproj" />
-    <ProjectReference Include="..\Climb.Test\Climb.Test.csproj" />
+    <ProjectReference Include="..\Climb.Test.Common\Climb.Test.Common.csproj" />
   </ItemGroup>
 
 </Project>

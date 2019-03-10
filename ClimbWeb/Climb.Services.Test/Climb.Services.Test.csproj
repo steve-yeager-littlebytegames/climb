@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Climb.Services\Climb.Services.csproj" />
-    <ProjectReference Include="..\Climb.Test\Climb.Test.csproj" />
+    <ProjectReference Include="..\Climb.Test.Common\Climb.Test.Common.csproj" />
   </ItemGroup>
 
 </Project>
