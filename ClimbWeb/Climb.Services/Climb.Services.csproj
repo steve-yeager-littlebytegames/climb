@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.31.11" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.31.23" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
