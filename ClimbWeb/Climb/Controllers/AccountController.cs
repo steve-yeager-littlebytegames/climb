@@ -71,7 +71,7 @@ namespace Climb.Controllers
         }
 
         [HttpGet("account/login")]
-        public async Task<IActionResult> LogIn()
+        public async Task<IActionResult> LogIn(string returnUrl)
         {
             if(TempData.ContainsKey(LoginFail))
             {
@@ -85,7 +85,7 @@ namespace Climb.Controllers
                 return RedirectToAction("Home", "User", new {userID = user.Id});
             }
 
-            var viewModel = new BaseViewModel(null);
+            var viewModel = new LogInViewModel(returnUrl);
             return View(viewModel);
         }
 
@@ -96,7 +96,11 @@ namespace Climb.Controllers
             {
                 await applicationUserService.LogIn(request);
 
-                return RedirectToAction("Home", "User");
+                if(string.IsNullOrWhiteSpace(request.ReturnUrl))
+                {
+                    return RedirectToAction("Home", "User");
+                }
+                return Redirect(request.ReturnUrl);
             }
             catch(Exception exception)
             {
