@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Climb.API", "Climb.API\Clim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Climb.Common", "Climb.Common\Climb.Common.csproj", "{37D7A5A1-33D6-40F8-BEA9-E9287120433E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climb.Services.Test", "Climb.Services.Test\Climb.Services.Test.csproj", "{635A0D94-8050-453F-A185-09D8A3A9B6A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Climb.Services.Test", "Climb.Services.Test\Climb.Services.Test.csproj", "{635A0D94-8050-453F-A185-09D8A3A9B6A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climb.API.Test", "Climb.API.Test\Climb.API.Test.csproj", "{56EDEE06-9065-4CAF-8A83-590968309700}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Climb.API.Test", "Climb.API.Test\Climb.API.Test.csproj", "{56EDEE06-9065-4CAF-8A83-590968309700}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Climb.Test.Common", "Climb.Test.Common\Climb.Test.Common.csproj", "{8926FB6B-9C98-484D-B2A2-56A578417363}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,10 @@ Global
 		{56EDEE06-9065-4CAF-8A83-590968309700}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56EDEE06-9065-4CAF-8A83-590968309700}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56EDEE06-9065-4CAF-8A83-590968309700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8926FB6B-9C98-484D-B2A2-56A578417363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8926FB6B-9C98-484D-B2A2-56A578417363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8926FB6B-9C98-484D-B2A2-56A578417363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8926FB6B-9C98-484D-B2A2-56A578417363}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
