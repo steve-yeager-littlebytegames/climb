@@ -57,10 +57,7 @@ namespace Climb.Models
         public int? LoserID => Player1Score > Player2Score ? Player2ID : Player1Score < Player2Score ? (int?)Player1ID : null;
         public int? SeasonWinnerID => Player1Score > Player2Score ? SeasonPlayer1ID : Player1Score < Player2Score ? SeasonPlayer2ID : null;
         public int? SeasonLoserID => Player1Score > Player2Score ? SeasonPlayer2ID : Player1Score < Player2Score ? SeasonPlayer1ID : null;
-
-        public Set()
-        {
-        }
+        public bool IsOpen => !IsForfeit && !IsComplete && !IsLocked;
 
         public bool IsPlaying(int leagueUserID)
         {

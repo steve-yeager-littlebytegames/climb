@@ -42,7 +42,7 @@ namespace Climb.Test.Api
         [Test]
         public async Task Create_Valid_CreatedResult()
         {
-            var gameID = DbContextUtility.AddNew<Game>(dbContext).ID;
+            var gameID = dbContext.AddNew<Game>().ID;
             var request = new CreateRequest
             {
                 Name = LeagueName,
@@ -127,8 +127,8 @@ namespace Climb.Test.Api
         public async Task GetSeasons_Valid_ReturnsSeasons()
         {
             var league = dbContext.CreateLeague();
-            DbContextUtility.AddNew<Season>(dbContext, s => s.LeagueID = league.ID);
-            DbContextUtility.AddNew<Season>(dbContext, s => s.LeagueID = league.ID);
+            dbContext.AddNew<Season>(s => s.LeagueID = league.ID);
+            dbContext.AddNew<Season>(s => s.LeagueID = league.ID);
 
             var result = await testObj.GetSeasons(league.ID);
             var seasons = result.GetObject<IEnumerable<SeasonDto>>();

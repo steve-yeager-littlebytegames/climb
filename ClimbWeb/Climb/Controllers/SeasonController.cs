@@ -65,7 +65,7 @@ namespace Climb.Controllers
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
-            if (season == null)
+            if(season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
@@ -86,7 +86,7 @@ namespace Climb.Controllers
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
-            if (season == null)
+            if(season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
@@ -107,7 +107,7 @@ namespace Climb.Controllers
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
-            if (season == null)
+            if(season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
@@ -128,12 +128,12 @@ namespace Climb.Controllers
                 .Include(s => s.Participants).ThenInclude(slu => slu.LeagueUser).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(s => s.League).ThenInclude(l => l.Members).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.ID == seasonID);
-            if (season == null)
+            if(season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
             }
 
-            var viewModel = new ManageViewModel(user, season, environment);
+            var viewModel = new ManageViewModel(user, season, environment, dateService);
             return View(viewModel);
         }
 
