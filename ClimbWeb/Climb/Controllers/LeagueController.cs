@@ -46,6 +46,11 @@ namespace Climb.Controllers
                 .Include(l => l.Members).ThenInclude(lu => lu.User).AsNoTracking()
                 .FirstOrDefaultAsync(l => l.ID == leagueID);
 
+            if(league == null)
+            {
+                return NotFound();
+            }
+
             var viewModel = new HomeViewModel(user, league);
 
             return View(viewModel);
