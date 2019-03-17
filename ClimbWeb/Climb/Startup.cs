@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Climb.Core.TieBreakers;
 using Climb.Data;
@@ -153,10 +153,11 @@ namespace Climb
             }
             else
             {
-                app.UseStatusCodePagesWithReExecute("/Site/Error", "?statusCode={0}");
                 app.UseHsts();
             }
 
+            app.UseStatusCodePagesWithReExecute("/Site/Error", "?statusCode={0}");
+            app.UseExceptionHandler("/Site/Error");
             app.UseHealthChecks("/health", new HealthCheckOptions{ResponseWriter = WriteResponse});
             app.UseHttpsRedirection();
             app.UseStaticFiles();

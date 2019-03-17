@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Climb.Data;
@@ -36,22 +36,28 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Error(int? statusCode = null)
+        [AllowAnonymous]
+        public async Task<IActionResult> Error(int? statusCode = null)
         {
-            var feature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
-            ViewData["ErrorUrl"] = feature?.OriginalPath;
-            ViewData["ErrorQuerystring"] = feature?.OriginalQueryString;
+            var user = await GetViewUserAsync();
 
-            if(statusCode.HasValue)
+            string description;
+
+            statusCode = statusCode ?? 500;
+            switch(statusCode)
             {
-                if(statusCode == 404 || statusCode == 500)
-                {
-                    var viewName = statusCode.ToString();
-                    return View($"Error{viewName}");
-                }
+                case 404:
+                    var feature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+                    var errorUrl = feature?.OriginalPath + feature?.OriginalQueryString;
+                    description = $"Nothing found at {errorUrl}";
+                    break;
+                default:
+                    description = "Something went wrong!";
+                    break;
             }
 
-            return View("Error500");
+            var viewModel = new ErrorViewModel(user, statusCode.Value, description);
+            return View("Error", viewModel);
         }
 
         [HttpGet("Support")]
@@ -114,7 +120,7 @@ namespace Climb.Controllers
                 .ToArrayAsync();
             var userResults = await dbContext.Users
                 .Where(u => u.NormalizedUserName.Contains(normalizedSearch)
-                            || (!string.IsNullOrWhiteSpace(u.Name) && u.Name.ToUpperInvariant().Contains(normalizedSearch)))
+                            || !string.IsNullOrWhiteSpace(u.Name) && u.Name.ToUpperInvariant().Contains(normalizedSearch))
                 .ToArrayAsync();
 
             var viewModel = new SearchViewModel(user, search, gameResults, leagueResults, userResults);
