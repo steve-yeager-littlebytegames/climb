@@ -8,7 +8,7 @@ function renderApp() {
     ReactDOM.render(
         <AppContainer>
             <ReactRouterDOM.BrowserRouter>
-                <ReactRouterDOM.Route path="/sets/fight/:setID" component={Submit} />
+                <ReactRouterDOM.Route path="/sets/fight/:setID" component={Submit}/>
             </ReactRouterDOM.BrowserRouter>
         </AppContainer>,
         document.getElementById("react-app")

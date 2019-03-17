@@ -4,7 +4,7 @@ var leaveButton = document.getElementById("leave-league-button");
 if (leaveButton != null) {
     const leagueUserIdString = leaveButton.getAttribute("data-leagueUserId");
     if (leagueUserIdString) {
-        const leagueUserId = parseInt(leagueUserIdString);
+        const leagueUserId = parseInt(leagueUserIdString, 10);
         leaveButton.onclick = () => {
             if (confirm("Are you sure you want to leave this league? You'll forfeit any season sets.")) {
                 leaveLeague(leagueUserId);

@@ -22,7 +22,7 @@
     }
 
     isValid(filter: string): boolean {
-        return this.keys.find(k => k.includes(filter)) != undefined;
+        return this.keys.find(k => k.includes(filter)) !== undefined;
     }
 
     tryFilter(filter: string): void {
@@ -49,12 +49,14 @@ export class FilterCollection {
 
     private registerFilter(filterBarId: string): void {
         const filterInput = document.getElementById(filterBarId) as HTMLInputElement;
-        if (!filterInput) throw new Error(`Could not find filter-bar`);
+        if (!filterInput) {
+            throw new Error(`Could not find filter-bar`);
+        }
 
-        filterInput.onkeyup = e => {
+        filterInput.onkeyup = (): void => {
             const filter = filterInput.value.toLowerCase();
             this.filter(filter);
-        }
+        };
     }
 
     private static collectFilterables(normalize: boolean): Filterable[] {

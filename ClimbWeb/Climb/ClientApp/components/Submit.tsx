@@ -93,7 +93,11 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
                         </div>
 
                         <div className="d-flex justify-content-end">
-                            <button id="submit-button" className="btn btn-cstm-primary mt-4" disabled={!canSubmit} onClick={this.onSubmit}>Submit</button>
+                            <button id="submit-button" className="btn btn-cstm-primary mt-4"
+                                    disabled={!canSubmit}
+                                    onClick={this.onSubmit}>
+                                Submit
+                            </button>
                         </div>
                     </div>
                 }
@@ -146,7 +150,9 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
 
     private onMatchEdited(match: ClimbClient.MatchDto) {
         const set = this.state.set;
-        if (!set || !set.matches) { throw new Error(); }
+        if (!set || !set.matches) {
+            throw new Error();
+        }
 
         set.matches[match.index] = match;
 
@@ -168,12 +174,16 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
 
     private onMatchDelete() {
         const selectedMatch = this.state.selectedMatch;
-        if (!selectedMatch) { throw new Error("Selected match can't be null."); }
+        if (!selectedMatch) {
+            throw new Error("Selected match can't be null.");
+        }
 
         const index = selectedMatch.index;
 
         const set = this.state.set;
-        if (!set || !set.matches) { throw new Error("Set and Matches can't be null"); }
+        if (!set || !set.matches) {
+            throw new Error("Set and Matches can't be null");
+        }
         set.matches.splice(index, 1);
 
         for (let i = 0; i < set.matches.length; i++) {
@@ -188,7 +198,9 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
 
     private onSubmit() {
         const set = this.state.set;
-        if (!set || !set.matches) { throw new Error(); }
+        if (!set || !set.matches) {
+            throw new Error();
+        }
 
         const setRequest = new ClimbClient.SubmitRequest();
         setRequest.setID = set.id;
@@ -217,7 +229,9 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
     private onAddMatch() {
         const set = this.state.set;
         const game = this.state.game;
-        if (!set || !set.matches || !game) { throw new Error(); }
+        if (!set || !set.matches || !game) {
+            throw new Error();
+        }
 
         const newMatch = new ClimbClient.MatchDto();
         newMatch.index = set.matches.length;
@@ -227,7 +241,9 @@ export class Submit extends React.Component<RouteComponentProps<any>, ISetSubmit
 
         if (newMatch.index > 0) {
             const prevMatch = set.matches[newMatch.index - 1];
-            if (!prevMatch.player1Characters || !prevMatch.player2Characters) { throw new Error(); }
+            if (!prevMatch.player1Characters || !prevMatch.player2Characters) {
+                throw new Error();
+            }
             newMatch.player1Characters = prevMatch.player1Characters.slice(0);
             newMatch.player2Characters = prevMatch.player2Characters.slice(0);
         } else {

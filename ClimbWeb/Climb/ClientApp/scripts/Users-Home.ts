@@ -21,7 +21,9 @@ for (let i = 0; i < requestButtons.length; i++) {
     const message = document.getElementById(`challenge-message-${challenged}`) as HTMLInputElement;
 
     if (requester != null && challenged != null) {
-        button.onclick = () => sendRequest(parseInt(requester), parseInt(challenged), message.value);
+        const requesterId = parseInt(requester, 10);
+        const challengedId = parseInt(challenged, 10);
+        button.onclick = () => sendRequest(requesterId, challengedId, message.value);
     }
 }
 
@@ -30,7 +32,8 @@ for (let i = 0; i < acceptButtons.length; i++) {
     const button = acceptButtons[i] as HTMLButtonElement;
     const request = button.getAttribute("data-requestId");
     if (request != null) {
-        button.onclick = () => respondToRequest(parseInt(request), true);
+        const requestId = parseInt(request, 10);
+        button.onclick = () => respondToRequest(requestId, true);
     }
 }
 
@@ -39,7 +42,8 @@ for (let i = 0; i < declineButtons.length; i++) {
     const button = declineButtons[i] as HTMLButtonElement;
     const request = button.getAttribute("data-requestId");
     if (request != null) {
-        button.onclick = () => respondToRequest(parseInt(request), false);
+        const requestId = parseInt(request, 10);
+        button.onclick = () => respondToRequest(requestId, false);
     }
 }
 
