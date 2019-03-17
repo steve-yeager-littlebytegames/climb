@@ -24,21 +24,27 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         const match = this.props.match;
         const matchToEdit = new ClimbClient.MatchDto(match);
 
-        if (!match.player1Characters || !match.player2Characters) throw new Error();
+        if (!match.player1Characters || !match.player2Characters) {
+            throw new Error("No match characters found.");
+        }
         matchToEdit.player1Characters = match.player1Characters.slice(0);
         matchToEdit.player2Characters = match.player2Characters.slice(0);
 
         this.state = {
             match: matchToEdit,
-        }
+        };
     }
 
     render() {
         const match = this.state.match;
         const game = this.props.game;
 
-        if (!game.characters || !game.stages) throw new Error();
-        if (!match.player1Characters || !match.player2Characters) throw new Error();
+        if (!game.characters || !game.stages) {
+            throw new Error("No characters or stages loaded.");
+        }
+        if (!match.player1Characters || !match.player2Characters) {
+            throw new Error("No match characters loaded.");
+        }
 
         game.characters.sort((c1, c2) => c1.name.localeCompare(c2.name));
         game.stages.sort((s1, s2) => s1.name.localeCompare(s2.name));
@@ -61,42 +67,57 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
 
                 <div className="d-flex justify-content-between">
                     <button className="btn btn-cstm-secondary" onClick={this.props.onCancel}>Cancel</button>
-                    <button className="btn btn-cstm-primary" disabled={!canOk} onClick={() => this.props.onEdit(this.state.match)}>Ok</button>
+                    <button className="btn btn-cstm-primary"
+                            disabled={!canOk}
+                            onClick={() => this.props.onEdit(this.state.match)}>
+                        Ok
+                    </button>
                 </div>
             </div>
         );
     }
 
-    private renderPlayerInputs(playerNumber: number, playerName: string, characters: JSX.Element[], characterValues: number[], game: ClimbClient.GameDto) {
+    private renderPlayerInputs(playerNumber: number,
+        playerName: string,
+        characters: JSX.Element[],
+        characterValues: number[],
+        game: ClimbClient.GameDto) {
         const match = this.state.match;
         const score = playerNumber === 1 ? match.player1Score : match.player2Score;
-        
-        const characterInputs:JSX.Element[] = [];
+
+        const characterInputs: JSX.Element[] = [];
         for (let i = 0; i < game.charactersPerMatch; i++) {
+            const onChange = (e: any) => this.updateCharacter(playerNumber, i, parseInt(e.currentTarget.value, 10));
             characterInputs.push(
-                <select className="form-control" key={i} value={characterValues[i]} onChange={(e: any) => this.updateCharacter(playerNumber, i, parseInt(e.currentTarget.value))}>{characters}</select>
+                <select className="form-control" key={i} value={characterValues[i]} onChange={onChange}>{characters}</select>
             );
         }
 
         return (
             <div>
-                {/*Player Name*/}
+                {
+                    /*Player Name*/
+                }
                 <div className="form-group row">
                     <label className="col-form-label col-4 text-right">Player {playerNumber}</label>
                     <div className="col-8">
-                        <input type="text" readOnly className="form-control" value={playerName} />
+                        <input type="text" readOnly className="form-control" value={playerName}/>
                     </div>
                 </div>
-
-                {/*Score*/}
+                {
+                    /*Score*/
+                }
                 <div className="form-group row">
                     <label className="col-form-label col-4 text-right">{game.scoreName}</label>
                     <div className="col-8">
-                        <input className="form-control" type="number" value={score} min="0" max={game.maxMatchPoints} onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value))}/>
+                        <input className="form-control" type="number"
+                               value={score} min="0" max={game.maxMatchPoints}
+                               onChange={(e: any) => this.updateScore(playerNumber, parseInt(e.currentTarget.value, 10))}/>
                     </div>
                 </div>
-
-                {/*Characters*/}
+                {
+                    /*Characters*/
+                }
                 <div className="form-group row">
                     <label className="col-form-label col-4 text-right">{`Character${game.charactersPerMatch > 1 ? "s" : ""}`}</label>
                     <div className="col-8">
@@ -121,7 +142,10 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
                 <div className="form-group row">
                     <label className="col-form-label col-4 text-right">Stage</label>
                     <div className="col-8">
-                        <select className="form-control" value={currentStage} onChange={(e: any) => this.updateStage(parseInt(e.currentTarget.value))}>{stageOptions}</select>
+                        <select className="form-control" value={currentStage}
+                                onChange={(e: any) => this.updateStage(parseInt(e.currentTarget.value, 10))}>
+                            {stageOptions}
+                        </select>
                     </div>
                 </div>
             </div>);
@@ -144,7 +168,9 @@ export class MatchEdit extends React.Component<IMatchEditProps, IMatchEditState>
         const match = this.state.match;
 
         const characters = playerNumber === 1 ? match.player1Characters : match.player2Characters;
-        if (characters == null) throw new Error();
+        if (characters == null) {
+            throw new Error("No characters selected.");
+        }
         characters[characterIndex] = characterId;
 
         this.setState({ match: match });
