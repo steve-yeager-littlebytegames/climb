@@ -6,6 +6,7 @@ using Climb.Requests.Seasons;
 using Climb.Services;
 using Climb.Services.ModelServices;
 using Climb.ViewModels.Seasons;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -116,6 +117,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
+        [Authorize]
         [HttpGet("seasons/manage/{seasonID:int}")]
         public async Task<IActionResult> Manage(int seasonID)
         {
@@ -131,6 +133,11 @@ namespace Climb.Controllers
             if(season == null)
             {
                 return CodeResultAndLog(HttpStatusCode.NotFound, $"No season with ID {seasonID} found.");
+            }
+
+            if(user.Id != season.League.AdminID)
+            {
+                return Forbid();
             }
 
             var viewModel = new ManageViewModel(user, season, environment, dateService);
