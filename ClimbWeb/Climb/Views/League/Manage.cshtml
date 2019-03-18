@@ -22,10 +22,22 @@
                 <button id="end-season-button" class="btn btn-cstm-secondary mb-5" data-seasonID="@Model.League.ActiveSeasonID">End Current Season</button>
             }
 
-            <form asp-controller="Season" asp-action="Create">
-                <input type="hidden" name="LeagueID" value="@Model.League.ID"/>
-                <input type="date" name="StartDate"/>
-                <input type="date" name="EndDate"/>
+            <form class="form" asp-controller="Season" asp-action="Create" method="post">
+                <h3>Create New Season</h3>
+                <!--League ID-->
+                <input asp-for="Request.LeagueID" value="@Model.League.ID"/>
+                <!--Start Date-->
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label text-left">Start</label>
+                    <input asp-for="Request.StartDate" class="form-control col-md-9" autofocus>
+                    <span asp-validation-for="Request.StartDate" class="text-danger"></span>
+                </div>
+                <!--End Date-->
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label text-left">End</label>
+                    <input asp-for="Request.EndDate" class="form-control col-md-9" autofocus>
+                    <span asp-validation-for="Request.EndDate" class="text-danger"></span>
+                </div>
                 <button class="btn btn-cstm-primary">Create Season</button>
             </form>
         }
