@@ -71,7 +71,7 @@ namespace Climb
             services.AddTransient<IAnalyzerService, AnalyzerService>();
             services.AddTransient<IAnalyzerFactory, AnalyzerFactory>();
 
-            if (string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
+            if(string.IsNullOrWhiteSpace(Configuration[ControlledDateService.OverrideKey]))
             {
                 services.AddTransient<IDateService, DateService>();
             }
@@ -80,7 +80,7 @@ namespace Climb
                 services.AddTransient<IDateService, ControlledDateService>();
             }
 
-            if (string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
+            if(string.IsNullOrWhiteSpace(Configuration["Email:Key"]))
             {
                 services.AddTransient<IEmailSender, NullEmailService>();
             }
@@ -158,7 +158,7 @@ namespace Climb
 
             app.UseStatusCodePagesWithReExecute("/Site/Error", "?statusCode={0}");
             app.UseExceptionHandler("/Site/Error");
-            app.UseHealthChecks("/health", new HealthCheckOptions{ResponseWriter = WriteResponse});
+            app.UseHealthChecks("/health", new HealthCheckOptions {ResponseWriter = WriteResponse});
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -170,8 +170,7 @@ namespace Climb
             app.UseMvcWithDefaultRoute();
         }
 
-        private static Task WriteResponse(HttpContext httpContext, 
-            HealthReport result)
+        private static Task WriteResponse(HttpContext httpContext, HealthReport result)
         {
             httpContext.Response.ContentType = "application/json";
 
