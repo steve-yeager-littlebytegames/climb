@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Climb.Controllers
 {
+    [Route("games")]
     public class GameController : BaseController<GameController>
     {
         private const string AddCharacterErrorKey = "AddCharacterErrors";
@@ -27,7 +28,7 @@ namespace Climb.Controllers
             this.cdnService = cdnService;
         }
 
-        [HttpGet("games")]
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var user = await GetViewUserAsync();
@@ -37,7 +38,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpGet("games/home/{gameID:int}")]
+        [HttpGet("home/{gameID:int}")]
         public async Task<IActionResult> Home(int gameID)
         {
             var user = await GetViewUserAsync();
@@ -51,7 +52,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpGet("games/characters/add")]
+        [HttpGet("characters/add")]
         public async Task<IActionResult> CharacterAdd(CharacterAddRequest request)
         {
             var user = await GetViewUserAsync();
@@ -82,7 +83,8 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("games/characters/add")]
+        [HttpPost("characters/add")]
+        [Authorize]
         public async Task<IActionResult> CharacterAddPost(AddCharacterRequest request)
         {
             if(ModelErrors.HasErrors(ModelState, out var errors))
@@ -94,7 +96,10 @@ namespace Climb.Controllers
             try
             {
                 await gameService.AddCharacter(request.GameID, request.CharacterID, request.Name, request.Image);
-                return RedirectToAction("Home", new {request.GameID});
+                return RedirectToAction("Home", new
+                {
+                    request.GameID
+                });
             }
             catch(Exception exception)
             {
@@ -102,7 +107,8 @@ namespace Climb.Controllers
             }
         }
 
-        [HttpGet("games/stages/add/{gameID:int}")]
+        [HttpGet("stages/add/{gameID:int}")]
+        [Authorize]
         public async Task<IActionResult> StageAdd(int gameID, int? stageID)
         {
             var user = await GetViewUserAsync();
@@ -127,13 +133,16 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("games/stages/add")]
+        [HttpPost("stages/add")]
         public async Task<IActionResult> StageAddPost(AddStageRequest request)
         {
             try
             {
                 await gameService.AddStage(request.GameID, request.StageID, request.Name);
-                return RedirectToAction("Home", new {request.GameID});
+                return RedirectToAction("Home", new
+                {
+                    request.GameID
+                });
             }
             catch(Exception exception)
             {
@@ -142,12 +151,12 @@ namespace Climb.Controllers
         }
 
         [Authorize]
-        [HttpGet("games/create")]
+        [HttpGet("create")]
         public async Task<IActionResult> Create()
         {
             var user = await GetViewUserAsync();
 
-            if (TempData.ContainsKey("game"))
+            if(TempData.ContainsKey("game"))
             {
                 var modelErrors = TempData.Get<ModelErrors>("game");
                 modelErrors.AssignErrors(ModelState);
@@ -158,7 +167,7 @@ namespace Climb.Controllers
         }
 
         [Authorize]
-        [HttpGet("games/update/{gameID:int}")]
+        [HttpGet("update/{gameID:int}")]
         public async Task<IActionResult> Update(int gameID)
         {
             var user = await GetViewUserAsync();
@@ -173,10 +182,10 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("games/update")]
+        [HttpPost("update")]
         public async Task<IActionResult> UpdatePost(UpdateRequest request)
         {
-            if (ModelErrors.HasErrors(ModelState, out var errors))
+            if(ModelErrors.HasErrors(ModelState, out var errors))
             {
                 TempData.Put("game", errors);
                 return RedirectToAction("Create");
