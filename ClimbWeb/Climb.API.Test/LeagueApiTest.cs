@@ -35,8 +35,9 @@ namespace Climb.Test.Api
             var logger = Substitute.For<ILogger<LeagueApi>>();
             var configuration = Substitute.For<IConfiguration>();
             var cdnService = Substitute.For<ICdnService>();
+            var dateService = Substitute.For<IDateService>();
 
-            testObj = new LeagueApi(logger, dbContext, leagueService, configuration, cdnService);
+            testObj = new LeagueApi(logger, dbContext, leagueService, configuration, cdnService, dateService);
         }
 
         [Test]
