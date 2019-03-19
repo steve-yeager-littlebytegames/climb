@@ -6,6 +6,7 @@ namespace Climb.ViewModels.Seasons
 {
     public class DataViewModel : PageViewModel
     {
+        public int ForfeitedSets { get; }
         public int OverdueSets { get; }
         public int CompletedSets { get; }
         public int RemainingSets { get; }
@@ -25,6 +26,12 @@ namespace Climb.ViewModels.Seasons
             var targetSetsCompleted = 0;
             foreach(var set in season.Sets)
             {
+                if(set.IsForfeit)
+                {
+                    ++ForfeitedSets;
+                    continue;
+                }
+
                 if(set.DueDate < today)
                 {
                     ++targetSetsCompleted;
