@@ -10,7 +10,7 @@ function registerButtons(): void {
     if (leaveSeasonButton) {
         const participantIdString = leaveSeasonButton.getAttribute("data-participantID");
         if (participantIdString) {
-            const participantId = parseInt(participantIdString);
+            const participantId = parseInt(participantIdString, 10);
             leaveSeasonButton.onclick = () => leaveSeason(participantId);
         }
     }

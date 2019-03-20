@@ -11,25 +11,13 @@
         <h1>@Model.Game.Name</h1>
         <h3>@Model.ActionName Stage</h3>
         <!--ID-->
-        <input name="gameID" value="@Model.Game.ID" type="hidden" />
-        <input name="stageid" value="@Model.Stage?.ID" type="hidden" />
+        <input asp-for="Request.GameID" value="@Model.Game.ID"/>
+        <input asp-for="Request.StageID" value="@Model.Stage?.ID"/>
         <!--Name-->
         <div class="form-group row mt-4">
             <label class="col-md-3 col-form-label text-left">Name</label>
-            <input class="form-control col-md-9" name="name" type="text" value="@Model.Stage?.Name" />
+            <input asp-for="Request.Name" class="form-control col-md-9" value="@Model.Stage?.Name" />
         </div>
-        <!--Image-->
-        @*<div class="form-group row mb-4">
-            <div class="col-md-3 col-form-label text-left d-flex flex-column">
-                <label class="col-form-label">Image</label>
-                <small>Max size of @ClimbImageRules.CharacterPic.MaxSize.ToBytesReadable()</small>
-            </div>
-            <div class="col-md-9 d-flex flex-column p-0">
-                <img class="mb-2 border" src="@Model.ImageUrl" width="100" height="100" />
-                <input asp-for="Request.Image" class="form-control-file" type="file" accept="image/*" />
-                <span class="text-danger" asp-validation-for="Request.Image"></span>
-            </div>
-        </div>*@
         <div class="d-flex flex-column align-items-center mt-4">
             <button class="btn btn-cstm-primary my-4 mx-auto">@Model.ActionName</button>
             <a asp-action="Home" asp-route-gameID="@Model.Game.ID">Cancel</a>

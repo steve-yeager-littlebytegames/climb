@@ -17,11 +17,11 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.2">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" PrivateAssets="All" />
     <PackageReference Include="morelinq" Version="3.1.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="12.0.15" />
     <PackageReference Include="JetBrains.Annotations" Version="2018.3.0" />
@@ -29,24 +29,6 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\User\Home.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Account\Settings.cshtml" />
-    <None Include="Views\Account\LogIn.cshtml" />
-    <None Include="Views\Account\Register.cshtml" />
-    <None Include="Views\Game\StageAdd.cshtml" />
-    <None Include="Views\Game\CharacterAdd.cshtml" />
-    <None Include="Views\Game\Index.cshtml" />
-    <None Include="Views\League\Index.cshtml" />
-    <None Include="Views\Organization\Home.cshtml" />
-    <None Include="Views\Organization\Index.cshtml" />
-    <None Include="Views\Season\Home.cshtml" />
-    <None Include="Views\Site\Support.cshtml" />
-    <None Include="Views\Site\Home.cshtml" />
-    <None Include="Views\League\Home.cshtml" />
-    <None Include="Views\Game\Home.cshtml" />
-    <None Include="Views\User\Home.cshtml" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -57,72 +39,6 @@
     <ApplicationInsightsResourceId>/subscriptions/793d5aee-be9c-445f-ace8-688cab420ed2/resourcegroups/climbranks/providers/microsoft.insights/components/climbranks</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/793d5aee-be9c-445f-ace8-688cab420ed2/resourcegroups/climbranks/providers/microsoft.insights/components/climbranks</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Update="Views\Account\ResetPassword.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Account\ForgotPassword.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Game\Update.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\League\Seasons.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\League\Manage.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\League\Data.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\League\Membership.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\League\_LeaguesLayout.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Season\Details.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Season\_SeasonsLayout.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Season\Manage.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Season\Data.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Season\Membership.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Season\Sets.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Season\Partials\SeasonParticipant.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Shared\FilterBar.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Shared\Navbar.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Shared\_Files.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Shared\_LayoutWithNavbar.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Site\About.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\User\Partials\LeagueUserLink.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\images\logo\" />
@@ -160,6 +76,16 @@
     <TypeScriptMapRoot />
     <TypeScriptSourceRoot />
     <TypeScriptOutFile />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <ProjectExtensions>

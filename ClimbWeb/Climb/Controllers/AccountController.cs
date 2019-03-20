@@ -17,6 +17,7 @@ using IEmailSender = Climb.Services.IEmailSender;
 
 namespace Climb.Controllers
 {
+    [Route("account")]
     public class AccountController : BaseController<AccountController>
     {
         public const string EmailKey = "Email";
@@ -35,7 +36,7 @@ namespace Climb.Controllers
             this.emailSender = emailSender;
         }
 
-        [HttpGet("account/register")]
+        [HttpGet("register")]
         public async Task<IActionResult> Register()
         {
             var user = await GetViewUserAsync();
@@ -48,7 +49,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("account/register")]
+        [HttpPost("register")]
         public async Task<IActionResult> RegisterPost(RegisterRequest request)
         {
             if(ModelErrors.HasErrors(ModelState, out var errors))
@@ -70,7 +71,7 @@ namespace Climb.Controllers
             }
         }
 
-        [HttpGet("account/login")]
+        [HttpGet("login")]
         public async Task<IActionResult> LogIn(string returnUrl)
         {
             if(TempData.ContainsKey(LoginFail))
@@ -89,7 +90,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("account/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> LogInPost(LoginRequest request)
         {
             try
@@ -110,7 +111,7 @@ namespace Climb.Controllers
             }
         }
 
-        [HttpPost("account/logout")]
+        [HttpPost("logout")]
         public async Task<IActionResult> LogOut()
         {
             await signInManager.SignOutAsync();
@@ -118,7 +119,7 @@ namespace Climb.Controllers
             return RedirectToAction("Home", "Site");
         }
 
-        [HttpGet("account/settings")]
+        [HttpGet("settings")]
         public async Task<IActionResult> Settings()
         {
             var user = await GetViewUserAsync();
@@ -133,7 +134,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("account/updatesettings")]
+        [HttpPost("updatesettings")]
         public async Task<IActionResult> UpdateSettings(UpdateSettingsRequest request)
         {
             var user = await GetViewUserAsync();
@@ -156,7 +157,7 @@ namespace Climb.Controllers
             return RedirectToAction("Settings");
         }
 
-        [HttpGet("account/forgotpassword")]
+        [HttpGet("forgotpassword")]
         public async Task<IActionResult> ForgotPassword()
         {
             var user = await GetViewUserAsync();
@@ -175,7 +176,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("account/forgotpassword")]
+        [HttpPost("forgotpassword")]
         public async Task<IActionResult> ForgotPasswordPost(string email)
         {
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -197,7 +198,7 @@ namespace Climb.Controllers
             return RedirectToAction("ForgotPassword");
         }
 
-        [HttpGet("account/resetpassword")]
+        [HttpGet("resetpassword")]
         public IActionResult ResetPassword(string userID, string code)
         {
             ViewData["User"] = userID;
@@ -206,7 +207,7 @@ namespace Climb.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("account/resetpassword")]
+        [HttpPost("resetpassword")]
         public async Task<IActionResult> ResetPasswordPost(string userID, string code, string password, string confirm)
         {
             if(password != confirm)
@@ -227,6 +228,15 @@ namespace Climb.Controllers
             }
 
             return RedirectToAction("LogIn");
+        }
+
+        [HttpGet("accessdenied")]
+        public async Task<IActionResult> AccessDenied(string returnUrl)
+        {
+            var user = await GetViewUserAsync();
+
+            var viewModel = new AccessDeniedViewModel(user, returnUrl);
+            return View(viewModel);
         }
     }
 }

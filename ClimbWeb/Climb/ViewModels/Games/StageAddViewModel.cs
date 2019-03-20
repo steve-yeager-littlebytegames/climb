@@ -1,8 +1,9 @@
 ﻿using Climb.Models;
+using Climb.Requests.Games;
 
 namespace Climb.ViewModels.Games
 {
-    public class StageAddViewModel : BaseViewModel
+    public class StageAddViewModel : RequestViewModel<AddStageRequest>
     {
         public Game Game { get; }
         public Stage Stage { get; }

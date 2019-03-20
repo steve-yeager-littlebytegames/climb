@@ -20,8 +20,9 @@ export class MatchSummary extends React.Component<IMatchSummaryProps> {
         const match = this.props.match;
         const game = this.props.game;
 
-        if (match.player1Characters == null) return null;
-        if (match.player2Characters == null) return null;
+        if (match.player1Characters == null || match.player2Characters == null) {
+            return null;
+        }
 
         const p1Characters = match.player1Characters.map(this.renderCharacter);
         const p2Characters = match.player2Characters.map(this.renderCharacter);
@@ -41,16 +42,22 @@ export class MatchSummary extends React.Component<IMatchSummaryProps> {
         );
     }
 
-    private renderCharacter(characterId: number, key: number) : JSX.Element | null {
+    private renderCharacter(characterId: number, key: number): JSX.Element | null {
         const game = this.props.game;
-        if (!game || !game.characters) return null;
+        if (!game || !game.characters) {
+            return null;
+        }
         const character = game.characters.find(gC => gC.id === characterId);
-        if (!character) return null;
+        if (!character) {
+            return null;
+        }
         return <img key={key} src={character.picture} title={character.name} width="32" height="32"/>;
     }
 
     private renderStage(match: ClimbClient.MatchDto, game: ClimbClient.GameDto) {
-        if (!game.stages) throw new Error("Stages are not loaded.");
+        if (!game.stages) {
+            throw new Error("Stages are not loaded.");
+        }
 
         const stage = game.stages.find((s: any) => s.id === match.stageID);
 

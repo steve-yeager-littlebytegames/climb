@@ -4,7 +4,7 @@ var openButton = document.getElementById("end-season-button");
 if (openButton != null) {
     const seasonIdString = openButton.getAttribute("data-seasonID");
     if (seasonIdString) {
-        const seasonId = parseInt(seasonIdString);
+        const seasonId = parseInt(seasonIdString, 10);
         openButton.onclick = () => endSeason(seasonId);
     }
 }

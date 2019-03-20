@@ -29,9 +29,8 @@ namespace Climb.ViewModels.Users
         public IReadOnlyList<Set> AvailableSets { get; }
         public IReadOnlyList<SharedLeagueUsers> SharedLeagues { get; }
         public IReadOnlyList<SetRequest> SetRequests { get; }
-        public bool ShowSetRequests { get; }
 
-        private HomeViewModel(ApplicationUser user, ApplicationUser homeUser, string profilePic, IReadOnlyList<Set> recentSets, IReadOnlyList<Set> availableSets, IReadOnlyList<SetRequest> setRequests, bool showSetRequests)
+        private HomeViewModel(ApplicationUser user, ApplicationUser homeUser, string profilePic, IReadOnlyList<Set> recentSets, IReadOnlyList<Set> availableSets, IReadOnlyList<SetRequest> setRequests)
             : base(user)
         {
             HomeUser = homeUser;
@@ -39,7 +38,6 @@ namespace Climb.ViewModels.Users
             RecentSets = recentSets;
             AvailableSets = availableSets;
             SetRequests = setRequests;
-            ShowSetRequests = showSetRequests;
 
             var sharedLeagues = new List<SharedLeagueUsers>();
             if(user != null)
@@ -64,14 +62,8 @@ namespace Climb.ViewModels.Users
             var recentSets = sets.Where(s => s.IsComplete).OrderByDescending(s => s.UpdatedDate).Take(10).ToArray();
             var availableSets = sets.Where(s => !s.IsComplete).OrderBy(s => s.DueDate).Take(100).ToArray();
 
-#if DEBUG
-            const bool showSetRequests = true;
-#else
-            var showSetRequests = user?.Id == homeUser.Id;
-#endif
-
             IReadOnlyList<SetRequest> setRequests = null;
-            if(showSetRequests)
+            if(user?.Id == homeUser.Id)
             {
                 setRequests = await dbContext.SetRequests
                     .Include(sr => sr.Requester).ThenInclude(lu => lu.User).AsNoTracking()
@@ -82,7 +74,7 @@ namespace Climb.ViewModels.Users
                     .ToArrayAsync();
             }
 
-            return new HomeViewModel(user, homeUser, profilePic, recentSets, availableSets, setRequests, showSetRequests);
+            return new HomeViewModel(user, homeUser, profilePic, recentSets, availableSets, setRequests);
         }
     }
 }

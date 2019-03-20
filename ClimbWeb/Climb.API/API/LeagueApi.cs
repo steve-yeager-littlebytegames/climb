@@ -24,13 +24,15 @@ namespace Climb.API
         private readonly ILeagueService leagueService;
         private readonly string adminKey;
         private readonly ICdnService cdnService;
+        private readonly IDateService dateService;
 
-        public LeagueApi(ILogger<LeagueApi> logger, ApplicationDbContext dbContext, ILeagueService leagueService, IConfiguration configuration, ICdnService cdnService)
+        public LeagueApi(ILogger<LeagueApi> logger, ApplicationDbContext dbContext, ILeagueService leagueService, IConfiguration configuration, ICdnService cdnService, IDateService dateService)
             : base(logger)
         {
             this.dbContext = dbContext;
             this.leagueService = leagueService;
             this.cdnService = cdnService;
+            this.dateService = dateService;
             adminKey = configuration["AdminKey"];
         }
 
@@ -142,11 +144,13 @@ namespace Climb.API
                 return NotFound(new {leagueID = id});
             }
 
+            var now = dateService.Now;
+
             var sets = await dbContext.Sets
                 .Include(s => s.Player1).AsNoTracking()
                 .Include(s => s.Player2).AsNoTracking()
                 .Include(s => s.League).AsNoTracking()
-                .Where(s => s.LeagueID == id && !s.IsComplete && s.DueDate <= dueDate)
+                .Where(s => s.LeagueID == id && !s.IsComplete && s.DueDate <= dueDate && s.DueDate > now)
                 .Select(s => SetDto.Create(s, league.GameID))
                 .ToArrayAsync();
 
