@@ -11,11 +11,13 @@ namespace Climb.Controllers
     public class UserController : BaseController<UserController>
     {
         private readonly ICdnService cdnService;
+        private readonly IDateService dateService;
 
-        public UserController(ApplicationDbContext dbContext, ILogger<UserController> logger, ICdnService cdnService, IUserManager userManager)
+        public UserController(ApplicationDbContext dbContext, ILogger<UserController> logger, ICdnService cdnService, IUserManager userManager, IDateService dateService)
             : base(logger, userManager, dbContext)
         {
             this.cdnService = cdnService;
+            this.dateService = dateService;
         }
 
         [HttpGet("users/home/{userID?}")]
@@ -30,7 +32,7 @@ namespace Climb.Controllers
             }
 
             var user = await dbContext.Users
-                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).ThenInclude(l => l.Game).AsNoTracking().AsNoTracking()
+                .Include(u => u.LeagueUsers).ThenInclude(lu => lu.League).ThenInclude(l => l.Game).AsNoTracking()
                 .Include(u => u.LeagueUsers).ThenInclude(lu => lu.P1Sets).ThenInclude(s => s.Matches).ThenInclude(m => m.MatchCharacters).AsNoTracking()
                 .Include(u => u.LeagueUsers).ThenInclude(lu => lu.P1Sets).ThenInclude(s => s.Player1).ThenInclude(lu => lu.User).AsNoTracking()
                 .Include(u => u.LeagueUsers).ThenInclude(lu => lu.P1Sets).ThenInclude(s => s.Player2).ThenInclude(lu => lu.User).AsNoTracking()
@@ -46,7 +48,7 @@ namespace Climb.Controllers
                 return NotFound();
             }
 
-            var viewModel = await HomeViewModel.CreateAsync(appUser, user, cdnService, dbContext);
+            var viewModel = await HomeViewModel.CreateAsync(appUser, user, cdnService, dbContext, dateService);
 
             return View(viewModel);
         }
