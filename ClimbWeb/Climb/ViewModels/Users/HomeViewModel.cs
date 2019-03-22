@@ -55,10 +55,12 @@ namespace Climb.ViewModels.Users
             SharedLeagues = sharedLeagues;
         }
 
-        public static async Task<HomeViewModel> CreateAsync(ApplicationUser user, ApplicationUser homeUser, ICdnService cdnService, ApplicationDbContext dbContext)
+        public static async Task<HomeViewModel> CreateAsync(ApplicationUser user, ApplicationUser homeUser, ICdnService cdnService, ApplicationDbContext dbContext, IDateService dateService)
         {
             var profilePic = cdnService.GetUserProfilePicUrl(homeUser.Id, homeUser.ProfilePicKey, ClimbImageRules.ProfilePic);
-            var sets = homeUser.LeagueUsers.SelectMany(lu => lu.P1Sets.Union(lu.P2Sets)).ToArray();
+
+            var now = dateService.Now;
+            var sets = homeUser.LeagueUsers.SelectMany(lu => lu.P1Sets.Union(lu.P2Sets)).Where(s => !s.IsOverdue(now)).ToArray();
             var recentSets = sets.Where(s => s.IsComplete).OrderByDescending(s => s.UpdatedDate).Take(10).ToArray();
             var availableSets = sets.Where(s => !s.IsComplete).OrderBy(s => s.DueDate).Take(100).ToArray();
 

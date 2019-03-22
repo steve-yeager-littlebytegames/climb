@@ -51,13 +51,13 @@ namespace Climb.Models
 
         [Required]
         public List<Match> Matches { get; set; }
-        [JsonIgnore]
+
         public int? WinnerID => Player1Score > Player2Score ? Player1ID : Player1Score < Player2Score ? (int?)Player2ID : null;
-        [JsonIgnore]
         public int? LoserID => Player1Score > Player2Score ? Player2ID : Player1Score < Player2Score ? (int?)Player1ID : null;
         public int? SeasonWinnerID => Player1Score > Player2Score ? SeasonPlayer1ID : Player1Score < Player2Score ? SeasonPlayer2ID : null;
         public int? SeasonLoserID => Player1Score > Player2Score ? SeasonPlayer2ID : Player1Score < Player2Score ? SeasonPlayer1ID : null;
         public bool IsOpen => !IsForfeit && !IsComplete && !IsLocked;
+        public bool IsOverdue(DateTime date) => DueDate < date;
 
         public bool IsPlaying(int leagueUserID)
         {
