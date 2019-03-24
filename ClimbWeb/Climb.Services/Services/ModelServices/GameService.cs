@@ -49,11 +49,18 @@ namespace Climb.Services.ModelServices
                     throw new BadRequestException(nameof(request.LogoImage), "A game needs a logo.");
                 }
 
+                if(request.BannerImage == null)
+                {
+                    throw new BadRequestException(nameof(request.BannerImage), "A game needs a banner.");
+                }
+
                 var logoImageKey = await cdnService.UploadImageAsync(request.LogoImage, ClimbImageRules.GameLogo);
+                var bannerImageKey = await cdnService.UploadImageAsync(request.BannerImage, ClimbImageRules.GameBanner);
 
                 game = new Game(request.Name, request.CharactersPerMatch, request.MaxMatchPoints, dateService.Now)
                 {
-                    LogoImageKey = logoImageKey
+                    LogoImageKey = logoImageKey,
+                    BannerImageKey = bannerImageKey,
                 };
                 dbContext.Add(game);
             }
@@ -63,11 +70,8 @@ namespace Climb.Services.ModelServices
                 game.CharactersPerMatch = request.CharactersPerMatch;
                 game.MaxMatchPoints = request.MaxMatchPoints;
 
-                if(request.LogoImage != null)
-                {
-                    var logoKey = await cdnService.ReplaceImageAsync(game.LogoImageKey, request.LogoImage, ClimbImageRules.GameLogo);
-                    game.LogoImageKey = logoKey;
-                }
+                game.LogoImageKey = await TryUpdateImage(request.LogoImage, game.LogoImageKey, ClimbImageRules.GameLogo);
+                game.BannerImageKey = await TryUpdateImage(request.BannerImage, game.BannerImageKey, ClimbImageRules.GameBanner);
 
                 dbContext.Update(game);
             }
@@ -78,6 +82,17 @@ namespace Climb.Services.ModelServices
             await dbContext.SaveChangesAsync();
 
             return game;
+
+            async Task<string> TryUpdateImage(IFormFile image, string oldKey, ImageRules imageRules)
+            {
+                if(image != null)
+                {
+                    var newKey = await cdnService.ReplaceImageAsync(oldKey, image, imageRules);
+                    return newKey;
+                }
+
+                return oldKey;
+            }
         }
 
         public async Task<Character> AddCharacter(int gameID, int? characterID, string name, IFormFile imageFile)

@@ -8,12 +8,14 @@ namespace Climb.ViewModels.Games
     {
         public Game Game { get; }
         public string LogoUrl { get; }
+        public string BannerUrl { get; }
 
-        private HomeViewModel(ApplicationUser user, Game game, string logoUrl)
+        private HomeViewModel(ApplicationUser user, Game game, string logoUrl, string bannerUrl)
             : base(user)
         {
             Game = game;
             LogoUrl = logoUrl;
+            BannerUrl = bannerUrl;
         }
 
         public static HomeViewModel Create(ApplicationUser user, Game game, ICdnService cdnService)
@@ -22,8 +24,9 @@ namespace Climb.ViewModels.Games
             game.Stages.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
 
             var logoUrl = cdnService.GetImageUrl(game.LogoImageKey, ClimbImageRules.GameLogo);
+            var bannerUrl = cdnService.GetImageUrl(game.BannerImageKey, ClimbImageRules.GameBanner);
 
-            return new HomeViewModel(user, game, logoUrl);
+            return new HomeViewModel(user, game, logoUrl, bannerUrl);
         }
     }
 }
