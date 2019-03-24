@@ -11,22 +11,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Climb.Controllers
+namespace Climb.API
 {
-    public class AdminController : Controller
+    public class AdminApi : BaseApi<AdminApi>
     {
         private readonly IConfiguration configuration;
         private readonly ApplicationDbContext dbContext;
         private readonly IServiceProvider serviceProvider;
-        private readonly ILogger<AdminController> logger;
         private readonly IDateService dateService;
 
-        public AdminController(IConfiguration configuration, ApplicationDbContext dbContext, IServiceProvider serviceProvider, ILogger<AdminController> logger, IDateService dateService)
+        public AdminApi(ILogger<AdminApi> logger, IConfiguration configuration, ApplicationDbContext dbContext, IServiceProvider serviceProvider, IDateService dateService)
+            : base(logger)
         {
             this.configuration = configuration;
             this.dbContext = dbContext;
             this.serviceProvider = serviceProvider;
-            this.logger = logger;
             this.dateService = dateService;
         }
 
